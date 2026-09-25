@@ -1,0 +1,13 @@
+[package]
+name = "shbt-power-telemetry"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+build = "build.rs"
+
+[dependencies]
+shbt-power-core = { path = "../shbt-power-core" }
+libc = { workspace = true }
+
+[build-dependencies]
+cc = { workspace = true }

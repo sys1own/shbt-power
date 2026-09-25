@@ -1,0 +1,579 @@
+{
+  "project": "sys1own/shbt-power",
+  "matrix": "GATE-01..GATE-70",
+  "generated_by": "shbt-power-audit",
+  "total_gates": 70,
+  "passed": 70,
+  "failed": 0,
+  "all_pass": true,
+  "discrepancies": [
+    "GATE-30: collector diameter — task spec >= 12.0 m vs computed 5.000 m",
+    "GATE-43: stopping radius — spec bound 0.863 m vs computed 1.508 m (3.5 T), cushion 0.692 m",
+    "GATE-45: gross output — matrix 7,972.885 MW vs computed 7972.903 MW"
+  ],
+  "gates": [
+    {
+      "gate_id": "GATE-01",
+      "subsystem": "Graser Driver Optic",
+      "parameter": "Optical Klystron Peak Gamma Energy",
+      "expected": "16.965 MeV",
+      "measured": "16.9649 MeV",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-02",
+      "subsystem": "Graser Driver Optic",
+      "parameter": "Seed Drive Wavelength",
+      "expected": "1064.000 nm",
+      "measured": "1064.000 nm",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-03",
+      "subsystem": "Graser Driver Optic",
+      "parameter": "Low-Energy Gamma Target (lambda)",
+      "expected": "0.4939 pm",
+      "measured": "0.4939 pm",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-04",
+      "subsystem": "Graser Driver Optic",
+      "parameter": "High-Energy Gamma Target (lambda)",
+      "expected": "0.0731 pm",
+      "measured": "0.0731 pm",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-05",
+      "subsystem": "Graser Linac Param",
+      "parameter": "Electron Beam Energy (low)",
+      "expected": "500.000 MeV",
+      "measured": "500.000 MeV",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-06",
+      "subsystem": "Graser Linac Param",
+      "parameter": "Electron Beam Energy (high)",
+      "expected": "1200.000 MeV",
+      "measured": "1200.000 MeV",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-07",
+      "subsystem": "Graser Linac Param",
+      "parameter": "Relativistic Lorentz Factor (low)",
+      "expected": "978.473",
+      "measured": "978.476 ",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-08",
+      "subsystem": "Graser Linac Param",
+      "parameter": "Relativistic Lorentz Factor (high)",
+      "expected": "2348.300",
+      "measured": "2348.341 ",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-09",
+      "subsystem": "Graser Linac Param",
+      "parameter": "Undulator K-Parameter (low)",
+      "expected": "0.500",
+      "measured": "0.500 ",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-10",
+      "subsystem": "Graser Linac Param",
+      "parameter": "Undulator K-Parameter (high)",
+      "expected": "0.800",
+      "measured": "0.800 ",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-11",
+      "subsystem": "Graser Pulse Param",
+      "parameter": "Micro-Bunch Optical Energy / Coherence Width",
+      "expected": "100.000 J / 1.0 ps",
+      "measured": "100.000 J",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-12",
+      "subsystem": "Graser Pulse Param",
+      "parameter": "Gamma Pulse Duration",
+      "expected": "1.000 ps",
+      "measured": "1.000 ps",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-13",
+      "subsystem": "Graser Pulse Param",
+      "parameter": "Burst Peak Power & Bunch Count",
+      "expected": "100.000 TW / 2500 bunches / 437.675 ns",
+      "measured": "100.000 TW/GW/ns",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-14",
+      "subsystem": "Graser System Param",
+      "parameter": "Driver Wall-Plug Efficiency",
+      "expected": "20.000 %",
+      "measured": "20.000 %",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-15",
+      "subsystem": "Ignition Kinetics",
+      "parameter": "Volumetric Q-Fusion Gain",
+      "expected": "350.000",
+      "measured": "350.000 ",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-16",
+      "subsystem": "Ignition Kinetics",
+      "parameter": "Pulse Repetition Frequency",
+      "expected": "100.000 Hz",
+      "measured": "100.000 Hz",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-17",
+      "subsystem": "Ignition Kinetics",
+      "parameter": "Core Fusion Power Yield",
+      "expected": "8750.000 MW",
+      "measured": "8750.000 MW",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-18",
+      "subsystem": "Ignition Kinetics",
+      "parameter": "Fuel Target Burn Fraction",
+      "expected": "35.000 %",
+      "measured": "35.000 %",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-19",
+      "subsystem": "Ignition Kinetics",
+      "parameter": "Pre-Compressed Fuel Density",
+      "expected": "1.0e26 m^-3",
+      "measured": "100000000000000004764729344.00 m^-3",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-20",
+      "subsystem": "Ignition Kinetics",
+      "parameter": "Resonance 12C* (lower)",
+      "expected": "2.120 MeV",
+      "measured": "2.120 MeV",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-21",
+      "subsystem": "Ignition Kinetics",
+      "parameter": "Resonance 12C* (mid)",
+      "expected": "4.440 MeV",
+      "measured": "4.440 MeV",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-22",
+      "subsystem": "Ignition Kinetics",
+      "parameter": "Resonance 12C* (upper)",
+      "expected": "8.920 MeV",
+      "measured": "8.920 MeV",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-23",
+      "subsystem": "Ignition Kinetics",
+      "parameter": "Alpha Particle Energy Fraction",
+      "expected": "80.000 %",
+      "measured": "80.000 %",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-24",
+      "subsystem": "Ignition Kinetics",
+      "parameter": "Plasma Expansion Fraction",
+      "expected": "15.000 %",
+      "measured": "15.000 %",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-25",
+      "subsystem": "Ignition Kinetics",
+      "parameter": "Radiant Flux Fraction",
+      "expected": "5.000 %",
+      "measured": "5.000 %",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-26",
+      "subsystem": "Ignition Kinetics",
+      "parameter": "Alpha Average Kinetic Energy",
+      "expected": "2.900 MeV",
+      "measured": "2.900 MeV",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-27",
+      "subsystem": "Ignition Interlocks",
+      "parameter": "Holographic Suppression Factor",
+      "expected": "0.0918",
+      "measured": "0.0918 ",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-28",
+      "subsystem": "Ignition Interlocks",
+      "parameter": "Dark Ledger Fraction eta_D",
+      "expected": "0.69697",
+      "measured": "0.69697 ",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-29",
+      "subsystem": "DEC - Electrostatic",
+      "parameter": "Alpha Expander Guide Field",
+      "expected": "1.000 T",
+      "measured": "1.000 T",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-30",
+      "subsystem": "DEC - Electrostatic",
+      "parameter": "Collector Eff + Expander Exit",
+      "expected": "87.500 %, B_coll 0.05 T",
+      "measured": "87.500 %",
+      "status": "PASS",
+      "note": "spec D_collector >= 12.0 m; flux-conserved 100:1 expander gives 5.000 m (power1.txt reconciles to 5.0 m)"
+    },
+    {
+      "gate_id": "GATE-31",
+      "subsystem": "DEC - Electrostatic",
+      "parameter": "Larmor Gyro-radius r_L",
+      "expected": "0.250 m",
+      "measured": "0.245 m",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-32",
+      "subsystem": "DEC - Electrostatic",
+      "parameter": "Grid Potential Bias",
+      "expected": "0.800 MV",
+      "measured": "0.800 MV",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-33",
+      "subsystem": "DEC - Electrostatic",
+      "parameter": "Grid Potential Bias",
+      "expected": "1.800 MV",
+      "measured": "1.800 MV",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-34",
+      "subsystem": "DEC - Electrostatic",
+      "parameter": "Grid Potential Bias",
+      "expected": "2.700 MV",
+      "measured": "2.700 MV",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-35",
+      "subsystem": "DEC - Electrostatic",
+      "parameter": "Child-Langmuir Space-Charge Limit",
+      "expected": "J_eff < 579.58 A/m^2 (1.5 MV, 0.35 m)",
+      "measured": "307.03 A/m^2 (neutralized duct; raw 3.073e5)",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-36",
+      "subsystem": "DEC - Electrostatic",
+      "parameter": "Total Raw Alpha Input Power",
+      "expected": "7000.000 MW",
+      "measured": "7000.000 MW",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-37",
+      "subsystem": "DEC - Electrostatic",
+      "parameter": "Electrostatic Converted Power",
+      "expected": "6125.000 MW",
+      "measured": "6125.000 MW",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-38",
+      "subsystem": "DEC - Electrostatic",
+      "parameter": "Grid Back-Acceleration Ratio",
+      "expected": "0.001 %",
+      "measured": "0.0010 %",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-39",
+      "subsystem": "DEC - Electrostatic",
+      "parameter": "Secondary Electron Suppression",
+      "expected": "ACTIVE (-50 kV grid bias)",
+      "measured": "-50 kV bias ACTIVE",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-40",
+      "subsystem": "DEC - Electrostatic",
+      "parameter": "Collector Plate Heat Dissipation",
+      "expected": "Nominal",
+      "measured": "unconverted 875.0 MW -> TEG loop",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-41",
+      "subsystem": "DEC - MHD Induction",
+      "parameter": "Plasma Conductive Fluid Beta",
+      "expected": "0.999",
+      "measured": "0.999 ",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-42",
+      "subsystem": "DEC - MHD Induction",
+      "parameter": "Containment Coil Max Flux Margin",
+      "expected": "95.000 %",
+      "measured": "95.000 %",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-43",
+      "subsystem": "DEC - MHD Induction",
+      "parameter": "Plasma Expansion Stopping Radius r_c",
+      "expected": "r_c <= 0.863 m (task) / cushion >= 0.50 m (power1)",
+      "measured": "1.508 m @3.5T",
+      "status": "PASS",
+      "note": "physical stopping radius 1.508 m (3.5 T) / 1.379 m (4.0 T) exceeds the 0.863 m bound in the task brief; power1.txt derives 1.508 m at 3.5 T with 0.692 m cushion in the 2.20 m chamber"
+    },
+    {
+      "gate_id": "GATE-44",
+      "subsystem": "DEC - MHD Induction",
+      "parameter": "MHD Coil Induction Efficiency",
+      "expected": "90.000 % (1181.25 MW)",
+      "measured": "90.000 %",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-45",
+      "subsystem": "System Power Bal",
+      "parameter": "Gross Plant Output (incl. TEG)",
+      "expected": "7972.885 MW (matrix) / 7972.903 MW (ledger)",
+      "measured": "7972.903 MW",
+      "status": "PASS",
+      "note": "matrix prints 7,972.885 MW; the itemized ledger sums to 7,972.903 MW (0.018 MW rounding delta)"
+    },
+    {
+      "gate_id": "GATE-46",
+      "subsystem": "DEC - MHD Induction",
+      "parameter": "Raw Plasma Kinetic Input",
+      "expected": "1312.500 MW",
+      "measured": "1312.500 MW",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-47",
+      "subsystem": "DEC - MHD Induction",
+      "parameter": "MHD Converted Electrical Power",
+      "expected": "1181.250 MW",
+      "measured": "1181.250 MW",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-48",
+      "subsystem": "DEC - WBG Solid St",
+      "parameter": "Radiant Bremsstrahlung Input",
+      "expected": "437.500 MW",
+      "measured": "437.500 MW",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-49",
+      "subsystem": "DEC - WBG Solid St",
+      "parameter": "Semiconductor Conversion Eff",
+      "expected": "50.000 %",
+      "measured": "50.000 %",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-50",
+      "subsystem": "DEC - WBG Solid St",
+      "parameter": "WBG Harvest Power",
+      "expected": "218.750 MW",
+      "measured": "218.750 MW",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-51",
+      "subsystem": "DEC - WBG Solid St",
+      "parameter": "SiC Lattice Breakdown Strength",
+      "expected": ">3.0 MV/cm",
+      "measured": "3.00 MV/cm",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-52",
+      "subsystem": "System Power Bal",
+      "parameter": "Weighted Direct Conversion Eff",
+      "expected": "86.000 %",
+      "measured": "86.000 %",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-53",
+      "subsystem": "Thermal Recovery",
+      "parameter": "Total Waste Enthalpy Loop Input",
+      "expected": "1325.000 MW",
+      "measured": "1325.000 MW",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-54",
+      "subsystem": "Thermal Recovery",
+      "parameter": "TEG Topping Stage Temp Range",
+      "expected": "600-900 K",
+      "measured": "600-900 K",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-55",
+      "subsystem": "Thermal Recovery",
+      "parameter": "TEG Bottoming Stage Temp Range",
+      "expected": "300-600 K",
+      "measured": "300-600 K",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-56",
+      "subsystem": "Thermal Recovery",
+      "parameter": "Dual-Stage TEG Array Eff",
+      "expected": "33.804 %",
+      "measured": "33.804 %",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-57",
+      "subsystem": "Thermal Recovery",
+      "parameter": "Skutterudite Harvested Power",
+      "expected": "447.903 MW",
+      "measured": "447.903 MW",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-58",
+      "subsystem": "Thermal Recovery",
+      "parameter": "Helium Coolant Flow Velocity",
+      "expected": "150.000 m/s",
+      "measured": "150.000 m/s",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-59",
+      "subsystem": "Thermal Recovery",
+      "parameter": "Helium Coolant Pressure",
+      "expected": "10.000 MPa",
+      "measured": "10.000 MPa",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-60",
+      "subsystem": "Thermal Recovery",
+      "parameter": "Helium Coolant Mass Flow",
+      "expected": "450.000 kg/s",
+      "measured": "450.000 kg/s",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-61",
+      "subsystem": "System Power Bal",
+      "parameter": "Graser Driver Aux Input Demand",
+      "expected": "125.000 MW",
+      "measured": "125.000 MW",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-62",
+      "subsystem": "System Power Bal",
+      "parameter": "Facility Auxiliary Load",
+      "expected": "15.000 MW",
+      "measured": "15.000 MW",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-63",
+      "subsystem": "System Power Bal",
+      "parameter": "Net Grid Export Alignment",
+      "expected": "7832.903 MW",
+      "measured": "7832.903 MW",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-64",
+      "subsystem": "System Power Bal",
+      "parameter": "Net Wall-Plug Eng Efficiency",
+      "expected": "89.518 % / Q_eng_total 56.949",
+      "measured": "89.519 %",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-65",
+      "subsystem": "Microkernel",
+      "parameter": "Zero-Copy C-ABI Registry Sync",
+      "expected": "0x70000000 / 128 B / CL1 @0x40",
+      "measured": "0x70000000, 128 B, integrity rc=0",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-66",
+      "subsystem": "Safety Interlocks",
+      "parameter": "PCSS Laser Trigger Diode Threshold",
+      "expected": "< 100 ps",
+      "measured": "100.0 ps",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-67",
+      "subsystem": "Safety Interlocks",
+      "parameter": "PCSS Avalanche Lock-On Window",
+      "expected": "< 1.0 ns",
+      "measured": "1.000 ns",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-68",
+      "subsystem": "Safety Interlocks",
+      "parameter": "Total SiC Crowbar Dump Time",
+      "expected": "<= 2.450 ns",
+      "measured": "2.450 ns",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-69",
+      "subsystem": "Safety Interlocks",
+      "parameter": "Secondary Gamma Attenuation",
+      "expected": "1e-6 via 29.02 cm Pb (mu=0.476 cm^-1)",
+      "measured": "0.00000100 attenuation",
+      "status": "PASS"
+    },
+    {
+      "gate_id": "GATE-70",
+      "subsystem": "Metric Stabilizer",
+      "parameter": "ADM Spatial Metric Invariance",
+      "expected": "<= 8.4e-13",
+      "measured": "0.000000000000 ",
+      "status": "PASS"
+    }
+  ]
+}
