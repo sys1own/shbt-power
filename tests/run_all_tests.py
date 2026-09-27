@@ -25,8 +25,8 @@ def run(cmd: list[str], **kw) -> int:
 def check_audit() -> int:
     report = json.loads((REPO_ROOT / "verification_matrix.json").read_text())
     print(f"audit: {report['passed']}/{report['total_gates']} PASS")
-    for d in report.get("discrepancies", []):
-        print(f"  discrepancy: {d}")
+    for d in report.get("resolved_discrepancies", []):
+        print(f"  resolved: {d}")
     return 0 if report["all_pass"] else 1
 
 

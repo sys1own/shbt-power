@@ -59,7 +59,8 @@ def cmd_audit(_args: argparse.Namespace) -> int:
     report = json.loads((REPO_ROOT / "verification_matrix.json").read_text())
     print(
         f"{report['passed']}/{report['total_gates']} PASS; "
-        f"{len(report['discrepancies'])} spec discrepancy(ies) logged"
+        f"{report.get('active_discrepancies', 0)} active discrepancy(ies), "
+        f"{len(report.get('resolved_discrepancies', []))} resolved"
     )
     return 0 if report["all_pass"] else 1
 

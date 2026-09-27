@@ -11,3 +11,5 @@ paper/*.fdb_latexmk
 paper/*.out
 paper/main.pdf
 python/shbt_power.egg-info/
+paper/*.toc
+paper/*.synctex.gz
