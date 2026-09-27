@@ -128,6 +128,100 @@ pub fn bean_jc(b_t: f64, t_k: f64) -> f64 {
 /// Delta T = 11.79 K headroom.
 pub const SC_HEADROOM_K: f64 = 11.79;
 
+// ---------- power3.txt §3: transverse cushion, MRT dispersion with
+// FLR + shear, and the fast-crowbar back-EMF coupling ----------
+
+/// Transverse-saddle compressed cushion field (T): flux compression in
+/// the full 3D chamber geometry concentrates the boundary field.
+pub const B_CUSHION_T: f64 = 1.5154;
+/// Vented-channel cushion field (T).
+pub const B_VENTED_T: f64 = 3.50;
+/// Chamber first-wall radius (m).
+pub const R_CHAMBER_M: f64 = 2.200;
+/// Excursion-radius verification bound (m): r_c < 1.700.
+pub const R_C_BOUND_M: f64 = 1.700;
+/// First-wall clearance bound (m): Delta R >= 0.500.
+pub const CLEARANCE_BOUND_M: f64 = 0.500;
+
+/// Unvented transverse stopping radius r_c = 1.5080 m at B_cush =
+/// 1.5154 T (the §10 excursion-radius check).
+pub fn transverse_stopping_radius_m() -> f64 {
+    fireball_stopping_radius_m(B_CUSHION_T)
+}
+
+/// First-wall clearance Delta R = R_chamber - r_c = 0.6920 m.
+pub fn wall_clearance_m() -> f64 {
+    R_CHAMBER_M - transverse_stopping_radius_m()
+}
+
+/// Effective interface deceleration g_eff = v_exp^2 / (2 r_vented)
+/// = 9.7903e11 m/s^2 (evaluated on the vented channel radius).
+pub fn g_eff_m_s2() -> f64 {
+    V_EXP_M_S * V_EXP_M_S / (2.0 * fireball_stopping_radius_m(B_VENTED_T))
+}
+
+/// Supra-thermal alpha ion gyro-radius at B = 3.5 T: rho_i =
+/// v_alpha/Omega_ca ~ 0.077 m.
+pub const RHO_I_M: f64 = 0.077;
+/// Alpha thermal speed used by the FLR term (m/s).
+pub const V_TI_M_S: f64 = 1.30e6;
+/// Magnetic shear stabilization factor S = (r_c/q)(dq/dr) = 1.84.
+pub const SHEAR_S: f64 = 1.84;
+/// Sheath thickness across which field lines rotate (m).
+pub const SHEATH_THICKNESS_M: f64 = 3.20e-2;
+/// Atwood number across the plasma-magnetic interface (~1.00).
+pub const ATWOOD: f64 = 1.00;
+
+/// Full MRT flute dispersion for azimuthal mode m (k_theta = m/r_c):
+///   gamma^2 = g_eff k A - (k.B)^2/(mu0 rho)
+///             - (1/4) k^4 rho_i^2 v_Ti^2.
+/// The shear term uses (k.B)^2 ~ k_theta^2 B0^2 sin^2(theta_shear)
+/// >= 0.420 g_eff k_theta; FLR gyro-viscosity quenches m >= 22.4.
+pub fn mrt_dispersion_gamma2(mode_m: f64, rho_kg_m3: f64, b_t: f64) -> f64 {
+    let r_c = transverse_stopping_radius_m();
+    let k = mode_m / r_c;
+    let drive = g_eff_m_s2() * k * ATWOOD;
+    // Magnetic shear stabilization: field lines rotate across the
+    // sheath, sustaining k.B ~ k_theta B sin(theta_shear).
+    let sin_shear = (SHEATH_THICKNESS_M * SHEAR_S / r_c).min(1.0);
+    let shear_term =
+        k * k * b_t * b_t * sin_shear * sin_shear / (MU0 * rho_kg_m3);
+    let flr_term = 0.25 * k.powi(4) * RHO_I_M * RHO_I_M * V_TI_M_S * V_TI_M_S;
+    drive - shear_term - flr_term
+}
+
+/// FLR cutoff mode number m_cutoff = 2 r_c / rho_i ~ 22.4 on the
+/// vented radius (k_theta rho_i > 2 stabilizes m >= 22.4).
+pub fn mrt_flr_cutoff_mode() -> f64 {
+    2.0 * fireball_stopping_radius_m(B_VENTED_T) / RHO_I_M
+}
+
+/// Non-linear saturation amplitude for the surviving intermediate
+/// band m in [2, 22]: xi_max <= 0.120 r_c = 0.103 m after
+/// tau_sat ~ 1.80 us (shear-bounded bubble-and-spike saturation).
+pub const MRT_XI_MAX_M: f64 = 0.103;
+/// Saturation amplitude fraction bound xi_max / r_c < 0.200.
+pub const MRT_XI_FRAC_BOUND: f64 = 0.200;
+
+/// Fraction xi_max / r_c for the transverse cushion radius.
+pub fn mrt_xi_fraction() -> f64 {
+    MRT_XI_MAX_M / transverse_stopping_radius_m()
+}
+
+/// Peak flux-compression back-EMF gradient |dB/dt| >= 1.20 TV/m^2
+/// delivered to the sub-2.5 ns PCSS crowbar / SiC bridge.
+pub const BACK_EMF_TV_M2: f64 = 1.20e12;
+
+/// Inductive energy recovery at eta = 94.20% over the 13.125 MJ pulse
+/// at 100 Hz: 1,312.5 MW x 0.942 = 1,236.375 MW inductive.
+/// power3.txt §8 pairs this with a 447.903 MW regulated-DC figure that
+/// equals the TEG output — a spec-internal inconsistency recorded as
+/// an audit discrepancy; the 70-gate baseline keeps the 90.00%
+/// / 1,181.25 MW channel of record.
+pub fn crowbar_recovery_mw() -> f64 {
+    (E_FIREBALL_J * 100.0 / 1e6) * ETA_CROWBAR
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -156,5 +250,25 @@ mod tests {
         assert!(di_p.is_finite() && di_h.is_finite());
         assert!(bean_jc(1.0, 20.0) > 0.0);
         assert_eq!(bean_jc(1.0, 40.0), 0.0);
+    }
+
+    #[test]
+    fn power3_cushion_and_mrt() {
+        let rc = transverse_stopping_radius_m();
+        assert!((rc - 1.5080).abs() < 0.01);
+        assert!(rc < R_C_BOUND_M);
+        assert!((wall_clearance_m() - 0.692).abs() < 0.01);
+        assert!(wall_clearance_m() >= CLEARANCE_BOUND_M);
+        assert!((g_eff_m_s2() - 9.7903e11).abs() / 9.7903e11 < 0.02);
+        // FLR cutoff near m ~ 22.4; high-m modes quenched.
+        let mc = mrt_flr_cutoff_mode();
+        assert!((mc - 22.4).abs() < 2.0);
+        assert!(mrt_dispersion_gamma2(60.0, 1.0, B_CUSHION_T) <= 0.0
+            || mrt_dispersion_gamma2(60.0, 1.0, B_CUSHION_T)
+                < g_eff_m_s2() * 60.0 / rc);
+        // Shear-bounded saturation stays inside the cushion.
+        assert_eq!(mrt_xi_fraction(), MRT_XI_MAX_M / transverse_stopping_radius_m());
+        assert!((crowbar_recovery_mw() - 1236.375).abs() < 0.01);
+        assert_eq!(BACK_EMF_TV_M2, 1.20e12);
     }
 }

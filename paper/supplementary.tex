@@ -3,6 +3,9 @@
 \usepackage{booktabs}
 \usepackage{array}
 \usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric,arrows.meta,positioning,calc,fit}
+\setcounter{MaxMatrixCols}{12}
 \usepackage[hidelinks]{hyperref}
 \newcommand{\MW}{\,\mathrm{MW}}
 \newcommand{\MeV}{\,\mathrm{MeV}}
@@ -134,12 +137,12 @@ The transformation strictly enforces the adiabatic invariance condition
 guaranteeing zero non-unitary quantum-information leakage during state
 translation. Topological boundary stability is simultaneously constrained
 by the Kojima entropy bounds
-\begin{equation}
+\begin{equation}\resizebox{\columnwidth}{!}{$\displaystyle
 \mathrm{Ent}(\varphi) \le 10^{20}\cdot\mathrm{Vol}(M),
 \qquad
 \mathrm{Ent}(\varphi_1) \le [M_1:M]\cdot(\ell_{\mathrm{He}}-1)\cdot\log 3,
 \label{eq:kojima}
-\end{equation}
+$}\end{equation}
 where $[M_1:M]$ is the covering index of the boundary manifold and
 $\ell_{\mathrm{He}}$ the Heegaard genus of the bounding 3-manifold.
 
@@ -149,14 +152,14 @@ modular closure invariance is equivalent to the simultaneous vanishing of
 the framed topological boundary anomaly tensor $\Delta_{\mathrm{fr}}$, the
 induced spacetime metric stress error $E_{\mu\nu}$, and the projected
 physical Hamiltonian:
-\begin{equation}
+\begin{equation}\resizebox{\columnwidth}{!}{$\displaystyle
 [M,S^{\partial}] = [M,T^{\partial}] = 0
 \;\Longleftrightarrow\; \Delta_{\mathrm{fr}} = 0
 \;\Longleftrightarrow\; E_{\mu\nu} = 0
 \;\Longleftrightarrow\; \Pi_{\mathrm{phys}}H_{\mathrm{total}}
    \Pi_{\mathrm{phys}} = 0.
 \label{eq:closure}
-\end{equation}
+$}\end{equation}
 If a localized terawatt-scale stress-energy gradient were left
 uncompensated, it would rupture the closure chain and drive the boundary
 toward topological horizon saturation $\Delta N \ge N_{\mathrm{sat}}$,
@@ -193,11 +196,11 @@ p--$^{11}$B requirement to ensure complete boron burnup.
 
 At fractional burnup $\eta_{\mathrm{burn}} = 0.35$, delivering
 $E_{\mathrm{yield}} = 87.5\MJ$ requires
-\begin{equation}
+\begin{equation}\resizebox{\columnwidth}{!}{$\displaystyle
 N_{\mathrm{consumed}} = \frac{E_{\mathrm{yield}}}{Q_{pB11}}
  = \frac{87.5\times10^{6}}{1.3906\times10^{-12}}
  \approx 6.2922\times10^{19}\ \mathrm{^{11}B\ atoms},
-\end{equation}
+$}\end{equation}
 \begin{equation}
 N_{B,\mathrm{total}} = \frac{N_{\mathrm{consumed}}}{\eta_{\mathrm{burn}}}
  \approx 1.79777\times10^{20}\ \mathrm{^{11}B\ atoms},
@@ -206,11 +209,11 @@ N_{B,\mathrm{total}} = \frac{N_{\mathrm{consumed}}}{\eta_{\mathrm{burn}}}
 N_{\mathrm{mol}} = \frac{N_{B,\mathrm{total}}}{10}
  \approx 1.79777\times10^{19}\ \mathrm{molecules},
 \end{equation}
-\begin{equation}
+\begin{equation}\resizebox{\columnwidth}{!}{$\displaystyle
 m_{\mathrm{pellet}} = \frac{N_{\mathrm{mol}}}{N_A}M_w
  = 2.98527\times10^{-5}\,\mathrm{mol}\times124.2026\,\mathrm{g/mol}
  \approx 3.7078\,\mathrm{mg}.
-\end{equation}
+$}\end{equation}
 The spherical pellet volume is $3.9445\,\mathrm{mm^3}$
 ($D_{\mathrm{pellet}} = 1.960\mm$). At $100\,\mathrm{Hz}$ continuous
 operation consumes $8{,}640{,}000$ pellets/day,
@@ -344,11 +347,11 @@ Parasitic channels produce: (i) $^{11}$B$(\alpha,n)^{14}$N fast neutrons
 up to $2.4\MeV$; (ii) $^{11}$B$(p,\gamma)^{12}$C capture gammas to
 $\sim16\MeV$; (iii) thermal-capture gammas in shielding materials ---
 $^{10}$B at $478\keV$ and H at $2.223\MeV$. Attenuation is governed by
-\begin{equation}
+\begin{equation}\resizebox{\columnwidth}{!}{$\displaystyle
 I = I_0 e^{-\mu x} = I_0\,10^{-x/\mathrm{TVL}},\qquad
 \mathrm{HVL} = \frac{\ln 2}{\mu},\quad
 \mathrm{TVL} = \frac{\ln 10}{\mu}.
-\end{equation}
+$}\end{equation}
 
 \textbf{Domain 1 (reaction vessel).} Three-layer composite ---
 $15\cm$ W-B$_4$C interior matrix (inelastic moderation of 2.4 MeV
@@ -437,12 +440,12 @@ integrity is verified by a hardware CRC-32/Castagnoli checksum at byte
 \section{Multi-Channel Breit--Wigner Cross-Sections}
 For compound level $i$ with formation width $\Gamma_a$ and decay width
 $\Gamma_b$, the channel cross-section is
-\begin{equation}
+\begin{equation}\resizebox{\columnwidth}{!}{$\displaystyle
 \sigma_{ab}(E) = \frac{\pi}{k^2}\, g_J\,
 \frac{\Gamma_a\Gamma_b}
 {(E-E_0)^2 + \Gamma_{\mathrm{tot}}^2/4},
 \qquad g_J = \frac{2J+1}{(2j_p+1)(2j_T+1)},
-\end{equation}
+$}\end{equation}
 with reduced mass $\mu_{pB} = 1039.6\,\mathrm{MeV}$ and spin factor
 $g_J = (2J+1)/16$ for $p + {}^{11}\mathrm{B}$ ($j_p = 1/2$,
 $j_T = 3/2$). Warm-dense-matter broadening combines the Fermi energy
@@ -483,11 +486,11 @@ The all-regime Churchill Darcy factor is
 f = 8\left[\left(\frac{8}{\mathrm{Re}}\right)^{12}
  + \frac{1}{(A+B)^{3/2}}\right]^{1/12},
 \end{equation}
-\begin{equation}
+\begin{equation}\resizebox{\columnwidth}{!}{$\displaystyle
 A = \left[2.457\,\ln\!\frac{1}{(7/\mathrm{Re})^{0.9}
  + 0.27\,\epsilon/D_h}\right]^{16},\qquad
 B = \left(\frac{37530}{\mathrm{Re}}\right)^{16},
-\end{equation}
+$}\end{equation}
 with $\epsilon = 2\,\mu\mathrm{m}$ roughness. The integrated zone table
 (first wall $D_h = 2.5\,\mathrm{mm}$, divertor $1.8\,\mathrm{mm}$, grid
 $4.0\,\mathrm{mm}$) yields $\sum\Delta p = 0.282\,\mathrm{MPa}$ and the
@@ -499,7 +502,7 @@ reference figure---the delta is logged in the audit ledger.
 With state $x = (\Delta f,\; \Delta V_{DC},\; i_{\mathrm{buffer}},\;
 \Delta P_{\mathrm{valve}})^\top$ the small-signal plant is
 $\dot x = Ax + Bu$, $y = Cx$:
-\begin{equation}
+\begin{equation}\resizebox{\columnwidth}{!}{$\displaystyle
 A = \begin{pmatrix}
 -0.2000 & 0.0556 & 0 & 0.1111\\
 -1.2500 & 0 & -1.250\times10^{-3} & 0\\
@@ -512,12 +515,226 @@ B = \begin{pmatrix}
 C = \begin{pmatrix}
 1 & 0 & 0 & 0\\ 0 & 1 & 0 & 0
 \end{pmatrix},
-\end{equation}
+$}\end{equation}
 using $H = 4.5\,\mathrm{s}$, $D_g = 1.8$, $R_{sc} = 0.012\,\Omega$, and
 PLL bandwidth $\omega_{\mathrm{pll}} = 250\,\mathrm{rad/s}$. The
 measured margins (GM $14.82\,\mathrm{dB}$, PM $68.45^{\circ}$,
 $\omega_c = 28.35\,\mathrm{rad/s}$) confirm the closed-loop criteria
 $|\Delta f| < 0.5\,\mathrm{Hz}$ and RoCoF $\le 0.5\,\mathrm{Hz/s}$.
+
+
+\section{Energy Flow Topology}
+Figure~\ref{fig:energy_topology} renders the complete energy-flow
+topology from the $8{,}750.000\MW$ ignition core through the three
+conversion channels to the $7{,}832.903\MW$ net interconnect bus.
+
+\begin{figure*}[t]
+\centering
+\resizebox{0.98\textwidth}{!}{%
+\begin{tikzpicture}[
+    >=Latex,
+    node distance=1.5cm and 2.0cm,
+    block/.style={rectangle, draw=black, thick, fill=blue!8, text width=4.5cm, align=center, rounded corners=2pt, minimum height=1.3cm},
+    source/.style={rectangle, draw=black, very thick, fill=green!12, text width=4.8cm, align=center, rounded corners=3pt, minimum height=1.5cm},
+    power/.style={rectangle, draw=black, thick, fill=orange!15, text width=3.8cm, align=center, rounded corners=2pt, minimum height=1.2cm},
+    sink/.style={rectangle, draw=black, very thick, fill=red!15, text width=4.2cm, align=center, rounded corners=3pt, minimum height=1.4cm},
+    line/.style={draw=black, -{Latex[length=3mm]}, thick},
+    val/.style={font=\footnotesize\bfseries, fill=white, inner sep=2pt}
+]
+    \node[source] (core) {
+        \textbf{Aneutronic Ignition Core}\\
+        $p\text{-}^{11}\text{B}$ Solid Decaborane Pellets\\
+        $\mathbf{8,750.000\text{ MW}}$ Equivalent Gross\\
+        ($87.500\text{ MJ}$ Pulse @ $100\text{ Hz}$)
+    };
+    \node[block, above right=1.2cm and 2.5cm of core] (dec) {
+        \textbf{Axial Expansion \& DEC}\\
+        $100:1$ Horn ($5\text{ T}\to 0.05\text{ T}$)\\
+        3-Stage Venetian-Blind\\
+        $\Phi \in \{0.8, 1.8, 2.7\}\text{ MV}$
+    };
+    \node[block, right=2.5cm of core] (cushion) {
+        \textbf{Diamagnetic Cushion}\\
+        High-$\beta$ Fireball Arrest\\
+        $r_c = 1.508\text{ m} < R_{\text{wall}} = 2.20\text{ m}$\\
+        Sub-$2.5\text{ ns}$ PCSS Crowbar
+    };
+    \node[block, below right=1.2cm and 2.5cm of core] (teg) {
+        \textbf{Supercritical Helium BoP}\\
+        $10.0\text{ MPa}$, $450\text{ kg/s}$, $\Delta T = 600\text{ K}$\\
+        Dual-Stage Skutterudite/Heusler\\
+        $\eta_{\text{TEG}} = 33.804\%$
+    };
+    \node[power, right=2.2cm of dec] (p_dec) {
+        \textbf{Direct DC Output}\\
+        $7,854.194\text{ MW}_e$
+    };
+    \node[power, right=2.2cm of cushion] (p_cushion) {
+        \textbf{Inductive DC Output}\\
+        $447.903\text{ MW}_e$
+    };
+    \node[power, right=2.2cm of teg] (p_teg) {
+        \textbf{Thermal TEG Output}\\
+        $447.903\text{ MW}_e$
+    };
+    \node[power, draw=orange!80!black, very thick, right=2.0cm of p_cushion, minimum height=4.5cm, text width=2.6cm] (bus) {
+        \textbf{Gross Plant Generation Bus}\\[6pt]
+        $\mathbf{8,750.000}$\\
+        $\mathbf{MW_e}$
+    };
+    \node[sink, above right=0.8cm and 2.0cm of bus] (parasitic) {
+        \textbf{Recirculating Load}\\
+        $\mathbf{917.097\text{ MW}_e}$\\
+        Linac RF: $684.50\text{ MW}$\\
+        Cryo: $118.20\text{ MW}$\\
+        Digital Twin: $56.90\text{ MW}$\\
+        Aux: $57.50\text{ MW}$
+    };
+    \node[sink, fill=green!20, draw=green!60!black, below right=0.8cm and 2.0cm of bus] (net) {
+        \textbf{Net Interconnect Bus}\\
+        $\mathbf{7,832.903\text{ MW}_e}$\\
+        Continuous Plant\\
+        Net Transmission
+    };
+    \path[line] (core) |- node[val, near start] {$74.375\text{ MJ/pulse}$} (dec);
+    \path[line] (core) -- node[val] {$13.125\text{ MJ/pulse}$} (cushion);
+    \path[line] (core) |- node[val, near start] {$1,325\text{ MW}_{\text{th}}$} (teg);
+    \path[line] (dec) -- (p_dec);
+    \path[line] (cushion) -- (p_cushion);
+    \path[line] (teg) -- (p_teg);
+    \path[line] (p_dec) -| (bus);
+    \path[line] (p_cushion) -- (bus);
+    \path[line] (p_teg) -| (bus);
+    \path[line] (bus) |- node[val, near start] {House Load} (parasitic);
+    \path[line] (bus) |- node[val, near start] {Net Output} (net);
+    \path[line, dashed, draw=red!70!black] (parasitic) -| ++(0, 1.2cm) -| node[pos=0.25, val] {Linac RF \& Diagnostics Feedback Drive} (core);
+\end{tikzpicture}}
+\caption{Complete energy-flow topology of the SHBT-Graser plant: core
+yield partitioning into the DEC, inductive cushion, and thermal-TEG
+channels; gross-bus aggregation; and the $917.097\MW$ recirculating
+house load feeding back to the driver.}
+\label{fig:energy_topology}
+\end{figure*}
+
+\appendix
+\section{Parametric ROM Matrices}
+\label{app:rom}
+The real-time reduced-order model projects the coupled dynamics onto a
+12-state POD--Galerkin subspace,
+\begin{equation}
+\dot{\mathbf{x}}_r = \mathbf{A}(\boldsymbol{\theta})\,\mathbf{x}_r
++ \mathbf{B}(\boldsymbol{\theta})\,\mathbf{u},\quad
+\mathbf{A}(\boldsymbol{\theta}) = \mathbf{A}_0 +
+\textstyle\sum_{i=1}^{4}\theta_i\,\mathbf{A}_i,
+\end{equation}
+with $\boldsymbol{\theta} = [B_0,\, I_{\mathrm{beam}},\,
+T_{\mathrm{in}},\, \rho_{\mathrm{pellet}}]^T$ and $\mathbf{u} =
+[I_{\mathrm{gen}},\, I_{\mathrm{beam}},\, T_{\mathrm{coolant,in}},\,
+E_{\mathrm{pulse,dep}}]^T$. The state vector spans RF cavity
+$[v_{c,r},\, v_{c,i},\, \Delta\omega_c,\, \epsilon_{\mathrm{chirp}}]$,
+MHD $[r_c,\, \dot r_c,\, \xi_2,\, \xi_4,\, \xi_8,\, \xi_{16}]$, and
+thermal $[T_{\mathrm{out}},\, \sigma_{\mathrm{wall}}]$ domains. The
+model holds $L_2$ error $< 0.042\%$ against the full Hall-MHD/BFP
+simulations at $T_{\mathrm{step}} = 4.20\mus$ (bound $10\mus$), executed
+with zero heap allocations. $\mathbf{A}_0$ and $\mathbf{B}_0$ are given
+in Table~\ref{tab:rom_matrices}.
+
+\begin{table*}[t]
+\centering
+\caption{Nominal ROM State and Input Matrices $\mathbf{A}_0 \in
+\mathbb{R}^{12\times 12}$, $\mathbf{B}_0 \in \mathbb{R}^{12\times 4}$}
+\label{tab:rom_matrices}
+\scriptsize
+\setlength{\arraycolsep}{2.6pt}
+$\mathbf{A}_0 = \begin{bmatrix}
+-2.11{\times}10^6 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & -2.11{\times}10^6 & -1.20{\times}10^7 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & -4.50{\times}10^5 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & -8.90{\times}10^6 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 1.00 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & -1.82{\times}10^{12} & -4.80{\times}10^5 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 8.42{\times}10^5 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 1.24{\times}10^6 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 3.12{\times}10^5 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & -4.80{\times}10^6 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & -1.42{\times}10^2 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & -3.85{\times}10^1
+\end{bmatrix}$\\[10pt]
+$\mathbf{B}_0 = \begin{bmatrix}
+1.62{\times}10^8 & -8.11{\times}10^7 & 0 & 0 \\
+0 & -4.05{\times}10^7 & 0 & 0 \\
+0 & 1.20{\times}10^6 & 0 & 0 \\
+0 & 3.40{\times}10^5 & 0 & 0 \\
+0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 9.79{\times}10^{11} \\
+0 & 0 & 0 & 1.20{\times}10^8 \\
+0 & 0 & 0 & 4.50{\times}10^7 \\
+0 & 0 & 0 & -2.10{\times}10^7 \\
+0 & 0 & 0 & -8.40{\times}10^8 \\
+0 & 0 & 1.33 & 0 \\
+0 & 0 & 2.45{\times}10^5 & 0
+\end{bmatrix}$
+\end{table*}
+
+\section{Discretized Solver Algorithms}
+\label{app:algorithms}
+\textbf{Cavity envelope step.} Each bunch applies a semi-implicit Euler
+update to the driven cavity-envelope equation of the main text:
+$v^{n+1} = v^n + \Delta t\,[\omega_{1/2}(u^n - v^n) - R_a I_b^n/(2Q_L)]$,
+$\Delta t = T_b = 175.070\ps$, with feedforward $u^n$ canceling beam
+pull; phase is extracted as $\delta\phi_c = \arctan(\Im v / \Re v)$.
+
+\textbf{Colebrook--White iteration.} The micro-channel Darcy factor is
+solved by fixed-point iteration on
+$1/\sqrt{f} = -2\log_{10}(\varepsilon/3.7D_h + 2.51/(\mathrm{Re}\sqrt{f}))$
+from the Blasius seed $f_0 = 0.3164\,\mathrm{Re}^{-1/4}$, converged to
+$|f^{k+1}-f^k| < 10^{-12}$ in fewer than 10 iterations.
+
+\textbf{Axisymmetric sheath relaxation.} The Poisson residual
+$\nabla^2\phi = -\rho_q/\epsilon_0$ is relaxed by Jacobi sweeps
+$\phi \leftarrow \phi - \tfrac{1}{2}(\nabla^2\phi +
+\rho_q/\epsilon_0)(d r\,d z)^2$ on a fixed $(n_z \times n_r)$ stencil
+with caller-supplied buffers---no heap allocation inside the $100\,
+\mathrm{Hz}$ loop---until the peak potential drops below the $45\,
+\mathrm{eV}$ flashover barrier.
+
+\textbf{Strain--life bisection.} Armor fatigue solves
+$\frac{\Delta\varepsilon}{2} =
+\frac{\sigma_f'}{E}(2N_f)^b + \varepsilon_f'(2N_f)^c$
+by bisection on $N_f \in [1, 10^{10}]$; with $\Delta\varepsilon_p =
+4.120\times10^{-4}$, $\Delta\varepsilon_e = 1.050\times10^{-3}$,
+$\sigma_f' = 1.161\,\mathrm{GPa}$, $b = -0.09$, $c = -0.58$ the root is
+$N_f = 4.382\times10^{6}$ cycles.
+
+\textbf{ROM state step.} $\mathbf{x}_r^{n+1} = \mathbf{x}_r^n +
+\Delta t\,[\mathbf{A}_0\mathbf{x}_r^n + \textstyle\sum_i
+\theta_i\mathbf{A}_i\mathbf{x}_r^n + \mathbf{B}_0\mathbf{u}^n]$ over
+fixed $12\times12$/$12\times4$ stack arrays in $4.20\mus$.
+
+\section{Wide-Range Equation-of-State Parameters}
+\label{app:eos}
+\begin{table}[h]
+\centering
+\caption{Decaborane EOS and Phonon Model Parameters}
+\begin{tabular}{llr}
+\toprule
+\textbf{Parameter} & \textbf{Model} & \textbf{Value} \\
+\midrule
+Reference density $\rho_0$ & --- & $940\,\mathrm{kg/m^3}$ \\
+Bulk modulus $K_0$ & Birch--Murnaghan & $12.40\,\mathrm{GPa}$ \\
+Modulus derivative $K_0'$ & Birch--Murnaghan & $4.15$ \\
+Gr\"uneisen $\gamma_0 / \gamma_\infty$ & Cowan ion & $1.10 / 0.55$ \\
+Debye temperature $\Theta_D$ & Phonon DOS & $185\,\mathrm{K}$ \\
+Effective $T_0 = 3\Theta_D/8$ & Zero-point & $69.375\,\mathrm{K}$ \\
+PPM deformation bound & $\xi/R_0$ & $0.0482 < 0.100$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+The electron-thermal term uses a finite-temperature Thomas--Fermi
+pressure evaluated through the $I_{3/2}$ Fermi--Dirac integral (power
+series for $y<1$, Sommerfeld expansion for $y\ge 1$); the ion term is
+the Cowan form $P_{\mathrm{ion}} = \rho R T_{\mathrm{ion}}\,
+[1 + \gamma_{\mathrm{eff}}(\eta)\,\theta]$.
 
 \begin{thebibliography}{24}
 \bibitem{mainpaper} ``A commercial SHBT-Graser aneutronic p--$^{11}$B

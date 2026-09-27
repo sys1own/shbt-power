@@ -11,6 +11,7 @@
 
 pub mod f512;
 pub mod constants;
+pub mod rom;
 
 pub use constants::*;
 pub use f512::{Complex512, Float512};
