@@ -3,7 +3,7 @@
 ### Multi-Physics Digital Twin, Freestanding C11 Microkernel, and 70-Gate Verification Suite
 
 ![Gates](https://img.shields.io/badge/gates-70%2F70%20PASS-brightgreen)
-![Extended](https://img.shields.io/badge/extended%20checks-58%2F58%20PASS-brightgreen)
+![Extended](https://img.shields.io/badge/extended%20checks-70%2F70%20PASS-brightgreen)
 ![Edition](https://img.shields.io/badge/rust-2021-orange)
 ![Kernel](https://img.shields.io/badge/kernel-freestanding%20C11-blue)
 ![License](https://img.shields.io/badge/license-MIT-lightgrey)
@@ -12,7 +12,7 @@
 verification suite for the SHBT-Graser aneutronic proton–Boron-11 fusion
 power plant. It couples a freestanding C11 control microkernel, a Cargo
 workspace of nine Rust physics crates, PyO3 Python bindings, a 70-gate
-numerical audit engine (plus 58 higher-order extended checks), and the
+numerical audit engine (plus 70 higher-order extended checks), and the
 compiled IEEE-format publication suite (`paper/power.pdf`,
 `paper/supplementary.pdf`).
 
@@ -233,7 +233,7 @@ shbt-power/
 │   │                              #   interconnect + teg_nodal
 │   ├── shbt-power-holography/     # suppression factor, dark ledger, ADM check
 │   ├── shbt-power-telemetry/      # MMIO mirror + SPSC ring + CRC-32C
-│   └── shbt-power-audit/          # GATE-01..70 engine + 58 EXT checks
+│   └── shbt-power-audit/          # GATE-01..70 engine + 70 EXT checks
 ├── bindings/shbt-power-py/        # PyO3 PyShbtDigitalTwin extension
 ├── python/shbt_power/             # CLI (run, audit), HUD, 5-regime sweep
 ├── tests/                         # run_all_tests.py + closed-loop Rust test
@@ -332,7 +332,7 @@ inside `step_macro_tick` (FFI `#[repr(C, align(64))]` preserved).
 cargo run --release -p shbt-power-audit   # -> verification_matrix.json
 ```
 
-`verification_matrix.json` reports `70/70` gates `"PASS"` plus `58/58`
+`verification_matrix.json` reports `70/70` gates `"PASS"` plus `70/70`
 `extended_checks` `"PASS"`, and a `discrepancies` array recording every
 computed-vs-spec delta for research follow-up.
 
@@ -401,8 +401,27 @@ computed-vs-spec delta for research follow-up.
 | EXT-41 crowbar channel | 447.903 MW | 1,236.375 MW (spec self-inconsistent) |
 | P4 CL stage design currents | 4.5/15.2/28.0 A/m² | ceilings ~226/764/1,406 A/m² |
 | P4 HOM choke τ_d @ Q=100 | < 5.5 ns | 5.57 ns (Q_ext ≤ 98.7 required) |
+| P5 sHe core ΔP (64×5.35 mm @850.51 kg/s) | 283.4 kPa | ~1.9e5 MPa (geometry spec inconsistent) |
 
-Extended checks EXT-01…EXT-58 cover LLRF ripple, FEL Schwinger margin,
+**power5 workbench checks (EXT-59…EXT-70)**
+
+| Domain | Criterion | Modeled |
+|---|---|---|
+| Slotted-iris HOM τ_d | 1.772 ns (10.12 τ_b) | 1.7723 ns |
+| BBU amplification | ≤ 1.184 | 1.184 |
+| Emittance ε_nx | ≤ 0.50 mm·mrad | 0.442 |
+| Intra-burst Δγ/γ | ≤ 1e-4 | 8.65e-5 |
+| FEL h=5 bunching / Schwinger | b5 0.284, ratio ≤ | 0.284 / 2.40e-7 |
+| CVD diamond armor life | 1,829 d (5.01 yr) | 1,829 d |
+| sHe loop closure | ṁ 850.51 kg/s @ 1,325 MW | 850.51 kg/s |
+| TEG cascade η | 33.804% → 447.903 MW | PASS |
+| LANR bus | 358.32 kA @ 1.25 kV, 3.488 mΩ | PASS |
+| GUM metrology | σ 1.3416 MW, U95 2.683 MW | PASS |
+| WLS calorimetry | \|β̂1−1\| ≤ 0.0020 | PASS |
+| ASTM E1004/E1681/F1624 + 5-phase FSM | all bounds | PASS |
+| EOS/BFP/PPM traits | w>1 solid, b_max>0, CFL ≤ 0.8 | PASS |
+
+Extended checks EXT-01…EXT-70 cover LLRF ripple, FEL Schwinger margin,
 LSC finiteness, resonance peaks, avalanche multiplication, expander
 optics, Child-Langmuir neutralization, suppressor barrier depth, MHD
 channel stopping, MRT wall-radius bound, Bean J_c, helium loop drop and

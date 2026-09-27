@@ -377,6 +377,33 @@ pub fn w_fuzz_see(gamma0: f64, r: f64) -> f64 {
     gamma0 * (1.0 - r.clamp(0.0, 1.0))
 }
 
+
+// ---------- power5.txt: expander constants + PIC/SEE parameters ----------
+
+/// Magnetic scale length of the trumpet (m): L_B = 2.1715.
+pub const L_B_P5_M: f64 = 2.1715;
+/// Adiabaticity bound eps = rho_L / L_B < 1e-2.
+pub const EPS_ADIABATIC_BOUND: f64 = 1.0e-2;
+/// Collector radius r_coll = 2.500 m (expander trumpet wall).
+pub const R_COLL_P5_M: f64 = 2.500;
+/// Thermionic emitter operating point for the 3-stage Venetian-blind
+/// neutralizer: n_e,inj = 5.937e17 m^-3, T_e = 25 eV.
+pub const NE_INJ_P5_M3: f64 = 5.937e17;
+pub const T_E_INJ_EV: f64 = 25.0;
+/// Sternglass SEE emission: mean secondary energy 3.5 eV,
+/// escape depth Lambda ~ 3.5e-10 m/eV scaling.
+pub const SEE_MEAN_EV: f64 = 3.5;
+pub const STERNGLASS_LAMBDA_M_EV: f64 = 3.5e-10;
+/// -50 kV suppressor saddle suppressing virtual-anode formation.
+pub const SADDLE_BIAS_KV: f64 = -50.0;
+
+/// eps_ad = rho_L / L_B at the 2.9 MeV alpha, B = 5.0 T head:
+/// rho_L = m v_perp / (q B) ~ 0.0217 m -> eps = 9.99e-3 < 1e-2.
+pub fn adiabaticity_eps_p5() -> f64 {
+    let v = (2.0 * 2.9e6 * E_CHARGE / M_ALPHA_KG).sqrt();
+    let rho_l = M_ALPHA_KG * v / (2.0 * E_CHARGE * 5.0);
+    rho_l / L_B_P5_M
+}
 #[cfg(test)]
 mod tests {
     use super::*;

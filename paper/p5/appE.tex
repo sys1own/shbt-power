@@ -1,0 +1,31 @@
+Thermo-Elasticity, Damage Mechanics, and Physical Sputtering FormulationsThe coupled thermo-mechanical state within the first-wall armor under the periodic 100 Hz heat flux transient $F(t) = F_0 \left[ \Theta(t) - \Theta(t - \tau_{\text{flash}}) \right]$ is resolved via the axisymmetric Navier-Cauchy equations. Assuming isotropic material properties and complete lateral displacement constraint ($\varepsilon_{xx} = \varepsilon_{yy} = 0$), the stress tensor components reduce to:\[
+\resizebox{\columnwidth}{!}{$\displaystyle \sigma_{xx}(z, t) = \sigma_{yy}(z, t) = - \frac{E \alpha_T}{1 - \nu} \left[ T(z, t) - T_{\text{initial}} \right]$}
+\]
+\[
+\resizebox{\columnwidth}{!}{$\displaystyle \sigma_{zz}(z, t) = \sigma_{xy} = \sigma_{yz} = \sigma_{zx} = 0$}
+\]
+The transient temperature profile within the half-space $z \ge 0$ during the heating phase ($t \le \tau_{\text{flash}}$) is given analytically by:\[
+\resizebox{\columnwidth}{!}{$\displaystyle T(z, t) - T_{\text{initial}} = \frac{2 F_0}{k} \sqrt{\alpha t} \, \text{ierfc}\left( \frac{z}{2 \sqrt{\alpha t}} \right)$}
+\]
+where $\text{ierfc}(\eta) = \frac{1}{\sqrt{\pi}} e^{-\eta^2} - \eta \, \text{erfc}(\eta)$. At $t = \tau_{\text{flash}} = 10.0\,\mu\text{s}$, the peak surface compressive stress in CVD diamond is $\sigma_{xx}(0) = -161.4\text{ MPa}$, well below its compressive fracture limit ($\sigma_{\text{comp}} \ge 8.5\text{ GPa}$).Total accumulated mechanical strain per reversal is tracked via:\[
+\resizebox{\columnwidth}{!}{$\displaystyle \Delta \varepsilon_{\text{total}} = \frac{\Delta \sigma}{E} + \Delta \varepsilon_{\text{plastic}}$}
+\]
+Damage accumulation per diurnal cycle ($N_{\text{day}} = 8.640 \times 10^6\text{ cycles}$) follows the Palmgren-Miner linear damage rule:\[
+\resizebox{\columnwidth}{!}{$\displaystyle D_{\text{fatigue}} = \sum_{j=1}^{N_{\text{blocks}}} \frac{n_j}{N_{f, j}} \le 1.0$}
+\]
+Linear elastic sub-surface crack propagation follows the Paris-Erdogan law with mean stress corrections via the Walker model:\[
+\resizebox{\columnwidth}{!}{$\displaystyle \frac{da}{dN} = C \left[ \frac{\Delta K}{(1 - R)^{1 - \lambda_{\text{walker}}}} \right]^m$}
+\]
+where $R = \sigma_{\text{min}} / \sigma_{\text{max}}$ is the stress ratio ($R \approx -5.6$ under constrained cyclic thermal shock).The angle-resolved physical sputtering yield $Y(E, \theta)$ is computed via the five-parameter Bohdansky-Yamamura-Eckstein model:\[
+\resizebox{\columnwidth}{!}{$\displaystyle Y(E, \theta) = Y(E, 0) \cos^{-f}(\theta^*) \exp\left\{ - b \left( \frac{1}{\cos(\theta^*)} - 1 \right) \right\}$}
+\]
+\[
+\resizebox{\columnwidth}{!}{$\displaystyle Y(E, 0) = q \, s_n^{\text{KrC}}(\epsilon) \frac{\left( 1 - (E_{\text{th}} / E)^{2/3} \right) (1 - E_{\text{th}} / E)^2}{w(\epsilon) + s_n^{\text{KrC}}(\epsilon) (E_{\text{th}} / E)^{2/3}}$}
+\]
+\[
+\resizebox{\columnwidth}{!}{$\displaystyle w(\epsilon) = \epsilon + 0.1728 \sqrt{\epsilon} + 0.008 \epsilon^{0.1504}$}
+\]
+Sputtering threshold energies are set to $E_{\text{th}} = 118.5\text{ eV}$ for $\text{He}^{2+} \to \text{W}$ and $E_{\text{th}} = 28.4\text{ eV}$ for $\text{He}^{2+} \to \text{Diamond}$. Total volume recession per unit time is evaluated via:\[
+\resizebox{\columnwidth}{!}{$\displaystyle \dot{\delta}_{\text{recession}} = \frac{1}{\rho_{\text{atom}}} \int_{E_{\text{th}}}^\infty dE \int_0^{\pi/2} d\theta \, \frac{d^2 \Phi_{\text{ion}}}{dE \, d\Omega} Y(E, \theta)$}
+\]
+yielding an erosion rate of $0.82\,\mu\text{m/day}$ for CVD diamond, establishing a maintenance interval of 1,829 days ($5.01\text{ years}$) for a $1.50\text{ mm}$ sacrificial armor tile.

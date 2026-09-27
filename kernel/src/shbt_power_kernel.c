@@ -10,6 +10,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <stdbool.h>
 #include "shbt_power_mmio.h"
 #include "shbt_ecc.h"
 
@@ -212,4 +213,94 @@ double shbt_pcss_crowbar_bench(unsigned iters)
     (void)sink;
     uint64_t dt = shbt_cycles() - t0;
     return (double)dt * 1.0e9 / ((double)SHBT_TSC_HZ * (double)iters);
+}
+
+/* power5.txt §5 — validated telemetry read across the 8-channel MMIO
+ * telemetry block: SECDED Hamming(72,64) single-bit correction,
+ * double-bit panic (cli; hlt) inside the 20 ns interlock budget, and
+ * fixed-point channel descaling into physical units. */
+typedef struct {
+    uint64_t data_raw;       /* raw 64-bit payload */
+    uint64_t ecc_syndrome;   /* stored SECDED check byte in [7:0] */
+    uint64_t status_flags;   /* bit1 = corrected, bit2 = panic */
+} telemetry_channel_t;
+
+typedef struct {
+    telemetry_channel_t channels[8];
+    volatile uint32_t global_fault_irq;
+    volatile uint32_t cal_heater_enable;
+    volatile uint64_t cal_heater_voltage_uv;
+    volatile uint64_t cal_heater_current_ua;
+} plant_telemetry_block_t;
+
+#define NUM_TELEMETRY_CHANNELS 8U
+
+/* SECDED syndrome computed from the same 7-parity mask set used by
+ * shbt_ecc.c (recomputed here so the read path carries no external
+ * state). */
+static const uint64_t ecc_parity_matrix[7] = {
+    0x5555555555555555ULL,
+    0x6666666666666666ULL,
+    0x7878787878787878ULL,
+    0x7F807F807F807F80ULL,
+    0x7FFF00007FFF0000ULL,
+    0x7FFFFFFF00000000ULL,
+    0x8000000000000000ULL
+};
+
+bool read_validated_telemetry(uint32_t channel_idx, double *out_physical_val)
+{
+    if (channel_idx >= NUM_TELEMETRY_CHANNELS || out_physical_val == 0) {
+        return false;
+    }
+
+    plant_telemetry_block_t *const mmio =
+        (plant_telemetry_block_t *)(uintptr_t)SHBT_POWER_BASE_ADDR;
+    telemetry_channel_t *ch = &mmio->channels[channel_idx];
+
+    uint64_t raw_data    = ch->data_raw;
+    uint8_t received_ecc = (uint8_t)(ch->ecc_syndrome & 0xFFULL);
+
+    uint8_t calc_syndrome = 0;
+    for (uint32_t i = 0; i < 7U; i++) {
+        if (__builtin_parityll(raw_data & ecc_parity_matrix[i])) {
+            calc_syndrome |= (uint8_t)(1U << i);
+        }
+    }
+
+    uint8_t overall_parity =
+        (uint8_t)(__builtin_parityll(raw_data) ^
+                  __builtin_parity(received_ecc & 0x7FU));
+    uint8_t syndrome_delta = calc_syndrome ^ (received_ecc & 0x7FU);
+    bool overall_parity_match =
+        (overall_parity == ((received_ecc >> 7U) & 0x01U));
+
+    if (syndrome_delta != 0U) {
+        if (!overall_parity_match) {
+            /* Single-bit error: correct and flag. */
+            uint32_t error_bit = syndrome_delta - 1U;
+            if (error_bit < 64U) {
+                raw_data ^= (1ULL << error_bit);
+            }
+            ch->status_flags |= (1ULL << 1);
+        } else {
+            /* Double-bit error: emergency panic within 20 ns. */
+            mmio->global_fault_irq = 0xDEADBEEFU;
+#if defined(__x86_64__) || defined(__i386__)
+            __asm__ volatile("cli; hlt");
+#endif
+            return false;
+        }
+    }
+
+    switch (channel_idx) {
+    case 0: *out_physical_val = (double)raw_data * 1.0e-4; break;
+    case 1: *out_physical_val = (double)raw_data * 1.0e-5; break;
+    case 2: *out_physical_val = (double)raw_data * 1.0e-5; break;
+    case 3: *out_physical_val = (double)raw_data * 1.0e-6; break;
+    case 4: *out_physical_val = (double)raw_data * 1.0e-4; break;
+    case 5: *out_physical_val = (double)(int64_t)raw_data * 1.0e-3; break;
+    default: *out_physical_val = (double)raw_data; break;
+    }
+    return true;
 }

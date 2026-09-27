@@ -7,6 +7,8 @@
 //! three-regime FEL Doppler equation for E_gamma in [2.510, 16.965] MeV.
 
 pub mod cavity_dynamics;
+pub mod wakefield;
+pub mod fatigue;
 
 use shbt_power_core::constants::*;
 use shbt_power_core::{PhysicsSubsystem, PlantStateSnapshot};
