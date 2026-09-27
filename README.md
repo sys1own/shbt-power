@@ -320,3 +320,19 @@ cd ..
 ## License
 
 MIT — see `LICENSE`.
+
+---
+
+## SHBT Ecosystem Code Repository Crosswalk
+
+`shbt-power` serves as the master systems engineering and multi-physics integration platform for commercial aneutronic fusion[cite: 16], directly synthesizing modular algorithms, runtime kernels, and verification pipelines across the Static Holographic Boundary Theory (SHBT) repository ecosystem:
+
+| Repository | Domain Role | Direct Integration into `shbt-power` |
+| :--- | :--- | :--- |
+| [`sys1own/shbt-cf`](https://github.com/sys1own/shbt-cf) | Cold Fusion Reactor & HIL Workbench | Canonical source for the 1,800-module LANR starter grid specification ($555.03\text{ W}$ net DC/cell, $999.054\text{ kW}$ array), dual-stage ($\text{CoSb}_3/\text{ZrNiSn}$) thermoelectric generator (TEG) enthalpy recovery routines, and 3D Eulerian-Eulerian helium thermal-hydraulics models. |
+| [`sys1own/shbt-ghost`](https://github.com/sys1own/shbt-ghost) | Fast Interlocks & Metric Control | Sub-2.5 ns Photoconductive Semiconductor Switch (PCSS) optical trigger logic, 94.20% SiC inductive recovery crowbars, and real-time ADM 3+1 spacetime metric stabilization routines enforcing shift nulling ($\beta^i \to 0$) and lapse invariance ($\vert{}\det(g)+1\vert{} \le 10^{-12}$). |
+| [`sys1own/shbt-exotic`](https://github.com/sys1own/shbt-exotic) | Boundary CFT & Dark Ledger | Boundary Conformal Field Theory state-vector formulations, Heegaard-Floer symplectic boundary relabeling ($T^\partial_{ij}$), and the invariant rational dark ledger capacity partitioning ($\eta_D = 23/33$, $\eta_A = 10/33$). |
+| [`sys1own/shbt-qc`](https://github.com/sys1own/shbt-qc) | Bare-Metal Runtime & HIL Microkernel | Freestanding C11 `shbt-os` microkernel execution environment, normative base 56-byte `SHBT-MMIO-1` register layout anchored at `0x70000000`, SECDED Hamming(72,64) ECC scrubbing, and AVX-512 real-time interlocks. |
+| [`sys1own/shbt-recon`](https://github.com/sys1own/shbt-recon) | Macroscopic States & Telemetry Rings | Multi-particle macroscopic state tracking ($N_{\text{local}} \in [10^{23}, 10^{28}]$ nucleons via $V_{\text{unified}}^{\text{macro}}$), 128-byte dual-cacheline zero-copy C-ABI standard, and POSIX SPSC shared-memory telemetry rings. |
+| [`sys1own/shbt-sglt`](https://github.com/sys1own/shbt-sglt) | Relativistic Optics & Cryogenics | 2PN relativistic electron beam optics[cite: 6, 16], high-heat-flux CVD Diamond-on-GaN substrate limits, and cryogenic $\text{NbN}/\text{MgB}_2$ quench margin safeguards (11.79 K headroom). |
+| [`sys1own/shbt-precision`](https://github.com/sys1own/shbt-precision) | Arbitrary-Precision Numerics | 512-bit arbitrary-precision hybrid numeric framework (`rug`/MPFR), canonical WZW affine branch $(26, 8, 312)$ arithmetic[cite: 10, 18], and zero-allocation audit primitives. |
