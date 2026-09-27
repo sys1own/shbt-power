@@ -562,8 +562,10 @@ $28.35\,\mathrm{rad/s}$, and worst-case RoCoF $0.112\,\mathrm{Hz/s}$
 --- all compliant.
 
 \subsection{LANR starter grid and cold start}
-A $1{,}800$-module LANR auxiliary array supplies $999.054\,\mathrm{kW}$
-net DC ($1800 \times 555.03\,\mathrm{W}$ upstream-canonical module rating).
+A $1{,}800$-module LANR auxiliary array---specified by the cold-fusion
+authority repository \texttt{sys1own/shbt-cf}---supplies $999.054\,
+\mathrm{kW}$ net DC ($1800 \times 555.03\,\mathrm{W}$
+upstream-canonical module rating).
 At converter efficiency $\eta = 0.95$ it charges the $450\,\mathrm{MJ}$
 supercapacitor buffer in
 \begin{equation}
@@ -809,21 +811,24 @@ margin. The gate asserts the itemized value and records the delta.
 Table~\ref{tab:crosswalk} maps sibling repositories onto the twin's
 subsystems.
 
-\begin{table}[h]
+\begin{table}[t]
 \centering
 \caption{SHBT Ecosystem Repository Crosswalk}
 \label{tab:crosswalk}
-\small
-\begin{tabular}{l>{\raggedright\arraybackslash}p{4.8cm}}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{l>{\raggedright\arraybackslash}p{5.3cm}}
 \toprule
-\textbf{Repository} & \textbf{Contribution} \\
+\textbf{Repository} & \textbf{Direct Technology Transfer \& Domain Responsibility} \\
 \midrule
-\texttt{shbt-precision} & canonical branch $(26,8,312)$, Float512 semantics \\
-\texttt{shbt-cf}        & fixed-point accumulators, BOP ledger, SPSC ring \\
-\texttt{shbt-sglt}      & SECDED ECC, MMIO map conventions, LANR ledger \\
-\texttt{shbt-qc}        & holographic suppression and unitarity checks \\
-\texttt{shbt-recon}     & telemetry reconciliation patterns \\
-\texttt{shbt-ghost}     & dark-ledger / shadow-sector accounting \\
+\texttt{shbt-power}     & Master fusion digital twin; top-level Cargo workspace, multi-channel DEC, closed-loop ledger (7,832.903~MW net export), and 70-gate verification harness. \\
+\texttt{shbt-cf}        & Cold fusion authority; supplies the 1,800-module LANR starter grid (555.03~W net/cell, 999.054~kW array), dual-stage TEG enthalpy recovery, and 3D Eulerian-Eulerian helium thermal-hydraulics. \\
+\texttt{shbt-ghost}     & Fast optical interlocks and metric stabilization; sub-2.5~ns PCSS crowbar interlocks, 94.20\% SiC recovery shunts, and ADM 3+1 metric stabilization ($\beta^i \to 0$, $|\det(g)+1| \le 10^{-12}$). \\
+\texttt{shbt-exotic}    & Boundary CFT foundations; boundary state-vector formulations, Heegaard-Floer symplectic boundary relabeling ($T^\partial_{ij}$), and invariant dark ledger capacity partitioning ($\eta_D = 23/33$). \\
+\texttt{shbt-qc}        & Bare-metal C11 \texttt{shbt-os} microkernel runtime, base 56-byte \texttt{SHBT-MMIO-1} register standard at base address \texttt{0x70000000}, SECDED Hamming(72,64) ECC, and AVX-512 interlocks. \\
+\texttt{shbt-recon}     & Macroscopic state tracking; macroscopic Stinespring dilation ($V_{\text{unified}}^{\text{macro}}$ over $N \sim 10^{20}$ particles), 128-byte dual-cacheline C-ABI mapping, and POSIX SPSC shared-memory rings. \\
+\texttt{shbt-sglt}      & Relativistic optics and cryogenics; 2PN relativistic electron beam optics, CVD Diamond-on-GaN thermal dissipation bounds, and $\text{NbN}/\text{MgB}_2$ quench margins (11.79~K headroom). \\
+\texttt{shbt-precision} & Computational mathematics core; 512-bit arbitrary-precision hybrid numeric framework (\texttt{rug}/MPFR), canonical WZW affine branch $(26, 8, 312)$, and zero-allocation execution loop arithmetic. \\
 \bottomrule
 \end{tabular}
 \end{table}
