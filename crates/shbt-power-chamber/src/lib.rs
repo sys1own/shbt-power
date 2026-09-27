@@ -6,6 +6,7 @@
 //! kinetic pressure: `R_stop = (3 E_plasma / (4 pi P_mag))^(1/3)`.
 
 pub mod resistive_mhd;
+pub mod hall_mhd;
 
 use shbt_power_core::constants::*;
 use shbt_power_core::{PhysicsSubsystem, PlantStateSnapshot};

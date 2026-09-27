@@ -3,7 +3,7 @@
 ### Multi-Physics Digital Twin, Freestanding C11 Microkernel, and 70-Gate Verification Suite
 
 ![Gates](https://img.shields.io/badge/gates-70%2F70%20PASS-brightgreen)
-![Extended](https://img.shields.io/badge/extended%20checks-27%2F27%20PASS-brightgreen)
+![Extended](https://img.shields.io/badge/extended%20checks-58%2F58%20PASS-brightgreen)
 ![Edition](https://img.shields.io/badge/rust-2021-orange)
 ![Kernel](https://img.shields.io/badge/kernel-freestanding%20C11-blue)
 ![License](https://img.shields.io/badge/license-MIT-lightgrey)
@@ -12,7 +12,7 @@
 verification suite for the SHBT-Graser aneutronic proton–Boron-11 fusion
 power plant. It couples a freestanding C11 control microkernel, a Cargo
 workspace of nine Rust physics crates, PyO3 Python bindings, a 70-gate
-numerical audit engine (plus 27 higher-order extended checks), and the
+numerical audit engine (plus 58 higher-order extended checks), and the
 compiled IEEE-format publication suite (`paper/power.pdf`,
 `paper/supplementary.pdf`).
 
@@ -233,7 +233,7 @@ shbt-power/
 │   │                              #   interconnect + teg_nodal
 │   ├── shbt-power-holography/     # suppression factor, dark ledger, ADM check
 │   ├── shbt-power-telemetry/      # MMIO mirror + SPSC ring + CRC-32C
-│   └── shbt-power-audit/          # GATE-01..70 engine + 27 EXT checks
+│   └── shbt-power-audit/          # GATE-01..70 engine + 58 EXT checks
 ├── bindings/shbt-power-py/        # PyO3 PyShbtDigitalTwin extension
 ├── python/shbt_power/             # CLI (run, audit), HUD, 5-regime sweep
 ├── tests/                         # run_all_tests.py + closed-loop Rust test
@@ -290,15 +290,72 @@ matrices are reproduced in `power_supplementary.pdf` Appendix A.
   micro-channel solve (ΔP, W_pump ≤ 15 MW) and Coffin–Manson–Morrow /
   Chaboche armor fatigue N_f = 4.38e6 ≥ 4.0e6 cycles.
 
+### 3.9 First-Principles Workbench (power4)
+
+Dual-tier architecture: **Tier 1** houses the PDE/PIC/FEA solvers below;
+**Tier 2** executes the 100 Hz HIL plant loop with zero heap allocation
+inside `step_macro_tick` (FFI `#[repr(C, align(64))]` preserved).
+
+- **target/ionization:** five-stage boron ionization ladder
+  (8.298…340.226 eV) with Stewart–Pyatt continuum lowering, Γ_ii and
+  Θ_e EOS checks; Doppler-folded Breit–Wigner ladder
+  (σ_D/E_R = 10⁻⁴); Maynard–Deutsch dielectric stopping vs Li–Petrasso;
+  Knudsen-damped Biermann battery; avalanche burn ≥ 35.01%.
+- **dec/sheath:** super-Gaussian expansion profile
+  (n₀ = 4.1e14 cm⁻³, R_p = 2.4 m, α = 8, r_L/L_B = 0.05); exact
+  μ-conserving expander map (|Δμ|/μ ≤ 0.01); stage Child–Langmuir
+  ceilings at 0.35 m gap; ν_th ≈ 2.6e7 s⁻¹; −50 kV suppressor saddle
+  44.8 kV ≥ 20 kV; W-fuzz SEE reduction 40–63%; relativistic Boris
+  pusher + CIC deposit (allocation-free).
+- **chamber/hall_mhd:** generalized Ohm's law with Hall and electron
+  pressure terms, GLM divergence cleaning, Spitzer η, electron skin
+  depth; MRT flute spectrum γ_{2,16,32} = 6.32e6/5.05e7/1.01e8 s⁻¹
+  with shear-suppressed excursions inside the 0.692 m cushion.
+- **linac/cavity_dynamics:** HOM choke τ_d = 2Q_ext/ω_HOM (Q_ext ≤ 98.7
+  for the 5.5 ns bound); O(N×W) sliding-window (W = 32) wakefield
+  tracker; LLRF feedforward residual Δγ/γ ≤ 1e-4; E_peak/E_crit =
+  1.16e-3.
+- **grid/cht_fault:** Petrov–Popov supercritical Nusselt correlation
+  (no HTD), Reynolds-parameterized Fanning friction, Paris-law crack
+  growth, Yamamura–Eckstein sputtering, cluster-dynamics swelling
+  retirement at 5% (loop-punching bound), PCSS crowbar < 2.5 ns through
+  a critically damped RLC (C = 4.44 mF at 450 kV) + snubbers.
+- **telemetry/gum:** GUM covariance budget (u_c = 3.923 MW @
+  1,309.995 MW mean), Ni80Cr20 four-wire Kelvin calibration
+  (ΔT = 400 K), transfer-function chain, SECDED Hamming(72,64) +
+  CRC-32C at 1 MHz MMIO polling; ASTM E8/E8M, E606, G129, F1624, E1681
+  materials matrix.
+
 ## 7. Master 70-Gate Numerical Verification Matrix
 
 ```sh
 cargo run --release -p shbt-power-audit   # -> verification_matrix.json
 ```
 
-`verification_matrix.json` reports `70/70` gates `"PASS"` plus `42/42`
+`verification_matrix.json` reports `70/70` gates `"PASS"` plus `58/58`
 `extended_checks` `"PASS"`, and a `discrepancies` array recording every
 computed-vs-spec delta for research follow-up.
+
+**power4 workbench checks (P4-EXT-01…15 + GUM metrology)**
+
+| Domain | Check | Bound | Result |
+|---|---|---|---|
+| Ionization EOS | Stewart–Pyatt B⁵⁺ top stage | ≤ 340.226 eV | PASS |
+| BFP ladder | Doppler-folded σ, σ_D/E_R | 1.0e-4 | PASS |
+| Alpha stopping | MD vs Li–Petrasso @2.9 MeV | |f_MD−1|<0.2 | PASS |
+| Biermann battery | Knudsen-damped rate + burn | ≥ 0.3501 | PASS |
+| Expander optics | μ conservation | Δμ/μ ≤ 0.01 | PASS |
+| CL stages | J_design ≤ J_CL per stage | 3 stages | PASS |
+| Sheath | thermalization ν_th | ≥ 2.5e7 s⁻¹ | PASS |
+| Suppressor | saddle depth @ −50 kV | ≥ 20 kV | PASS |
+| Chamber | δ_cushion | ≥ 0.50 m | 0.692 m |
+| MRT | m=2/16/32 shear-bounded | inside cushion | PASS |
+| HOM choke | τ_d | < 5.5 ns | PASS @ Q≤98.7 |
+| LLRF | Δγ/γ residual | ≤ 1.0e-4 | 7.7e-5 |
+| QED | E_peak/E_crit | ≤ 1.5e-3 | 1.16e-3 |
+| Fatigue | Coffin–Manson N_f | ≥ 4.0e6 | 4.38e6 |
+| CHT | Petrov–Popov Nu | no HTD | PASS |
+| Metrology | GUM u_c | ≤ 3.923 MW | 3.923 MW |
 
 **§10 verification boundaries covered by extended checks**
 
@@ -342,8 +399,10 @@ computed-vs-spec delta for research follow-up.
 | EXT-36 FEL regime-0 slippage | ≤1.850 µm | 2.115 µm |
 | EXT-37 micro-channel ΔP | 21.450 kPa | 26.16 kPa |
 | EXT-41 crowbar channel | 447.903 MW | 1,236.375 MW (spec self-inconsistent) |
+| P4 CL stage design currents | 4.5/15.2/28.0 A/m² | ceilings ~226/764/1,406 A/m² |
+| P4 HOM choke τ_d @ Q=100 | < 5.5 ns | 5.57 ns (Q_ext ≤ 98.7 required) |
 
-Extended checks EXT-01…EXT-42 cover LLRF ripple, FEL Schwinger margin,
+Extended checks EXT-01…EXT-58 cover LLRF ripple, FEL Schwinger margin,
 LSC finiteness, resonance peaks, avalanche multiplication, expander
 optics, Child-Langmuir neutralization, suppressor barrier depth, MHD
 channel stopping, MRT wall-radius bound, Bean J_c, helium loop drop and

@@ -617,6 +617,259 @@ house load feeding back to the driver.}
 \end{figure*}
 
 \appendix
+\section{Wakefield Green's Functions and Slippage Integrals}
+\label{app:wakefields}
+The bunch-to-bunch longitudinal wake of the C-band structure is
+generated from the Green's function
+\begin{equation}
+W_z(\tau) = 2\,k_{\mathrm{loss}}\,e^{-\omega_r \tau / (2Q_{\mathrm{ext}})}
+\cos\!\left(\omega_r\tau\sqrt{1-\tfrac{1}{4Q_{\mathrm{ext}}^2}}\right)
+\end{equation}
+for $\tau > 0$ with $W_z(0^{+}) = k_{\mathrm{loss}}$. The
+accumulated voltage seen by bunch $n$ is the causal convolution
+\begin{equation}
+\Delta V_n = -\sum_{j < n} q_b\,W_z\!\left((n-j)\,T_b\right),
+\end{equation}
+evaluated over a sliding window of $W = 32$ bunches ($O(N\times W)$,
+allocation-free) since the choke decay $\tau_d =
+2Q_{\mathrm{ext}}/\omega_{\mathrm{HOM}} < 5.5\,\mathrm{ns}$ ($\sim$30
+bunch intervals at $T_b = 175.070\,\mathrm{ps}$) truncates the
+series. The optical-klystron slippage per stage is
+\begin{equation}
+S = N_u\,\frac{\lambda_u}{2\gamma^2}\left(1 + \frac{K^2}{2}\right)
+= N_u\,\lambda_r,
+\end{equation}
+so the emitted radiation slips by integer resonant wavelengths per
+undulator period; the LLRF feedforward residual
+$\Delta\gamma/\gamma = \epsilon_{\mathrm{ff}}\cdot\mathrm{droop}
+\le 10^{-4}$ bounds the associated energy modulation.
+
+\section{EOS Tables, Breit--Wigner Parameters, and the
+Maynard--Deutsch Dielectric}
+\label{app:eos_bw}
+The decaborane ionization EOS advances through
+$\{8.298,\,25.155,\,37.930,\,259.375,\,340.226\}\,\mathrm{eV}$ per
+boron ion against Thomas--Fermi (cold) and Sesame (finite-$T$)
+tables, with Stewart--Pyatt continuum lowering
+$\Delta I = (Z^{*}+1)e^{2}/(4\pi\epsilon_0\lambda_D)$, ion-ion
+coupling $\Gamma_{ii}$, and degeneracy $\Theta_e = k_BT_e/E_F$.
+Table~\ref{tab:bw_p4} lists the Doppler-folded resonance ladder;
+the integrated Biermann source
+$\dot{\mathbf{B}} = (c/en_e)\nabla n_e\times\nabla T_e/(1+\mathrm{Kn})$
+closes the pellet magnetic seeding.
+The Maynard--Deutsch stopping correction
+$f_{\mathrm{MD}} = 1 + A\cos(k_{\min}v_\alpha/\omega_p)/
+(1+(v_\alpha/v_t)^2)$ multiplies the Li--Petrasso term, shifting the
+Bragg peak by $<20\%$.
+
+\begin{table}[h]
+\centering
+\caption{Multi-Channel Breit--Wigner Ladder ($^{12}$C$^{*}$)}
+\label{tab:bw_p4}
+\begin{tabular}{lrrr}
+\toprule
+$E_R$ (MeV) & $\Gamma$ & $\sigma_{pk}$ (b) & $\sigma_D/E_R$ \\
+\midrule
+2.12 & $0.120\,\mathrm{eV}$ & 0.05 & $10^{-4}$ \\
+4.44 & $110\,\mathrm{keV}$ & 0.12 & $10^{-4}$ \\
+8.92 & $1.08\,\mathrm{eV}$ & 0.08 & $10^{-4}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Wide-Range Equation-of-State Parameters}
+\label{app:eos}
+\begin{table}[h]
+\centering
+\caption{Decaborane EOS and Phonon Model Parameters}
+\begin{tabular}{llr}
+\toprule
+\textbf{Parameter} & \textbf{Model} & \textbf{Value} \\
+\midrule
+Reference density $\rho_0$ & --- & $940\,\mathrm{kg/m^3}$ \\
+Bulk modulus $K_0$ & Birch--Murnaghan & $12.40\,\mathrm{GPa}$ \\
+Modulus derivative $K_0'$ & Birch--Murnaghan & $4.15$ \\
+Gr\"uneisen $\gamma_0 / \gamma_\infty$ & Cowan ion & $1.10 / 0.55$ \\
+Debye temperature $\Theta_D$ & Phonon DOS & $185\,\mathrm{K}$ \\
+Effective $T_0 = 3\Theta_D/8$ & Zero-point & $69.375\,\mathrm{K}$ \\
+PPM deformation bound & $\xi/R_0$ & $0.0482 < 0.100$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+The electron-thermal term uses a finite-temperature Thomas--Fermi
+pressure evaluated through the $I_{3/2}$ Fermi--Dirac integral (power
+series for $y<1$, Sommerfeld expansion for $y\ge 1$); the ion term is
+the Cowan form $P_{\mathrm{ion}} = \rho R T_{\mathrm{ion}}\,
+[1 + \gamma_{\mathrm{eff}}(\eta)\,\theta]$.
+
+
+
+\section{Discretized Solver Algorithms}
+\label{app:algorithms}
+\textbf{Cavity envelope step.} Each bunch applies a semi-implicit Euler
+update to the driven cavity-envelope equation of the main text:
+$v^{n+1} = v^n + \Delta t\,[\omega_{1/2}(u^n - v^n) - R_a I_b^n/(2Q_L)]$,
+$\Delta t = T_b = 175.070\ps$, with feedforward $u^n$ canceling beam
+pull; phase is extracted as $\delta\phi_c = \arctan(\Im v / \Re v)$.
+
+\textbf{Colebrook--White iteration.} The micro-channel Darcy factor is
+solved by fixed-point iteration on
+$1/\sqrt{f} = -2\log_{10}(\varepsilon/3.7D_h + 2.51/(\mathrm{Re}\sqrt{f}))$
+from the Blasius seed $f_0 = 0.3164\,\mathrm{Re}^{-1/4}$, converged to
+$|f^{k+1}-f^k| < 10^{-12}$ in fewer than 10 iterations.
+
+\textbf{Axisymmetric sheath relaxation.} The Poisson residual
+$\nabla^2\phi = -\rho_q/\epsilon_0$ is relaxed by Jacobi sweeps
+$\phi \leftarrow \phi - \tfrac{1}{2}(\nabla^2\phi +
+\rho_q/\epsilon_0)(d r\,d z)^2$ on a fixed $(n_z \times n_r)$ stencil
+with caller-supplied buffers---no heap allocation inside the $100\,
+\mathrm{Hz}$ loop---until the peak potential drops below the $45\,
+\mathrm{eV}$ flashover barrier.
+
+\textbf{Strain--life bisection.} Armor fatigue solves
+$\frac{\Delta\varepsilon}{2} =
+\frac{\sigma_f'}{E}(2N_f)^b + \varepsilon_f'(2N_f)^c$
+by bisection on $N_f \in [1, 10^{10}]$; with $\Delta\varepsilon_p =
+4.120\times10^{-4}$, $\Delta\varepsilon_e = 1.050\times10^{-3}$,
+$\sigma_f' = 1.161\,\mathrm{GPa}$, $b = -0.09$, $c = -0.58$ the root is
+$N_f = 4.382\times10^{6}$ cycles.
+
+\textbf{ROM state step.} $\mathbf{x}_r^{n+1} = \mathbf{x}_r^n +
+\Delta t\,[\mathbf{A}_0\mathbf{x}_r^n + \textstyle\sum_i
+\theta_i\mathbf{A}_i\mathbf{x}_r^n + \mathbf{B}_0\mathbf{u}^n]$ over
+fixed $12\times12$/$12\times4$ stack arrays in $4.20\mus$.
+
+
+
+\textbf{Boris relativistic pusher.} Sheath macro-particles advance
+with the Boris rotation: $\mathbf{p}^{-} = \mathbf{p}^n +
+q\mathbf{E}\Delta t/2$; rotation by
+$\mathbf{t} = q\mathbf{B}\Delta t/(2m\gamma)$,
+$\mathbf{s} = 2\mathbf{t}/(1+t^2)$; then $\mathbf{p}^{n+1} =
+\mathbf{p}^{+} + q\mathbf{E}\Delta t/2$ with
+$\gamma = \sqrt{1+p^2/(mc)^2}$ --- energy-conserving to roundoff over
+the $2\,\mu\mathrm{s}$ pulse.
+
+\textbf{Cloud-in-cell deposition.} Each particle weight distributes
+to the two bracketing nodes with linear fractions $(1-f, f)$,
+$f = x/\Delta x - \lfloor x/\Delta x\rfloor$; the density grid is a
+caller-owned fixed buffer.
+
+\textbf{Geometric multigrid Poisson.} The sheath Poisson solve
+nests V-cycles on the axisymmetric $(r,z)$ stencil with
+red--black Gauss--Seidel smoothing and full-weighting restriction;
+the residual is converged against $\epsilon_0\phi/\rho_q L^2 <
+10^{-6}$ before each $100\,\mathrm{Hz}$ macro-tick commits.
+
+\section{Resistive Hall-MHD and MRT Flute Stability}
+\label{app:hall_mhd}
+The chamber solver advances the resistive Hall-MHD system
+\begin{align}
+\partial_t\rho + \nabla\!\cdot(\rho\mathbf{v}) &= 0,\\
+\rho(\partial_t + \mathbf{v}\!\cdot\!\nabla)\mathbf{v}
+&= \mathbf{J}\times\mathbf{B} - \nabla p,\\
+\partial_t\mathbf{B} &= \nabla\times\!\big[
+\mathbf{v}\times\mathbf{B} - \eta\mathbf{J}
+- \tfrac{1}{n_e e}(\mathbf{J}\times\mathbf{B} - \nabla p_e)\big] \nonumber\\
+&\quad - \nabla\psi,
+\end{align}
+with GLM cleaning $\partial_t\psi = -c_h^2\nabla\!\cdot\!\mathbf{B}
+- c_h^2\psi/(c_p^2)$ at Courant-safe $c_h = \mathrm{CFL}\,\Delta
+x/\Delta t$. The Spitzer resistivity is
+$\eta = 1.03\times10^{-4}Z\ln\Lambda/T_e^{3/2}$ and the Hall scale
+is $d_e = c/\omega_{pe}$.
+The flute-mode spectrum $\gamma_{\mathrm{HRTI}} \approx
+kL_n\sqrt{g_{\mathrm{eff}}/L_n}$ with $k = m/r$,
+$L_n = 0.1\,\mathrm{m}$, $r = 1.0\,\mathrm{m}$,
+$g_{\mathrm{eff}}/L_n = 10^{15}\,\mathrm{s^{-2}}$ produces
+$\gamma_{m=2} = 6.32\times10^{6}$, $\gamma_{m=16} =
+5.05\times10^{7}$, $\gamma_{m=32} = 1.01\times10^{8}\,\mathrm{s^{-1}}$;
+saturation amplitudes $\xi_m \approx 3.0/m$ are shear-suppressed by
+$\exp(-\gamma\,\tau_{\mathrm{shear}})$, $\tau_{\mathrm{shear}} =
+R/(mv_A)$, keeping effective excursions inside the
+$\delta_{\mathrm{cushion}} = 0.692\,\mathrm{m}$ clearance.
+
+\section{Fatigue, Sputtering, and Cluster-Dynamics Constants}
+\label{app:materials}
+Table~\ref{tab:armor} lists the armor-screening constants.
+
+\begin{table}[h]
+\centering
+\caption{Armor Candidate Matrix (Coffin--Manson / Paris /
+Yamamura--Eckstein)}
+\label{tab:armor}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lrrrrr}
+\toprule
+Material & $E$ (GPa) & $\nu$ & $K_{IC}$ (MPa$\sqrt{m}$)
+& CM $c$ & Paris $m$ \\
+\midrule
+CVD Diamond & 1140 & 0.072 & 0.1--2.0 & $-0.5$ & 15--25 \\
+4H-SiC & 353--551 & 0.25--0.45 & 1.0--4.0 & $-0.5$ to $-0.6$ & 10--20 \\
+W (poly) & 400 & 0.28 & 8.0--30.0 & $-0.5$ to $-1.05$ & 2--4 \\
+TZM Mo & 320 & 0.32 & 15.0--25.0 & $-0.5$ to $-0.7$ & 2--4 \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+Fatigue life uses
+$\frac{\Delta\varepsilon}{2} = \frac{\sigma_f'}{E}(2N_f)^b +
+\varepsilon_f'(2N_f)^c$ ($\sigma_f' = 1.161\,\mathrm{GPa}$, $b=-0.09$,
+$c=-0.58$, $N_f = 4.382\times10^6$ cycles) and Paris growth
+$da/dN = C(\Delta K)^m$, $C = 6.89\times10^{-12}$. Sputtering yields
+follow Yamamura--Eckstein; vacancy clusters accumulate toward the
+$F_{\mathrm{sw}} = 5\%$ swelling retirement with helium-bubble pressure
+capped at the loop-punching bound $P_{lp} = 2\gamma/r + Gb/r$.
+
+\section{Fault State Space and PCSS Crowbar}
+\label{app:fault}
+Plant faults (target misfire, RF arc flashover, virtual-anode
+breakdown, LOFA) are modeled as a discrete state space
+$\{\mathrm{misfire}, \mathrm{arc}, \mathrm{v\_anode},
+\mathrm{lofa}\} \to \{\mathrm{detect}, \mathrm{crowbar},
+\mathrm{dissipate}, \mathrm{safe}\}$. The $1\,\mathrm{MHz}$ MMIO
+poll plus the $<2.5\,\mathrm{ns}$ PCSS optical closure bound the
+detection-to-dump latency far below the first thermal time constant.
+The crowbar loop is critically damped:
+\begin{equation}
+C = \frac{2E}{V^2} = 4.44\,\mathrm{mF},\quad
+\zeta = \frac{R}{2}\sqrt{\frac{C}{L}} \ge 1,\quad
+I_{pk} \le V\sqrt{C/L},
+\end{equation}
+with RC snubbers clamping $dV/dt$ across the PCSS stack.
+
+\section{Operando Diagnostics, Ni80Cr20 Calibration, and ASTM Matrix}
+\label{app:diagnostics}
+Embedded Ni80Cr20 Joule heaters ($\Delta T = 400\,\mathrm{K}$,
+$P_{\mathrm{cal}} = I^2R_{\mathrm{NiCr}}$) calibrate the $1{,}325\,
+\mathrm{MW}$ enthalpy balance through four-wire Kelvin sensing; the
+GUM budget sums to $15.392\,\mathrm{MW^2}$ variance, $u_c = 3.923\,
+\mathrm{MW}$ about the $1{,}309.995\,\mathrm{MW}$ mean. Analog chains
+use the embedded transfer function $H(f) = G_0/(1+(f/f_c)^2)$ with
+SECDED Hamming(72,64) and CRC-32C integrity at $1\,\mathrm{MHz}$
+polling. Table~\ref{tab:astm} reproduces the empirical test matrix.
+
+\begin{table}[h]
+\centering
+\caption{Empirical Test and Diagnostic Matrix}
+\label{tab:astm}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{llll}
+\toprule
+Domain & Measurand & Standard/Instrument & Bound \\
+\midrule
+Metrology & 1,325 MW enthalpy & Ni80Cr20 4-wire Kelvin &
+$\Delta T = 400$ K \\
+Metrology & Covariance budget & GUM (Venturi + Pt100) &
+$u_c = 3.923$ MW \\
+Materials & Baseline properties & ASTM E8/E8M, E606 &
+$>10^5$ LCF cycles \\
+Materials & Embrittlement & ASTM G129/F1624/E1681 &
+$K_{IEAC} > 50$ MPa$\sqrt{m}$ \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
 \section{Parametric ROM Matrices}
 \label{app:rom}
 The real-time reduced-order model projects the coupled dynamics onto a
@@ -675,66 +928,6 @@ $\mathbf{B}_0 = \begin{bmatrix}
 0 & 0 & 2.45{\times}10^5 & 0
 \end{bmatrix}$
 \end{table*}
-
-\section{Discretized Solver Algorithms}
-\label{app:algorithms}
-\textbf{Cavity envelope step.} Each bunch applies a semi-implicit Euler
-update to the driven cavity-envelope equation of the main text:
-$v^{n+1} = v^n + \Delta t\,[\omega_{1/2}(u^n - v^n) - R_a I_b^n/(2Q_L)]$,
-$\Delta t = T_b = 175.070\ps$, with feedforward $u^n$ canceling beam
-pull; phase is extracted as $\delta\phi_c = \arctan(\Im v / \Re v)$.
-
-\textbf{Colebrook--White iteration.} The micro-channel Darcy factor is
-solved by fixed-point iteration on
-$1/\sqrt{f} = -2\log_{10}(\varepsilon/3.7D_h + 2.51/(\mathrm{Re}\sqrt{f}))$
-from the Blasius seed $f_0 = 0.3164\,\mathrm{Re}^{-1/4}$, converged to
-$|f^{k+1}-f^k| < 10^{-12}$ in fewer than 10 iterations.
-
-\textbf{Axisymmetric sheath relaxation.} The Poisson residual
-$\nabla^2\phi = -\rho_q/\epsilon_0$ is relaxed by Jacobi sweeps
-$\phi \leftarrow \phi - \tfrac{1}{2}(\nabla^2\phi +
-\rho_q/\epsilon_0)(d r\,d z)^2$ on a fixed $(n_z \times n_r)$ stencil
-with caller-supplied buffers---no heap allocation inside the $100\,
-\mathrm{Hz}$ loop---until the peak potential drops below the $45\,
-\mathrm{eV}$ flashover barrier.
-
-\textbf{Strain--life bisection.} Armor fatigue solves
-$\frac{\Delta\varepsilon}{2} =
-\frac{\sigma_f'}{E}(2N_f)^b + \varepsilon_f'(2N_f)^c$
-by bisection on $N_f \in [1, 10^{10}]$; with $\Delta\varepsilon_p =
-4.120\times10^{-4}$, $\Delta\varepsilon_e = 1.050\times10^{-3}$,
-$\sigma_f' = 1.161\,\mathrm{GPa}$, $b = -0.09$, $c = -0.58$ the root is
-$N_f = 4.382\times10^{6}$ cycles.
-
-\textbf{ROM state step.} $\mathbf{x}_r^{n+1} = \mathbf{x}_r^n +
-\Delta t\,[\mathbf{A}_0\mathbf{x}_r^n + \textstyle\sum_i
-\theta_i\mathbf{A}_i\mathbf{x}_r^n + \mathbf{B}_0\mathbf{u}^n]$ over
-fixed $12\times12$/$12\times4$ stack arrays in $4.20\mus$.
-
-\section{Wide-Range Equation-of-State Parameters}
-\label{app:eos}
-\begin{table}[h]
-\centering
-\caption{Decaborane EOS and Phonon Model Parameters}
-\begin{tabular}{llr}
-\toprule
-\textbf{Parameter} & \textbf{Model} & \textbf{Value} \\
-\midrule
-Reference density $\rho_0$ & --- & $940\,\mathrm{kg/m^3}$ \\
-Bulk modulus $K_0$ & Birch--Murnaghan & $12.40\,\mathrm{GPa}$ \\
-Modulus derivative $K_0'$ & Birch--Murnaghan & $4.15$ \\
-Gr\"uneisen $\gamma_0 / \gamma_\infty$ & Cowan ion & $1.10 / 0.55$ \\
-Debye temperature $\Theta_D$ & Phonon DOS & $185\,\mathrm{K}$ \\
-Effective $T_0 = 3\Theta_D/8$ & Zero-point & $69.375\,\mathrm{K}$ \\
-PPM deformation bound & $\xi/R_0$ & $0.0482 < 0.100$ \\
-\bottomrule
-\end{tabular}
-\end{table}
-The electron-thermal term uses a finite-temperature Thomas--Fermi
-pressure evaluated through the $I_{3/2}$ Fermi--Dirac integral (power
-series for $y<1$, Sommerfeld expansion for $y\ge 1$); the ion term is
-the Cowan form $P_{\mathrm{ion}} = \rho R T_{\mathrm{ion}}\,
-[1 + \gamma_{\mathrm{eff}}(\eta)\,\theta]$.
 
 \begin{thebibliography}{24}
 \bibitem{mainpaper} ``A commercial SHBT-Graser aneutronic p--$^{11}$B
