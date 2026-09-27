@@ -42,7 +42,7 @@ conversion channels plus a dual-stage thermoelectric loop.
 Net wall-plug efficiency **89.519%**; engineering gain
 **Q_eng,total = 56.949** (direct-conversion-only Q_eng = 53.75).
 
-**Gross-bus topology (power3 reconciliation):** 8,750.000 MW gross
+**Gross-bus topology:** 8,750.000 MW gross
 generation feeds a 917.097 MW parasitic house load — linac modulators
 684.500 MW, 20 K cryogenics 118.200 MW, digital-twin/FPGA control
 56.897 MW, thermionic neutralizers 42.500 MW, circulation pumps
