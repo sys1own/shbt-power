@@ -1,0 +1,6 @@
+[package]
+name = "shbt-power-core"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Core types: 512-bit fixed-point numerics, SI constants, canonical branch, PlantStateSnapshot, PhysicsSubsystem trait."

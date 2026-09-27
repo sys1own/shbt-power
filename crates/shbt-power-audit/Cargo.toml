@@ -1,0 +1,17 @@
+[package]
+name = "shbt-power-audit"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+shbt-power-core = { path = "../shbt-power-core" }
+shbt-power-linac = { path = "../shbt-power-linac" }
+shbt-power-chamber = { path = "../shbt-power-chamber" }
+shbt-power-dec = { path = "../shbt-power-dec" }
+shbt-power-grid = { path = "../shbt-power-grid" }
+shbt-power-target = { path = "../shbt-power-target" }
+shbt-power-holography = { path = "../shbt-power-holography" }
+shbt-power-telemetry = { path = "../shbt-power-telemetry" }
+serde = { workspace = true }
+serde_json = { workspace = true }

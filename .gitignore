@@ -1,0 +1,6 @@
+target/
+.venv/
+kernel/build/
+crates/shbt-power-telemetry/bin/*.so
+__pycache__/
+*.pyc

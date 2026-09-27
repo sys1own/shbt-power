@@ -1,0 +1,58 @@
+# shbt-power workspace manifest — SHBT-Graser aneutronic p-11B power plant
+# multi-physics digital twin (power.txt, power1.txt).
+
+[package]
+name = "shbt-power"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+description = "Root integration crate for the shbt-power digital twin (tests/)."
+
+[lib]
+name = "shbt_power"
+path = "src/lib.rs"
+
+[dependencies]
+
+[dev-dependencies]
+shbt-power-core = { path = "crates/shbt-power-core" }
+shbt-power-linac = { path = "crates/shbt-power-linac" }
+shbt-power-chamber = { path = "crates/shbt-power-chamber" }
+shbt-power-dec = { path = "crates/shbt-power-dec" }
+shbt-power-grid = { path = "crates/shbt-power-grid" }
+shbt-power-target = { path = "crates/shbt-power-target" }
+shbt-power-holography = { path = "crates/shbt-power-holography" }
+shbt-power-telemetry = { path = "crates/shbt-power-telemetry" }
+
+[workspace]
+resolver = "2"
+members = [
+    "crates/shbt-power-core",
+    "crates/shbt-power-linac",
+    "crates/shbt-power-chamber",
+    "crates/shbt-power-dec",
+    "crates/shbt-power-grid",
+    "crates/shbt-power-target",
+    "crates/shbt-power-holography",
+    "crates/shbt-power-telemetry",
+    "crates/shbt-power-audit",
+    "bindings/shbt-power-py",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["sys1own/shbt-power Core Technical Working Group"]
+license = "MIT"
+
+[workspace.dependencies]
+libc = "0.2"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+pyo3 = { version = "0.20", features = ["extension-module", "abi3-py310"] }
+cc = "1"
+thiserror = "1.0"
+
+[profile.release]
+opt-level = 3
+lto = "thin"

@@ -1,0 +1,20 @@
+[package]
+name = "shbt-power-py"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[lib]
+name = "shbt_power_py"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+shbt-power-core = { path = "../../crates/shbt-power-core" }
+shbt-power-linac = { path = "../../crates/shbt-power-linac" }
+shbt-power-chamber = { path = "../../crates/shbt-power-chamber" }
+shbt-power-dec = { path = "../../crates/shbt-power-dec" }
+shbt-power-grid = { path = "../../crates/shbt-power-grid" }
+shbt-power-target = { path = "../../crates/shbt-power-target" }
+shbt-power-holography = { path = "../../crates/shbt-power-holography" }
+shbt-power-telemetry = { path = "../../crates/shbt-power-telemetry" }
+pyo3 = { workspace = true }
