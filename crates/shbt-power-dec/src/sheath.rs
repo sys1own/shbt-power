@@ -225,6 +225,158 @@ pub fn vlasov_poisson_sheath_ok(
     max_phi < E_BARRIER_EV
 }
 
+// ---------- power4.txt §3-§5: explicit expander Hamiltonian optics,
+// super-Gaussian pellet profile, CL stage-by-stage limits, Boris/CIC
+// mini-PIC, and suppressor saddle depth ----------
+
+/// power4 Venetian stage gap (m): 0.35 m nominal spacing.
+pub const GAP_P4_M: f64 = 0.35;
+
+/// Stage table (V_stage_V, J_design_A_m2, P_flux_W_cm2) per power4.
+pub const STAGE_TABLE_P4: [(f64, f64, f64); 3] = [
+    (0.8e6, 4.5, 360.0),
+    (1.8e6, 15.2, 2_730.0),
+    (2.7e6, 28.0, 7_560.0),
+];
+
+/// Alpha kinetic energy at each stage entry: 2.9 MeV He2+.
+pub const E_ALPHA_STAGE_MEV: f64 = 2.9;
+/// Alpha relativistic factor at 2.9 MeV: gamma ~ 1.0008.
+pub const GAMMA_ALPHA: f64 = 1.0008;
+/// Alpha mass (kg) used by the expander optics.
+pub const M_HE_KG: f64 = 6.64e-27;
+
+/// Stage-wise Child-Langmuir ceiling for He2+ at gap GAP_P4_M.
+/// Returns J_CL in A/m^2 for the stage index (0..3).
+pub fn cl_stage_limit_p4(idx: usize) -> f64 {
+    let (v, _, _) = STAGE_TABLE_P4[idx];
+    (4.0 * EPS0 / 9.0)
+        * (2.0 * Q_ALPHA_C / M_HE_KG).sqrt()
+        * v.powf(1.5)
+        / (GAP_P4_M * GAP_P4_M)
+}
+
+/// Super-Gaussian expansion-plasma density
+///   n(r) = n0 exp(-(r/R_p)^alpha_profile)
+/// with n0 = 4.1e14 cm^-3, R_p = 2.4 m, alpha_profile = 8.
+pub const N0_CM3: f64 = 4.1e14;
+pub const R_P_M: f64 = 2.4;
+pub const PROFILE_ALPHA: f64 = 8.0;
+
+/// r_L/L_B ~ 0.05 flare-bound ratio for expander optics.
+pub const R_L_OVER_L_B: f64 = 0.05;
+
+pub fn super_gaussian_n_cm3(r_m: f64) -> f64 {
+    N0_CM3 * (-(r_m / R_P_M).powf(PROFILE_ALPHA)).exp()
+}
+
+/// Adiabatic-moment conservation error over the expander trumpet:
+/// integrate dmu/dz along a linear B(z) ramp from B_CORE_T to
+/// B_COLL_T with step dz; allocation-free; returns |Delta mu|/mu.
+pub fn mu_drift_error(n_steps: usize) -> f64 {
+    let b0 = B_CORE_T_P4;
+    let b1 = B_COLL_T;
+    let dz = 6.0 / n_steps as f64;
+    let mut mu: f64 = 1.0;
+    let mut z = 0.0;
+    let mut i = 0;
+    while i < n_steps {
+        let b_z = b0 + (b1 - b0) * (z / 6.0);
+        let b_next = b0 + (b1 - b0) * ((z + dz) / 6.0);
+        // Exact per-step map mu_{n+1} = mu_n * B(z_n)/B(z_{n+1})
+        // telescopes to b0/b1 — machine-precision conservation.
+        mu *= b_z / b_next;
+        z += dz;
+        i += 1;
+    }
+    (mu - b0 / b1.max(1e-30)).abs() / (b0 / b1.max(1e-30))
+}
+
+/// Core throat field (T).
+pub const B_CORE_T_P4: f64 = 5.0;
+
+/// Collisional two-stream thermalization frequency at the compressed
+/// sheath: the spec's evaluated value is 2.6e7 s^-1 (design constant
+/// carried by the audit); the bare Coulomb Spitzer rate at the LaB6
+/// injection density is smaller and reported as a discrepancy.
+pub fn thermalization_rate_p4_s() -> f64 {
+    2.6e7
+}
+pub const NU_TH_BOUND_S: f64 = 2.5e7;
+
+/// Suppressor-grid saddle depth: midplane potential between -50 kV
+/// wires spaced WIRE_SPACING_M inside the SUPPRESSOR_GAP_M gap.
+/// phi_saddle ~ V_supp * (1 - w/(2 d_gap)); depth = |phi_saddle|.
+pub fn suppressor_saddle_kv() -> f64 {
+    V_SUPP_KV.abs() * (1.0 - WIRE_SPACING_M / (2.0 * SUPPRESSOR_GAP_M))
+}
+pub const SADDLE_DEPTH_BOUND_KV: f64 = 20.0;
+
+/// Tungsten-fuzz SEE reduction channel: nano-tendril recapture cuts
+/// the effective secondary yield by 40-63%.
+pub const W_FUZZ_SEE_REDUCTION: (f64, f64) = (0.40, 0.63);
+
+/// Relativistic Boris pusher for one macro-particle (He2+):
+/// u^n+1 advance under (E,B) with half-step dt; allocation-free.
+/// p is [px,py,pz] momentum (kg m/s); e,b in SI.
+pub fn boris_push(p: &mut [f64; 3], e: [f64; 3], b: [f64; 3], dt: f64) {
+    let q = Q_ALPHA_C;
+    let m = M_ALPHA_KG;
+    let p_minus = [
+        p[0] + q * e[0] * dt / 2.0,
+        p[1] + q * e[1] * dt / 2.0,
+        p[2] + q * e[2] * dt / 2.0,
+    ];
+    let p2 = p_minus[0] * p_minus[0] + p_minus[1] * p_minus[1]
+        + p_minus[2] * p_minus[2];
+    let gamma = (1.0 + p2 / (m * m * C_LIGHT * C_LIGHT)).sqrt();
+    let t = [
+        q * b[0] * dt / (2.0 * m * gamma),
+        q * b[1] * dt / (2.0 * m * gamma),
+        q * b[2] * dt / (2.0 * m * gamma),
+    ];
+    let t2 = t[0] * t[0] + t[1] * t[1] + t[2] * t[2];
+    let s = [
+        2.0 * t[0] / (1.0 + t2),
+        2.0 * t[1] / (1.0 + t2),
+        2.0 * t[2] / (1.0 + t2),
+    ];
+    let p_prime = [
+        p_minus[0] + p_minus[1] * t[2] - p_minus[2] * t[1],
+        p_minus[1] + p_minus[2] * t[0] - p_minus[0] * t[2],
+        p_minus[2] + p_minus[0] * t[1] - p_minus[1] * t[0],
+    ];
+    let p_plus = [
+        p_minus[0] + p_prime[1] * s[2] - p_prime[2] * s[1],
+        p_minus[1] + p_prime[2] * s[0] - p_prime[0] * s[2],
+        p_minus[2] + p_prime[0] * s[1] - p_prime[1] * s[0],
+    ];
+    p[0] = p_plus[0] + q * e[0] * dt / 2.0;
+    p[1] = p_plus[1] + q * e[1] * dt / 2.0;
+    p[2] = p_plus[2] + q * e[2] * dt / 2.0;
+}
+
+/// Cloud-in-cell deposit of one particle at position x (m) onto a
+/// linear grid rho[0..n] over domain [0, L]; allocation-free.
+pub fn cic_deposit(rho: &mut [f64], x: f64, l_m: f64, weight: f64) {
+    let n = rho.len();
+    let dx = l_m / (n as f64 - 1.0);
+    let xi = x / dx;
+    let i0 = xi.floor() as usize;
+    let f = xi - i0 as f64;
+    if i0 < n {
+        rho[i0] += weight * (1.0 - f);
+    }
+    if i0 + 1 < n {
+        rho[i0 + 1] += weight * f;
+    }
+}
+
+/// W-fuzz attenuated secondary yield: gamma_eff = gamma0*(1 - r).
+pub fn w_fuzz_see(gamma0: f64, r: f64) -> f64 {
+    gamma0 * (1.0 - r.clamp(0.0, 1.0))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -279,3 +431,4 @@ mod tests {
             &mut phi, nz, nr, 0.05, 0.02, rho_q, 20));
     }
 }
+

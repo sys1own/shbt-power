@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "shbt-power"
+version = "0.1.0"
+description = "Python orchestration layer for the shbt-power digital twin"
+requires-python = ">=3.9"
+
+[tool.setuptools]
+packages = ["shbt_power"]

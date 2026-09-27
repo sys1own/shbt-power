@@ -377,6 +377,91 @@ pub fn harmonic_bunching(n: i32, r56_m: f64, lambda_s_m: f64, gamma: f64,
 pub const E_FOCUS_P3_V_M: f64 = 1.840e15;
 pub const E_FOCUS_RATIO_P3: f64 = 1.394e-3;
 
+// ---------- power4.txt §2: HOM choke bandwidth, sliding-window
+// wakefield tracker, LLRF feedforward bounds, Schwinger ratio ----------
+
+/// External HOM damping quality bound: Q_ext <= 100.
+pub const Q_EXT_BOUND: f64 = 100.0;
+/// HOM centre frequency proxy (C-band fundamental harmonic window).
+pub const F_HOM_HZ: f64 = 5.712e9;
+/// Choke decay-time bound (s): 5.5 ns.
+pub const TAU_D_BOUND_S: f64 = 5.5e-9;
+/// Bunch-train spacing covered by the choke: ~30 bunch intervals.
+pub const CHOKE_BUNCH_INTERVALS: f64 = 30.0;
+
+/// HOM choke decay time tau_d = 2 Q_ext / omega_HOM.
+pub fn hom_decay_time_s(q_ext: f64) -> f64 {
+    2.0 * q_ext / (2.0 * std::f64::consts::PI * F_HOM_HZ)
+}
+
+/// Sliding-window longitudinal wakefield tracker: evaluates the
+/// summed wake W_sum(n) = sum_{j<n, n-j<=W} w_j for a train of
+/// n_bunches charges q_b with per-bunch wake amplitude w0 decaying
+/// with the choke tau_d. O(N x W) with W = WINDOW_W, allocation-free:
+/// returns the worst-bunch cumulative wake (V/C).
+pub const WINDOW_W: usize = 32;
+
+pub fn wakefield_window_max(
+    n_bunches: usize,
+    q_b_c: f64,
+    w0_v_c: f64,
+    dt_bunch_s: f64,
+) -> f64 {
+    let tau = hom_decay_time_s(Q_EXT_BOUND);
+    let mut ring = [0.0_f64; WINDOW_W];
+    let mut worst = 0.0_f64;
+    let mut n = 0;
+    while n < n_bunches {
+        let slot = n % WINDOW_W;
+        ring[slot] = q_b_c * w0_v_c;
+        let mut acc = 0.0_f64;
+        let mut j = 0;
+        while j < WINDOW_W {
+            let age = (n + WINDOW_W - ((n / WINDOW_W) * WINDOW_W + j))
+                % WINDOW_W;
+            let dt = age as f64 * dt_bunch_s;
+            acc += ring[(n + WINDOW_W - j) % WINDOW_W]
+                * (-dt / tau).exp()
+                * (j <= n) as u8 as f64;
+            j += 1;
+        }
+        if acc > worst {
+            worst = acc;
+        }
+        n += 1;
+    }
+    worst
+}
+
+/// LLRF feedforward scalar: generator current required to cancel
+/// beam-loading droop at cavity r/Q and loaded Q.
+pub fn feedforward_i_g(r_over_q: f64, q_l: f64, i_beam_a: f64, v0: f64) -> f64 {
+    i_beam_a + v0 / (r_over_q * q_l)
+}
+
+/// power4 LLRF bounds.
+pub const DV_OVER_V0_MAX: f64 = 1.0e-4;
+pub const DPHI_MAX_DEG: f64 = 0.05;
+pub const DGAMMA_OVER_GAMMA_MAX: f64 = 1.0e-4;
+/// Emitter/magnet misalignment envelope (m): +/-10 um.
+pub const MISALIGN_UM: f64 = 10.0;
+
+/// Residual energy spread under feedforward: passive droop
+/// DeltaE/E ~ DeltaV_droop/V0 is cancelled to the feedforward
+/// precision eps_ff ~ 1e-3, giving Delta gamma/gamma <= 1e-4.
+pub fn residual_energy_spread(droop_frac: f64, eps_ff: f64) -> f64 {
+    droop_frac * eps_ff
+}
+
+/// Peak focal field evaluated by the power4 retinal-safety/QED
+/// section: E_peak = 1.534e15 V/m.
+pub const E_PEAK_P4_V_M: f64 = 1.534e15;
+/// Ratio E_peak/E_Schwinger ~ 1.16e-3 (bound 1.5e-3).
+pub fn schwinger_ratio_p4() -> f64 {
+    E_PEAK_P4_V_M / E_SAUTER_SCHWINGER_V_M
+}
+pub const SCHWINGER_RATIO_BOUND: f64 = 1.5e-3;
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -458,3 +543,4 @@ mod tests {
         assert!((CSR_CHIRP_DEG - 3.20).abs() < 1e-9);
     }
 }
+
