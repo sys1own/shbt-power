@@ -54,8 +54,8 @@ Net wall-plug efficiency **89.519%**; engineering gain
    (shbt-cf, 1,800 ×    │  Buffer + Synthetic       │────► Grid Export Bus
     555.03 W = 999 kW)─►│  Inertia (4–5% droop)     │      7,832.903 MW net
                         └───────┬──────────▲────────┘            ▲
-                                │ 125 MW   │ 7,972.903 MW gross │
-                                ▼          │                    │
+                                │ 125 MW   │ 7,972.903 MW gross  │
+                                ▼          │                     │
    Electromagnetic Railgun   ┌─────────────┴────┐   ┌────────────┴─────────┐
    (250 m/s, min-jerk,       │ 5.712 GHz C-Band │   │  DEC + TEG Returns   │
     ≤50 µm jitter)           │ Linac → Optical  │   │  6,125 + 1,181.25    │
