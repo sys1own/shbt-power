@@ -1,4 +1,4 @@
-# shbt-power microkernel build rules (paper/main.tex §6, up1.txt §12).
+# shbt-power microkernel build rules (SHBT-MMIO-POWER normative specification).
 #  - shbt_power_kernel.elf: freestanding image linked through linker.ld with
 #    the 128-byte MMIO register arena anchored at 0x70000000.
 #  - shbt_power_reference.so: hosted interface library consumed by the

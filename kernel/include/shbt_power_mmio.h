@@ -1,6 +1,7 @@
 /*
  * shbt_power_mmio.h — 128-byte, dual-cacheline C-ABI MMIO register standard
- * for the SHBT-Graser p-11B power plant (paper/main.tex §6, up1.txt §12).
+ * for the SHBT-Graser p-11B power plant (SHBT-MMIO-POWER normative
+ * specification).
  *
  * Cacheline 0 (0x00-0x3F): microkernel control + ADM metric interlocks.
  * Cacheline 1 (0x40-0x7F): DEC telemetry + plant balance extension.

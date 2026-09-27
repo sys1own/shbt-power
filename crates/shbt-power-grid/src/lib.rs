@@ -2,8 +2,10 @@
 //! buffer, five-phase handover FSM, dual-stage TEG reclamation, and the
 //! master closed-loop net-grid ledger (paper/main.tex §6, paper/supplementary.tex §4/§11).
 //!
-//! LANR ledger transferred from `sys1own/shbt-cf`/`sys1own/shbt-sglt`
-//! (`module_ledger.rs`): 555.03 W net per module -> 999.054 kW array.
+//! LANR starter grid and dual-stage TEG enthalpy recovery transferred
+//! from `sys1own/shbt-cf` (`module_ledger.rs`): 555.03 W net per module
+//! -> 999.054 kW array; helium thermal-hydraulic loop conventions align
+//! with the shbt-cf 3D Eulerian-Eulerian specification.
 
 pub mod helium_network;
 pub mod interconnect;
