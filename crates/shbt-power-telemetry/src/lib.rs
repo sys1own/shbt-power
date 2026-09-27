@@ -5,6 +5,7 @@
 //! C-ABI layout and SPSC ring semantics transferred from
 //! `sys1own/shbt-recon`; SECDED/MMIO anchoring from `sys1own/shbt-qc`.
 
+pub mod calibration;
 pub mod gum;
 pub mod metrology;
 

@@ -293,6 +293,7 @@ dependencies = [
  "shbt-power-grid",
  "shbt-power-holography",
  "shbt-power-linac",
+ "shbt-power-solvers",
  "shbt-power-target",
  "shbt-power-telemetry",
 ]
@@ -313,6 +314,7 @@ name = "shbt-power-dec"
 version = "0.1.0"
 dependencies = [
  "shbt-power-core",
+ "shbt-power-solvers",
 ]
 
 [[package]]
@@ -320,6 +322,7 @@ name = "shbt-power-grid"
 version = "0.1.0"
 dependencies = [
  "shbt-power-core",
+ "shbt-power-solvers",
 ]
 
 [[package]]
@@ -352,10 +355,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "shbt-power-solvers"
+version = "0.1.0"
+
+[[package]]
 name = "shbt-power-target"
 version = "0.1.0"
 dependencies = [
  "shbt-power-core",
+ "shbt-power-solvers",
 ]
 
 [[package]]

@@ -1,6 +1,6 @@
 # SHBT-Power: Commercial SHBT-Graser Aneutronic p-¹¹B Fusion Power Plant
 
-### Multi-Physics Digital Twin, Freestanding C11 Microkernel, and 70-Gate Verification Suite
+### Multi-Physics Digital Twin, Freestanding C11 Microkernel, and 70-Gate + 83-EXT Verification Suite
 
 ![Gates](https://img.shields.io/badge/gates-70%2F70%20PASS-brightgreen)
 ![Extended](https://img.shields.io/badge/extended%20checks-70%2F70%20PASS-brightgreen)
@@ -421,7 +421,31 @@ computed-vs-spec delta for research follow-up.
 | ASTM E1004/E1681/F1624 + 5-phase FSM | all bounds | PASS |
 | EOS/BFP/PPM traits | w>1 solid, b_max>0, CFL ≤ 0.8 | PASS |
 
-Extended checks EXT-01…EXT-70 cover LLRF ripple, FEL Schwinger margin,
+
+**power6 workbench checks (P6-EXT-01…13, shbt-power-solvers crate)**
+
+| Domain | Criterion | Modeled |
+|---|---|---|
+| HOM damping τ_d = 2Q_ext/ω @ Q≤200 | ≤ 8.0 ns | 7.48 ns |
+| BBU centroid / emittance | Δx ≤ 10 µm, ε_nx ≤ 0.50 | PASS |
+| 3D GLM-MHD r_c = 0.8631·(16/3)^⅓ | 1.508 m, cushion 0.692 m | PASS |
+| MRT flute spike (m=2..64) | h ≤ 0.180 m | 0.177 m |
+| Crowbar DC recovery | 1,181.25 MW @ η=94.20% | PASS |
+| Expander D_beam (μ-conserved) | 5.000 m | PASS |
+| Suppressor saddle eΔΦ | ≥ 20 kV @ −50 kV | PASS |
+| Burn: τ_conf / f_burn / η_avalon | 442.81 ns / 35.012% / ≥1.05 | PASS |
+| CVD diamond N_f | > spec life | 9.85e13 cyc |
+| W slat erosion @ 99.5% shield | ≤ bound | 0.0118 mm/yr |
+| sHe loop W_pump | ≤ 15 MW | 14.22 MW |
+| GUM U(k=2) | reported | 7.846 MW (0.599%) |
+| Joule-cal slope | \|β̂1−1\| ≤ 0.0020 | PASS |
+
+Logged discrepancy: the spec's sHe Δp = 0.282 MPa two-leg table implies
+~4.4e5 parallel micro-channels and its per-leg pump rows (9.32/4.90 MW)
+do not sum to the W = ṁΔp/(ρ·η) = 14.22 MW identity — recorded in
+`verification_matrix.json` pending channel-count hardware definition.
+
+Extended checks EXT-01…EXT-83 cover LLRF ripple, FEL Schwinger margin,
 LSC finiteness, resonance peaks, avalanche multiplication, expander
 optics, Child-Langmuir neutralization, suppressor barrier depth, MHD
 channel stopping, MRT wall-radius bound, Bean J_c, helium loop drop and

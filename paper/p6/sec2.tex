@@ -1,0 +1,50 @@
+
+\subsection{Transient Beam-Loading Synthesis and LLRF Pre-Distortion Control}
+\label{subsec:beam_loading_llrf}
+
+The acceleration of high-current macro-bursts ($I_b = 1.1424~\text{A}$) containing $N_{\text{bunch}} = 2,500$ bunches across a burst duration $T_{\text{burst}} = 437.675~\text{ns}$ induces severe transient beam loading in constant-gradient C-band ($f_0 = 5.712~\text{GHz}$) traveling-wave structures. The induced beam-loading voltage phasor across cell index $m$ evolves according to:
+\begin{equation}
+    V_b(t) = -\frac{r_0 L I_b}{2} \left(1 - e^{-2\tau_0}\right) \left[ 1 - e^{-t/t_f} \right],
+    \label{eq:beam_loading_phasor}
+\end{equation}
+where $r_0 = 94.0~\text{M}\Omega/\text{m}$, $L = 1.00~\text{m}$, $\tau_0 = 0.530~\text{Np}$, and filling time $t_f = 277.78~\text{ns}$. Uncompensated transient loading creates a steady-state decelerating potential $V_{b,\text{ss}} = -35.09~\text{MV/m}$, which distorts the longitudinal phase space and exceeds beam stability tolerances.
+
+To suppress intra-train energy chirps and maintain relative energy spread $\Delta\gamma/\gamma \le 10^{-4}$ across all 2,500 bunches, an LLRF amplitude and phase pre-distortion feedforward profile is applied during the transient fill interval $0 \le t \le t_f$:
+\begin{equation}
+\resizebox{\columnwidth}{!}{$\displaystyle
+    V_{\text{RF}}(t) = \sqrt{\left(V_0 \cos\phi_0 + \frac{r_0 L I_b}{2}\left(1 - e^{-2\tau_0}\right)\left[1 - e^{-t/t_f}\right]\right)^2 + \left(V_0 \sin\phi_0\right)^2}$}
+\label{eq:llrf_amplitude_predistortion}
+\end{equation}
+\begin{equation}
+\resizebox{\columnwidth}{!}{$\displaystyle
+    \phi_{\text{RF}}(t) = \arctan\left(\frac{V_0 \sin\phi_0}{V_0 \cos\phi_0 + \frac{r_0 L I_b}{2}\left(1 - e^{-2\tau_0}\right)\left[1 - e^{-t/t_f}\right]}\right)$}
+\label{eq:llrf_phase_predistortion}
+\end{equation}
+This pre-distortion matches the instantaneous beam loading buildup, maintaining flat-top energy profile stability across the macro-burst.
+
+
+
+
+
+\subsection{Dipole Wakefield Damping and Multi-Bunch BBU Suppression}
+\label{subsec:dipole_bbu}
+
+Off-axis trajectory deviations excite dipole higher-order modes ($\text{HEM}_{11}$) that drive cumulative multi-bunch transverse beam breakup (BBU). The transverse wakefield Green's function per unit length $W_\perp(\tau)$ is formulated as a summation over resonant dipole modes $m$:
+\begin{equation}
+    W_\perp(\tau) = \sum_m \left(\frac{R}{Q}\right)_m \frac{\omega_m^2}{c} e^{-\frac{\omega_m \tau}{2 Q_m}} \sin(\omega_m \tau).
+    \label{eq:wake_greens_function}
+\end{equation}
+By integrating silicon carbide (SiC) HOM absorbers into the cavity iris structures, the dipole quality factor is lowered to $Q_{\text{ext}} \le 200$. This reduces the damping time constant to $\tau_d = 2 Q_{\text{ext}} / \omega_m \approx 7.48~\text{ns}$, causing the wakefield amplitude to decay rapidly over $42.7$ RF buckets ($T_{\text{RF}} = 175.070~\text{ps}$).
+
+The multi-bunch centroid evolution $x_k(z)$ for bunch index $k \in [1, 2500]$ is governed by the state-space equation:
+\begin{equation}
+\resizebox{\columnwidth}{!}{$\displaystyle
+    \frac{d}{dz}\left(\gamma(z) \frac{d x_k}{dz}\right) + k_\beta^2(z) \gamma(z) x_k(z) = \frac{e^2 N_e}{\epsilon_0 m_e c^2} \sum_{j=1}^{k-1} W_\perp\left((k-j)T_{\text{RF}}\right) x_j(z)$}
+\label{eq:bbu_differential}
+\end{equation}
+Multi-particle tracking confirms that $Q_{\text{ext}} \le 200$ bounds transverse centroid growth to $\Delta x_c \le 10.0~\mu\text{m}$ and limits normalized emittance growth to $\epsilon_{n,x} \le 0.50~\text{mm}\cdot\text{mrad}$ across all energy regimes.
+
+
+
+
+

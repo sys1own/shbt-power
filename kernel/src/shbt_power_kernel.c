@@ -304,3 +304,33 @@ bool read_validated_telemetry(uint32_t channel_idx, double *out_physical_val)
     }
     return true;
 }
+
+/* --------------------------------------------------------------------------
+ * Runtime telemetry refresh tick (power6.txt §F): snapshot the 128-byte
+ * register block, re-validate the CRC-32/Castagnoli frame over bytes
+ * 0x00-0x7B, and advance the monotonic clock counter.  On frame mismatch,
+ * latch SHBT_PWR_STATUS_ECC_ERR (SECDED double-bit faults already panic
+ * inside read_validated_telemetry via cli; hlt).
+ * ------------------------------------------------------------------------ */
+void shbt_power_kernel_telemetry_tick(void)
+{
+    shbt_power_mmio_t *mmio = shbt_power_regs();
+
+    shbt_power_mmio_t local_snapshot;
+    {
+        const uint8_t *src = (const uint8_t *)mmio;
+        uint8_t *dst = (uint8_t *)&local_snapshot;
+        for (size_t i = 0; i < sizeof(local_snapshot); ++i)
+            dst[i] = src[i];
+    }
+
+    if (shbt_mmio_crc_region(&local_snapshot) != local_snapshot.telemetry_crc32) {
+        mmio->sys_status |= SHBT_PWR_STATUS_ECC_ERR;
+        return;
+    }
+
+    mmio->sys_status &= ~SHBT_PWR_STATUS_ECC_ERR;
+    if (++mmio->clock_ticks_lo == 0u) {
+        mmio->clock_ticks_hi++;
+    }
+}

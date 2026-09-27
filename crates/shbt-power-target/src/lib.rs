@@ -116,6 +116,22 @@ impl PhysicsSubsystem for TargetSubsystem {
     }
 }
 
+
+// ---------------------------------------------------------------------------
+// power6: zero-allocation reduced-order target response surrogate exported
+// from the Tier-1 solver workbench (shbt-power-solvers::target_kinetic).
+// ---------------------------------------------------------------------------
+pub use shbt_power_solvers::target_kinetic::surrogate::{
+    ReducedOrderTargetResponse, TargetSurrogateModel,
+};
+
+/// Evaluates the design point (rho_norm=1, E_graser=250 kJ) at the end of the
+/// 437.675 ns macro-pulse; f_burn must saturate at >= 35.01%.
+#[inline]
+pub fn target_surrogate_design_point() -> ReducedOrderTargetResponse {
+    TargetSurrogateModel::new().evaluate(1.0, 250.0, 437.675)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

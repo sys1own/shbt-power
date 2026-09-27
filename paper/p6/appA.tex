@@ -1,0 +1,24 @@
+\section{Appendix A: Derivation of Reduced-Order Dipole Wakefield Matrix Operators}
+\label{appendix:reduced_order_wake}
+
+To calculate multi-bunch transverse kicks across 2,500 bunches without evaluating $O(N^2)$ direct summations during multi-objective optimization, we construct a discrete reduced-order lower-triangular wake operator $\mathbf{W} \in \mathbb{R}^{2500 \times 2500}$. The elements $W_{k,j}$ are defined as:
+\begin{equation}
+\resizebox{\columnwidth}{!}{$\displaystyle
+W_{k,j} = \begin{cases}
+\sum_m \left(\frac{R}{Q}\right)_m \frac{\omega_m^2}{c} \exp\left(-\frac{\omega_m (k-j) T_{\text{RF}}}{2 Q_m}\right) \sin\left(\omega_m (k-j) T_{\text{RF}}\right), & \text{if } j < k, \\
+0, & \text{if } j \ge k.
+\end{cases}
+$}
+\label{eq:reduced_wake_matrix_def}
+\end{equation}
+
+Using the block transfer matrix $\mathbf{M}_{n,0}$ from the injector to cavity site $n$, the cumulative centroid offset vector $\mathbf{X}_{\text{vec}} = [x_1, x_2, \dots, x_{2500}]^T$ satisfies:
+\begin{equation}
+\resizebox{\columnwidth}{!}{$\displaystyle
+\mathbf{X}_{\text{vec}}(z) = \mathbf{M}_{\text{lattice}} \mathbf{X}_{\text{vec}}(0) + \sum_{n=1}^{N_{\text{cav}}} \mathbf{K}_n \cdot \left( \mathbf{W} \mathbf{X}_{\text{vec}}(z_n) \right)
+$}
+\label{eq:matrix_bbu_system}
+\end{equation}
+where $\mathbf{K}_n = \frac{e q_b L_{\text{eff}}}{\gamma(z_n) m_e c^2} \mathbf{M}(z, z_n)_{12} \mathbf{I}_{2500}$. 
+
+Because $W_{k,j}$ depends only on the index difference $k-j$, the operator $\mathbf{W}$ is a lower-triangular Toeplitz matrix. Truncating the matrix at $N_{\text{decay}} = \lceil 5 \tau_d / T_{\text{RF}} \rceil = 214$ nonzero sub-diagonals reduces memory usage to $O(N_{\text{decay}} N)$ and accelerates tracking computations by more than two orders of magnitude in the zero-allocation Rust solver.

@@ -6,3 +6,4 @@ license.workspace = true
 
 [dependencies]
 shbt-power-core = { path = "../shbt-power-core" }
+shbt-power-solvers = { path = "../shbt-power-solvers" }

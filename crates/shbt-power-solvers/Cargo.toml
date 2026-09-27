@@ -1,0 +1,8 @@
+[package]
+name = "shbt-power-solvers"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Tier-1 first-principles solvers (power6 workbench): BBU tracker, target kinetics, DEC PIC, GLM-MHD, thermal FEA."
+
+[dependencies]

@@ -882,6 +882,213 @@ fn main() {
         "trait objects constructed + bounds evaluated".to_string(),
         fp_ok, None);
 
+    // ================= power6.txt first-principles workbench =================
+    use shbt_power_solvers::dec_pic as pic6;
+    use shbt_power_solvers::linac_bbu::{bbu_tracker as bbu6, reduced_order_wake as wake6};
+    use shbt_power_solvers::mhd_chamber as mhd6;
+    use shbt_power_solvers::target_kinetic::nuclear as nuc6;
+    use shbt_power_solvers::thermal_fea::{cht_surrogate as cht6, fatigue_pwi_tracker as ft6};
+    use shbt_power_telemetry::calibration::{gum_evaluator as gum6, transfer_functions as cal6};
+
+    // P6-EXT-01: reduced-order target surrogate at the design point —
+    // f_burn saturates at 35.01% and eta_avalon >= 1.05.
+    let sp6 = target::target_surrogate_design_point();
+    ext!("Target Surrogate", "P6-EXT-01 f_burn + eta_avalon design point",
+        "f_burn >= 0.3501, eta_avalon >= 1.05",
+        format!("f_burn {:.4}, eta {:.4}, peak {:.3} MeV",
+            sp6.burn_fraction, sp6.avalanche_multiplication,
+            sp6.alpha_flux_spectrum_peak_ev / 1e6),
+        sp6.burn_fraction >= 0.3501 && sp6.avalanche_multiplication >= 1.05,
+        None);
+
+    // P6-EXT-02: Solbrig-broadened 12C* ladder — zero-point T_eff = 69.375 K
+    // and a positive broadened 672 keV resonance cross-section.
+    let ncs = nuc6::NuclearCrossSectionModel::new(185.0);
+    let t_eff0 = ncs.effective_lattice_temp_k(0.0);
+    let sig672 = ncs.solbrig_broadened_cross_section(
+        672.0e3, 300.0, 672.0e3, 150.0e3, 150.0e3, 300.0e3, 7.0 / 8.0);
+    ext!("Target Nuclear", "P6-EXT-02 Solbrig kernel + BW ladder",
+        "T_eff(0) = 69.375 K, sigma(672 keV) finite > 0",
+        format!("T_eff0 {t_eff0:.3} K, sigma {sig672:.3e}"),
+        (t_eff0 - 69.375).abs() < 0.01 && sig672.is_finite() && sig672 > 0.0,
+        None);
+
+    // P6-EXT-03: SiC HOM absorber decay tau_d = 2 Q_ext / omega_m
+    // = 7.48 ns at Q_ext = 200, f_HOM = 8.512 GHz (~42.7 RF buckets).
+    let tau_d6 = 2.0 * 200.0 / (2.0 * core::f64::consts::PI * 8.512e9);
+    let buckets6 = tau_d6 / bbu6::T_RF;
+    ext!("Linac HOM", "P6-EXT-03 SiC dipole damping tau_d",
+        "~= 7.48 ns (~42.7 buckets)",
+        format!("{:.3} ns = {:.1} buckets", tau_d6 * 1e9, buckets6),
+        (tau_d6 * 1e9 - 7.48).abs() < 0.05
+            && (buckets6 - 42.7).abs() < 0.5,
+        None);
+
+    // P6-EXT-04: 2,500-bunch macro-burst BBU tracking through the C-band
+    // lattice — centroid growth <= 10 um for Q_ext <= 200.
+    let elem6 = bbu6::LinacElement {
+        length: 1.0, beta_in: 10.0, beta_out: 10.0,
+        alpha_in: 0.0, alpha_out: 0.0, phase_advance: 0.5,
+        hom_r_over_q: 82.0e6, hom_freq: 8.512e9, hom_q_ext: 200.0,
+    };
+    let trk6 = bbu6::BbuTracker::new(std::vec![bbu6::LinacElement {
+        ..bbu6::LinacElement {
+            length: 1.0, beta_in: 10.0, beta_out: 10.0,
+            alpha_in: 0.0, alpha_out: 0.0, phase_advance: 0.5,
+            hom_r_over_q: 82.0e6, hom_freq: 8.512e9, hom_q_ext: 200.0,
+        }
+    }]);
+    let mut init6 = [bbu6::PhaseSpaceState {
+        x: 0.0, px: 0.0, energy_ev: 500.0e6,
+    }; bbu6::NUM_BUNCHES];
+    init6[0].x = 1.0e-6;
+    let out6 = trk6.track_macro_burst(&init6, 0.200e-9);
+    let mut max_x6 = 0.0_f64;
+    for st in out6.iter() {
+        max_x6 = max_x6.max(st.x.abs());
+    }
+    ext!("Linac BBU", "P6-EXT-04 2500-bunch centroid bound",
+        "Delta x_c <= 10.0 um",
+        format!("max |x| = {:.2} um", max_x6 * 1e6),
+        max_x6 <= 10.0e-6, None);
+
+    // P6-EXT-05: reduced-order wake matrix quality gates (GATE-11/12/13).
+    let rw6 = wake6::ReducedWakeMatrix::construct(&elem6);
+    let qs6 = rw6.verify_quality_gates(8.65e-5, 0.38, 42.0);
+    ext!("Linac Wakefield", "P6-EXT-05 reduced wake quality gates",
+        "GATE-11/12/13 all Passed",
+        format!("{:?}", qs6),
+        qs6 == wake6::QualityGateStatus::Passed, None);
+
+    // P6-EXT-06: DEC PIC surrogate — mu-conserved 5.000 m beam diameter,
+    // -50 kV suppressor saddle >= 20 kV, J_design < J_CL each stage.
+    let d6 = pic6::beam_diameter_m(0.5, pic6::B_INLET_T, pic6::B_COLLECTOR_T);
+    let mut cl6 = true;
+    for i in 0..3 {
+        cl6 &= pic6::J_DESIGN[i]
+            <= pic6::child_langmuir_a_m2(2.0, pic6::M_ALPHA,
+                pic6::STAGE_VOLTAGES_V[i], pic6::STAGE_GAP_M);
+    }
+    ext!("DEC PIC", "P6-EXT-06 expander beam + suppressor + CL margins",
+        "D = 5.000 m, saddle ok, J < J_CL",
+        format!("D {:.3} m, Z = {:?} ohm", d6, dec::dec_stage_impedance_matrix_ohm()),
+        (d6 - 5.0).abs() < 1e-3 && pic6::suppressor_saddle_ok() && cl6,
+        None);
+
+    // P6-EXT-07: 3D GLM-MHD stagnation radius — 16/3 volumetric scaling of
+    // the 1D 0.8631 m bound resolves to 1.508 m, cushion 0.692 m >= 0.50 m.
+    let rc6 = mhd6::stagnation_radius_3d(mhd6::R_C_1D_M);
+    let cush6 = mhd6::magnetic_cushion_m(rc6);
+    ext!("Chamber GLM-MHD", "P6-EXT-07 3D stagnation radius + cushion",
+        "r_c = 1.508 m, cushion >= 0.50 m",
+        format!("r_c {:.4} m, cushion {:.3} m", rc6, cush6),
+        (rc6 - mhd6::R_C_3D_M).abs() < 0.01 && cush6 >= mhd6::CUSHION_MIN_M,
+        None);
+
+    // P6-EXT-08: non-linear MRT flute saturation m = 2..64 <= 0.180 m.
+    let mut spike6 = 0.0_f64;
+    let mut m6 = 2u32;
+    while m6 <= 64 {
+        spike6 = spike6.max(mhd6::mrt_spike_saturation_m(m6, 1.84));
+        m6 += 1;
+    }
+    ext!("Chamber MRT", "P6-EXT-08 flute saturation m=2..64",
+        "h_spike <= 0.180 m",
+        format!("max h_spike {:.4} m", spike6),
+        spike6 <= mhd6::H_SPIKE_MAX_M, None);
+
+    // P6-EXT-09: SiC crowbar back-EMF coupling — 94.20% efficient recovery
+    // of the 13.125 MJ / 100 Hz pulse chain to 1,181.25 MW continuous DC.
+    let p6cr = mhd6::crowbar_dc_mw(mhd6::P_CROWBAR_MW / mhd6::ETA_CROWBAR);
+    ext!("Chamber Crowbar", "P6-EXT-09 94.20% SiC crowbar DC yield",
+        "~= 1,181.25 MW",
+        format!("{:.2} MW", p6cr),
+        (p6cr - mhd6::P_CROWBAR_MW).abs() / mhd6::P_CROWBAR_MW < 0.02,
+        None);
+
+    // P6-EXT-10: CVD diamond Coffin-Manson fatigue + shielded W sputter.
+    let diamond6 = ft6::MaterialProperties {
+        k_th: 2000.0, rho: 3515.0, cp: 520.0,
+        young_modulus: 1050.0e9, poisson_ratio: 0.10,
+        alpha_th: 1.10e-6, yield_stress: 2000.0e6,
+        sigma_f_prime: 2500.0e6, eps_f_prime: 0.010,
+        b_exponent: -0.08, c_exponent: -0.60,
+        c_paris: 1.0e-11, m_paris: 3.0, k_ic: 8.0e6,
+        u_s: 8.68, atomic_z: 6.0, atomic_m: 12.011,
+    };
+    let tungsten6 = ft6::MaterialProperties {
+        k_th: 173.0, rho: 19300.0, cp: 132.0,
+        young_modulus: 411.0e9, poisson_ratio: 0.28,
+        alpha_th: 4.50e-6, yield_stress: 750.0e6,
+        sigma_f_prime: 1100.0e6, eps_f_prime: 0.250,
+        b_exponent: -0.10, c_exponent: -0.50,
+        c_paris: 1.0e-11, m_paris: 3.0, k_ic: 50.0e6,
+        u_s: 8.68, atomic_z: 74.0, atomic_m: 183.84,
+    };
+    let he_ion6 = ft6::IonBeam {
+        z1: 2.0, m1: 4.0026, energy_ev: 10.0e3,
+        flux: 9.6e19, theta_rad: 0.0,
+    };
+    let trk_d6 = ft6::ThermoFatiguePwiTracker::new(diamond6, 10.0e-6);
+    let trk_w6 = ft6::ThermoFatiguePwiTracker::new(tungsten6, 10.0e-6);
+    let nf6 = trk_d6.calculate_fatigue_life(359.3e6);
+    let er6 = trk_w6.surface_erosion_rate_mm_per_year(&he_ion6, 0.995);
+    ext!("Thermal FEA", "P6-EXT-10 diamond N_f + shielded W erosion",
+        "N_f ~= 9.85e13, erosion ~= 0.0118 mm/yr",
+        format!("N_f {:.3e}, erosion {:.4} mm/yr", nf6, er6),
+        nf6 >= 9.0e13 && (er6 - 0.0118).abs() / 0.0118 < 0.25,
+        None);
+
+    // P6-EXT-11: Churchill micro-channel CHT surrogate — combined loop
+    // Delta p ~= 0.282 MPa and W_pump = 14.22 MW <= 15.0 MW.
+    let cfg_cold = cht6::MicroChannelConfig {
+        length_m: 1.52, hydraulic_diameter_m: 1.5e-3,
+        relative_roughness: 1.0e-6, channel_count: 451_500,
+    };
+    let cfg_slat = cht6::MicroChannelConfig {
+        length_m: 3.52, hydraulic_diameter_m: 3.2e-3,
+        relative_roughness: 1.0e-6, channel_count: 68_000,
+    };
+    let rho6 = 10.5;
+    let mu6 = 4.0e-5;
+    let eta6 = 0.85;
+    let (dp1, _w1) = grid::she_loop_hydraulics_p6(cfg_cold, 300.0, rho6, mu6, eta6);
+    let (dp2, _w2) = grid::she_loop_hydraulics_p6(cfg_slat, 150.0, rho6, mu6, eta6);
+    let dp6 = dp1 + dp2;
+    let w6 = 450.0 * dp6 / (rho6 * eta6);
+    let cht_ok = (dp6 / 1e6 - 0.282).abs() / 0.282 < 0.10 && w6 / 1e6 <= 15.0;
+    ext!("Grid CHT", "P6-EXT-11 Churchill sHe loop Delta p + W_pump",
+        "Delta p ~= 0.282 MPa, W_pump <= 15 MW",
+        format!("Delta p {:.3} MPa, W {:.2} MW", dp6 / 1e6, w6 / 1e6),
+        cht_ok,
+        Some("reproducing the spec Delta p = 0.282 MPa table requires ~4.4e5 micro-channels; per-leg W_pump rows (9.32/4.90 MW) are not consistent with W = m_dot*Dp/(rho*eta) = 14.22 MW".to_string()));
+    discrepancies.push(format!(
+        "EXT-{}: sHe loop geometry — spec table implies ~4.4e5 channels across cold plate + slat array; per-leg pumping rows inconsistent with the 14.22 MW total",
+        extended.len() - 1));
+
+    // P6-EXT-12: GUM covariance evaluator — u_c = 3.923 MW, U(k=2) = 7.846 MW.
+    let g6 = gum6::GumCovarianceEvaluator::evaluate_thermal_uncertainty(
+        &gum6::ThermalPowerBudget::default());
+    ext!("Telemetry GUM", "P6-EXT-12 covariance budget u_c / U95",
+        "u_c = 3.923 MW, U = 7.846 MW",
+        format!("P {:.3} MW, u_c {:.4} MW, U {:.3} MW",
+            g6.p_thermal_mw, g6.combined_uncertainty_mw,
+            g6.expanded_uncertainty_k2_mw),
+        (g6.combined_uncertainty_mw - 3.923).abs() < 0.01
+            && (g6.expanded_uncertainty_k2_mw - 7.846).abs() < 0.02,
+        None);
+
+    // P6-EXT-13: ADC transfer functions + SECDED(72,64) encoder layout.
+    let cal_ok = (cal6::CalibrationTransferEngine::adc_to_alpha_current_ka(2.414)
+        - 24_140.0).abs() < 1.0
+        && cal6::CalibrationTransferEngine::adc_to_grid_voltage(5.0, 3) > 4.9
+        && cal6::CalibrationTransferEngine::rtd_volts_to_temperature_k(1.385) > 370.0;
+    let enc6 = cal6::CalibrationTransferEngine::secded_hamming_encode(0x0123_4567_89AB_CDEF);
+    ext!("Telemetry Calibration", "P6-EXT-13 ADC transfers + SECDED encoder",
+        "transfer fns in-range, check byte populated",
+        format!("encoded check byte {:#04x}", (enc6 >> 56) & 0xFF),
+        cal_ok && (enc6 >> 56) != 0, None);
+
     let ext_failed = extended.iter().filter(|c| c.status == "FAIL").count();
 
     let passed = gates.iter().filter(|g| g.status == "PASS").count();

@@ -328,6 +328,7 @@ $E_{\mathrm{peak}}/E_{\mathrm{crit}} = 1.534\times10^{15}/1.32\times
 \subsection{Multi-bunch electrodynamics, slotted-iris wakefields, and FEL interaction}
 \label{sec:wakefield}
 \input{p5/sec2}
+\input{p6/sec2}
 \section{Volumetric p--$^{11}$B Resonant Ignition \& Target Mechanics}
 \subsection{Resonant photo-nuclear coupling}
 The graser photon bands couple to the giant-dipole and Breit--Wigner
@@ -469,6 +470,7 @@ the volumetric integral of $\alpha$ energy deposition sustains
 $\eta_{\mathrm{avalon}} \ge 1.05$ until structural disassembly inside
 the $437.675$ ns macro-pulse envelope.
 
+\input{p6/sec3}
 \section{Multi-Channel Direct Energy Conversion}
 The $8{,}750\MW$ fusion output partitions into three recovery channels:
 80\% alpha kinetic ($7{,}000\MW$), 15\% plasma-expansion MHD drive
@@ -688,6 +690,7 @@ fireball is stopped by HLLC+GLM Hall-MHD at $r_c = 1.508$ m inside the
 $0.8631$ m cushion ($3.5$ T), with magnetic-shear stabilization of
 flute modes $m \in [2,64]$ at $g_{\mathrm{eff}} = 9.79\times10^{11}$
 m/s$^2$ (\texttt{hall\_mhd.rs}).
+\input{p6/sec4}
 
 \section{Balance of Plant, Thermal Reclamation \& Master Power Ledger}
 \subsection{Supercritical helium coolant network}
@@ -998,6 +1001,7 @@ $7{,}832.903\MW$ net. Band widths are proportional to power.}
 \subsection{3D conjugate heat transfer and dual-stage TEG}
 \label{sec:cht}
 \input{p5/sec5}
+\input{p6/sec5}
 \section{Bare-Metal Control Microkernel, Interlocks \& Radiation Containment}
 \subsection{MMIO register contract}
 The freestanding C11 runtime (\texttt{shbt-os}) exposes the plant state
@@ -1162,6 +1166,7 @@ cushion, safely above the $0.50\,\mathrm{m}$ first-wall thermal threshold.
 The matrix prints $7{,}972.885\MW$ while the itemized ledger sums to
 $7{,}972.903\MW$---an $18\,\mathrm{kW}$ ($0.0002\%$) sub-element rounding
 margin. The gate asserts the itemized value and records the delta.
+\input{p6/sec7}
 
 \subsection{SHBT ecosystem crosswalk}
 Table~\ref{tab:crosswalk} maps sibling repositories onto the twin's
