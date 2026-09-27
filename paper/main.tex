@@ -116,23 +116,23 @@ $\hat{T}^{\partial}$ is the unitary Heegaard--Floer boundary relabeling
 isometry preserving the boundary $L^2$ norm. The transformation enforces
 adiabatic invariance $\Delta S_A = 0$ and is bounded by the Kojima
 topological entropy limits
-\begin{equation}
-\mathrm{Ent}(\varphi) \le 10^{20}\cdot\mathrm{Vol}(M), \quad
+\begin{multline}
+\mathrm{Ent}(\varphi) \le 10^{20}\cdot\mathrm{Vol}(M), \\
 \mathrm{Ent}(\varphi_1) \le [M_1:M](\ell_{\mathrm{He}}-1)\log 3,
 \label{eq:kojima}
-\end{equation}
+\end{multline}
 with $[M_1:M]$ the boundary covering index and $\ell_{\mathrm{He}}$ the
 Heegaard genus. On the canonical WZW affine branch
 $(k_\ell, k_q, K) = (26, 8, 312)$, modular closure invariance is equivalent
 to simultaneous vanishing of the boundary anomaly, the induced metric
 stress error, and the physical Hamiltonian constraint:
-\begin{equation}
-[M, S^{\partial}] = [M, T^{\partial}] = 0 \;\Longleftrightarrow\;
-\Delta_{\mathrm{fr}} = 0 \;\Longleftrightarrow\; E_{\mu\nu} = 0
-\;\Longleftrightarrow\; \Pi_{\mathrm{phys}} H_{\mathrm{total}}
+\begin{multline}
+[M, S^{\partial}] = [M, T^{\partial}] = 0 \Longleftrightarrow
+\Delta_{\mathrm{fr}} = 0 \Longleftrightarrow E_{\mu\nu} = 0 \\
+\Longleftrightarrow \Pi_{\mathrm{phys}} H_{\mathrm{total}}
 \Pi_{\mathrm{phys}} = 0.
 \label{eq:modular}
-\end{equation}
+\end{multline}
 Extended derivations appear in the supplementary document
 \cite{supplementary}.
 
@@ -178,8 +178,8 @@ penetrating resonances above the primary $^{11}$B band.
 \centering
 \caption{Optical Klystron Three-Regime Operating Parameters}
 \label{tab:klystron_regimes}
-\small
-\setlength{\tabcolsep}{3.5pt}
+\footnotesize
+\setlength{\tabcolsep}{2.5pt}
 \begin{tabular}{lrrrrrr}
 \toprule
 \textbf{Regime} & $E_e$ & $\gamma$ & $\lambda_s$ & $K$ & $\lambda_\gamma$ & $E_\gamma$ \\
@@ -298,8 +298,8 @@ with the resolved ladder of Table~\ref{tab:resonances}:
 \centering
 \caption{$^{12}$C$^*$ Multi-Channel Resonance Ladder}
 \label{tab:resonances}
-\small
-\setlength{\tabcolsep}{3pt}
+\footnotesize
+\setlength{\tabcolsep}{2pt}
 \begin{tabular}{lccccc}
 \toprule
 $E_x$ (MeV) & $J^\pi$ & Channel & $\Gamma_a$ & $\Gamma_b$ &
@@ -307,10 +307,8 @@ $\Gamma_{\mathrm{tot}}$ \\ \midrule
 2.124  & $1/2^+$ & $\gamma$ & $0.12$ eV  & $120$ eV  & $120.12$ eV \\
 4.439  & $2^+$   & $\gamma$ & $10.8$ eV  & $10.8$ keV & $10.81$ keV \\
 8.921  & $2^-$   & $\gamma$ & $85.0$ eV  & $87$ keV   & $87.08$ keV \\
-16.11  & $2^+$   & p ($E_{\mathrm{lab}}{=}161.5$ keV) & $37$ eV &
-$5.2$ keV & $5.3$ keV \\
-16.57  & $3^-$   & p ($E_{\mathrm{lab}}{=}672$ keV)   & $150$ keV &
-$150$ keV & $300$ keV \\
+16.11  & $2^+$   & p @ 161.5 keV & $37$ eV & $5.2$ keV & $5.3$ keV \\
+16.57  & $3^-$   & p @ 672 keV   & $150$ keV & $150$ keV & $300$ keV \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -482,13 +480,13 @@ radius $R_{\mathrm{fw,min}} = r_c + 0.35\,r_c + 0.50\,\mathrm{m} =
 
 \paragraph{HTS pickup coupled circuits}
 Flux compression couples the plasma and pickup coils through
-\begin{equation}
+\begin{gather}
 \frac{d}{dt}\left[L_p I_p + M(t) I_{\mathrm{HTS}}\right] + R_p I_p = 0,
-\quad
+\\
 \frac{d}{dt}\left[L_{\mathrm{HTS}} I_{\mathrm{HTS}} + M(t) I_p\right]
 + V_{\mathrm{crowbar}} = 0,
 \label{eq:hts}
-\end{equation}
+\end{gather}
 with $L_{\mathrm{HTS}} = 12.4\,\mu\mathrm{H}$, $M(t) = M_0
 (r/r_c)^2$, and the plasma inductance collapsing as $L_p(t) = L_0(1 -
 r^3/R_{\mathrm{ch}}^3)$. The network captures $15\%$ of pulse energy
