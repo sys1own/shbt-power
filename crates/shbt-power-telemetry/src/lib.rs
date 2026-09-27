@@ -6,6 +6,7 @@
 //! `sys1own/shbt-recon`; SECDED/MMIO anchoring from `sys1own/shbt-qc`.
 
 pub mod gum;
+pub mod metrology;
 
 use shbt_power_core::constants::MMIO_BASE_ADDR;
 use shbt_power_core::{PhysicsSubsystem, PlantStateSnapshot};

@@ -5,6 +5,7 @@
 pub mod kinetics;
 pub mod ionization;
 pub mod eos;
+pub mod first_principles;
 
 use shbt_power_core::constants::*;
 use shbt_power_core::{PhysicsSubsystem, PlantStateSnapshot};

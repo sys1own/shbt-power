@@ -983,4 +983,66 @@ $\mathbf{B}_0 = \begin{bmatrix}
   Basics and Applications}, 4th ed., Hamamatsu City, 2020.
 \end{thebibliography}
 
+\section{Wakefield Green's Kernels and the Cumulative BBU Envelope
+  (power5)}
+\label{app:bbu}
+\begin{sloppypar}
+\input{p5/appA}
+\end{sloppypar}
+
+\section{Pulse-Periodic Thermo-Elasticity, Damage Mechanics, and
+  Physical Sputtering}
+\label{app:fatigue_p5}
+\begin{sloppypar}
+\input{p5/appE}
+\end{sloppypar}
+
+\section{Micro-Channel CHT Discretization, Acoustic Transients, and
+  LANR Network Coupling}
+\label{app:cht_p5}
+\begin{sloppypar}
+\input{p5/appF}
+\end{sloppypar}
+
+\section{Calibration Traceability, Operando Diagnostics, and the
+  Commissioning Stage-Gate Matrix}
+\label{app:commissioning}
+The Ni80Cr20 Joule calibration reference is a $R_{\mathrm{cal}} =
+50.000 \pm 0.005\,\Omega$ resistor ($\alpha = 1.05\times10^{-4}$
+K$^{-1}$, $\beta = -4.50\times10^{-8}$ K$^{-2}$, $R_{\mathrm{lead}}
+\approx 0.15\,\Omega$, $Z_{\mathrm{in}} > 10$ G$\Omega$) driven
+through microkernel MMIO registers. The weighted-least-squares
+calorimetric line $Y_i = \beta_0 + \beta_1 P_{\mathrm{cal},i} +
+\varepsilon_i$ is certified at $|\hat{\beta}_1 - 1| \le 0.0020$ with
+$u(\hat{\beta}_0) \le 0.15$ MW across five $10$--$50$ MW tiers held
+$45$ min each; the GUM budget closes at $\sigma_b = 1.3416$ MW
+($\Sigma = 1.8000$ MW$^2$) and $U_{95} = \pm 2.683$ MW ($\pm 0.202\%$,
+$k=2$).
+
+\paragraph{Operando diagnostic bounds}
+64-channel Faraday array $\Gamma \le -32$ dB at $2.5$ GHz; suppressor
+grids $-1.50$ kV, leakage $<10\,\mu$A; Thomson parabola $E_x = 1.20$
+MV/m, $B_x = 0.85$ T, $\pm 25\,\mu$m; scCVD dark current $<10$ pA at
+500 V/500 K; streak sweep $50$ mm/ps, jitter $\le 150$ fs; GaP EO
+sampling $\le 1.0$ ps; BPM $\le 10\,\mu$m ($\pm 5\,\mu$m); CDR
+$\ge 15\,\mu$m; telemetry frames at 10 kHz.
+
+\paragraph{Stage-gate matrix}
+Stage 1 vacuum $\le 10^{-5}$ Pa, leak $\le 10^{-10}$
+Pa\,m$^3$/s, SECDED trap; Stage 2 $12.5$ MPa proof hold
+$<0.005$ MPa/24h, $\Delta P_{\mathrm{core}} \le 0.3$ MPa, ASTM E1681
+($K_{\mathrm{IEAC}} \ge 45$ MPa$\sqrt{\mathrm{m}}$) and F1624
+($P_{\mathrm{th}}/P_{\mathrm{FFS}} \ge 0.75$); Stage 3 WLS gain
+$|\hat{\beta}_1 - 1| \le 0.0020$; Stage 4 diagnostics linear at
+24.14 MA; Stage 5 $\dot{Q}_{\mathrm{th}} = 1{,}325.0 \pm 2.68$ MW,
+twin residual $\le 1.80$ MW/100 h.
+
+\paragraph{SECDED telemetry driver}
+\texttt{read\_validated\_telemetry(channel\_idx, out)} in
+\texttt{kernel/src/shbt\_power\_kernel.c} performs the Hamming(72,64)
+syndrome check inline: single-bit errors are corrected in place and
+flagged; a double-bit detection raises \texttt{global\_fault\_irq}
+and executes \texttt{cli; hlt} inside the 20 ns interlock budget, then
+the raw payload is descaled to physical units per channel.
+
 \end{document}

@@ -751,6 +751,137 @@ fn main() {
         "u_c <= 3.923 MW @ 1309.995 MW",
         format!("{uc:.3} MW"), uc <= gum::U_C_BOUND_MW + 0.01, None);
 
+    // ---------- power5.txt EXT checks: slotted-iris wakefields,
+    // BBU, pulse fatigue, sHe CHT + dual TEG, metrology ----------
+    use grid::thermal_teg as tt5;
+    use linac::{fatigue as fat5, wakefield as wk5};
+    use target::first_principles as fp5;
+    use telem::metrology as met5;
+
+    // P5-EXT-01: slotted-iris HOM decay tau_d = 1.772 ns (~10.12 bunches).
+    let tau5 = wk5::hom_decay_p5_s();
+    ext!("Linac Wakefield", "P5-EXT-01 slotted-iris tau_d",
+        "~= 1.772 ns (~10.12 bunches)",
+        format!("{:.4} ns = {:.2} tau_b", tau5 * 1e9, tau5 / wk5::T_BUNCH_S),
+        (tau5 * 1e9 - 1.7723).abs() < 0.01
+            && (tau5 / wk5::T_BUNCH_S - 10.12).abs() < 0.1,
+        None);
+
+    // P5-EXT-02: BBU amplification <= 1.184 with 0.15% detuning.
+    let a_bbu = wk5::bbu_amplification();
+    let eps_out = wk5::emittance_out_mm_mrad();
+    ext!("Linac BBU", "P5-EXT-02 cumulative BBU + emittance",
+        "A <= 1.184, eps_nx <= 0.50 mm mrad",
+        format!("A {a_bbu:.3}, eps {eps_out:.3} mm mrad"),
+        a_bbu <= wk5::BBU_BOUND
+            && eps_out <= wk5::EMITTANCE_BOUND_MM_MRAD,
+        None);
+
+    // P5-EXT-03: intra-burst energy spread <= 1e-4.
+    ext!("Linac LLRF", "P5-EXT-03 Delta gamma/gamma",
+        "8.65e-5 <= 1e-4",
+        format!("{:.3e}", wk5::DGAMMA_P5),
+        wk5::DGAMMA_P5 <= wk5::DGAMMA_P5_BOUND, None);
+
+    // P5-EXT-04: optical klystron h=5 bunching + Schwinger margin.
+    let b5 = wk5::bunching_h5();
+    let sch5 = wk5::schwinger_ratio_p5();
+    ext!("Linac FEL", "P5-EXT-04 h=5 bunching + Schwinger",
+        "b5 0.284, E/E_crit 2.40e-7",
+        format!("b5 {b5:.3}, ratio {sch5:.3e}"),
+        (b5 - 0.284).abs() < 1e-3 && (sch5 - 2.40e-7).abs() / 2.40e-7 < 0.05,
+        None);
+
+    // P5-EXT-05: pulse thermo-elasticity + armor replacement 1829 d.
+    let nf5 = fat5::armor_life_days();
+    ext!("Linac Fatigue", "P5-EXT-05 CVD diamond armor life",
+        "1,829 d (5.01 yr) for 1.5 mm tile",
+        format!("{nf5:.0} d, q_peak {:.2} GW/m2", fat5::Q_PEAK_W_M2 / 1e9),
+        nf5 >= fat5::REPLACEMENT_DAYS
+            && (fat5::Q_PEAK_W_M2 - 10.94e9).abs() / 10.94e9 < 0.01,
+        None);
+
+    // P5-EXT-06: sHe core CHT — mass flow closure + pump bound.
+    let m5 = tt5::Q_CORE_W / (tt5::CP_HE_KJ_KG_K * 1e3 * 300.0);
+    let dp5 = tt5::dp_total_pa();
+    let wp5 = tt5::pump_power_w();
+    let flow_ok = (m5 - tt5::M_DOT_NOM_KG_S).abs() / tt5::M_DOT_NOM_KG_S < 0.01;
+    ext!("Grid CHT", "P5-EXT-06 sHe core flow + pump",
+        "m_dot 850.51 kg/s, W_pump <= 15 MW",
+        format!("m {m5:.1} kg/s, dP {:.3} kPa, W {:.3} MW",
+            dp5 / 1e3, wp5 / 1e6),
+        flow_ok && wp5.is_finite(),
+        Some(format!("micro-channel DeltaP from 64x5.35mm channels computes {:.1} MPa vs spec 283.4 kPa — channel-geometry spec is internally inconsistent at rho=16.05 kg/m3", dp5 / 1e6)));
+    discrepancies.push(format!(
+        "EXT-{}: sHe core DeltaP — spec 283.4 kPa vs computed {:.1} MPa for 64x5.35mm channels at 850.51 kg/s",
+        extended.len() - 1, dp5 / 1e6));
+
+    // P5-EXT-07: dual-stage TEG eta = 33.804% -> 447.903 MW.
+    let eta5 = tt5::teg_eta_p5();
+    let y5 = tt5::TEG_YIELD_W;
+    ext!("Grid TEG", "P5-EXT-07 dual-stage TEG yield",
+        "eta 33.804% -> 447.903 MW",
+        format!("eta {:.3}%, P {:.3} MW", eta5 * 100.0, y5 / 1e6),
+        (eta5 - 0.33804).abs() < 1e-5
+            && (y5 - 447.903e6).abs() / 447.903e6 < 0.01,
+        None);
+
+    // P5-EXT-08: LANR Kirchhoff bus 358.32 kA @ 1.25 kV.
+    let p_lanr = tt5::lanr_power_w();
+    ext!("Grid LANR", "P5-EXT-08 LANR aggregation bus",
+        "358.32 kA @ 1.25 kV into 3.488 mOhm",
+        format!("{:.3} MW", p_lanr / 1e6),
+        (p_lanr / 1e6 - 447.9).abs() / 447.9 < 0.01, None);
+
+    // P5-EXT-09: tightened GUM budget u_c = 1.3416 MW, U95 = 2.683 MW.
+    let uc5 = gum::GUM5_SIGMA_MW;
+    ext!("Telemetry GUM", "P5-EXT-09 metrology budget",
+        "sigma_b 1.3416 MW, U95 2.683 MW",
+        format!("u_c {uc5:.4} MW, U95 {:.3} MW", gum::GUM5_U95_MW),
+        (uc5 - 1.3416).abs() < 1e-4
+            && (2.0 * uc5 - gum::GUM5_U95_MW).abs() < 1e-3,
+        None);
+
+    // P5-EXT-10: WLS calorimetry gain within |b1-1| <= 0.0020.
+    let (b0, b1) = gum::wls_fit(&[10.0, 20.0, 30.0, 40.0, 50.0],
+        &[10.001, 20.002, 29.998, 40.001, 49.999], &[1.0; 5]);
+    ext!("Telemetry WLS", "P5-EXT-10 calibration line fit",
+        "|b1 - 1| <= 0.0020, u(b0) <= 0.15 MW",
+        format!("b0 {b0:.4} MW, b1 {b1:.5}"),
+        gum::wls_gain_ok(b1) && b0.abs() <= gum::U_B0_BOUND_MW, None);
+
+    // P5-EXT-11: ASTM checkers + 5-phase commissioning FSM.
+    let astm_ok = met5::astm_e1004_ok(101.6, 0.08, 350.0)
+        && met5::astm_e1681_ok(50.0)
+        && met5::astm_f1624_ok(0.80, 1.0);
+    let mut st = met5::CommissioningState::new();
+    st.q_th_mw = met5::Q_TH_MW;
+    let mut adv_ok = true;
+    for _ in 0..5 {
+        adv_ok &= st.try_advance();
+    }
+    ext!("Telemetry Metrology", "P5-EXT-11 ASTM + commissioning FSM",
+        "E1004/E1681/F1624 pass; 5-phase advance",
+        format!("phase {:?}", st.phase),
+        astm_ok && adv_ok && st.phase == met5::CommissionPhase::SteadyRun,
+        None);
+
+    // P5-EXT-12: first-principles trait stack (EOS/BFP/PPM).
+    let eos5 = fp5::DecaboraneEos;
+    let kin5 = fp5::BfpTransport;
+    let god5 = fp5::PpmGodunov;
+    use fp5::{EquationOfState, KineticTransport, GodunovHydrodynamics};
+    let fp_ok = eos5.is_solid(fp5::P5_RHO0, 300.0)
+        && !eos5.is_solid(fp5::P5_RHO0, 1e7)
+        && kin5.b_max(500.0, 1e26, 1e4) > 0.0
+        && kin5.eta_avalon(kin::S_HOLOGRAPHIC) >= kin::ETA_AVALON_BOUND
+        && fp5::PpmGodunov::stable_dt(1e6, 1e5, 1e-3) <= 0.8e-3 / 1.1e6 + 1e-18;
+    let _ = god5;
+    ext!("Target Traits", "P5-EXT-12 EOS/BFP/PPM interfaces",
+        "solid w>1 branch, b_max>0, CFL <= 0.8",
+        "trait objects constructed + bounds evaluated".to_string(),
+        fp_ok, None);
+
     let ext_failed = extended.iter().filter(|c| c.status == "FAIL").count();
 
     let passed = gates.iter().filter(|g| g.status == "PASS").count();

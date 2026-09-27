@@ -325,6 +325,9 @@ evaluation of the focused graser spot yields
 $E_{\mathrm{peak}}/E_{\mathrm{crit}} = 1.534\times10^{15}/1.32\times
 10^{18} = 1.16\times10^{-3} \le 1.5\times10^{-3}$.
 
+\subsection{Multi-bunch electrodynamics, slotted-iris wakefields, and FEL interaction}
+\label{sec:wakefield}
+\input{p5/sec2}
 \section{Volumetric p--$^{11}$B Resonant Ignition \& Target Mechanics}
 \subsection{Resonant photo-nuclear coupling}
 The graser photon bands couple to the giant-dipole and Breit--Wigner
@@ -452,6 +455,19 @@ s(t) = L\left(10\tau^3 - 15\tau^4 + 6\tau^5\right),\quad \tau = t/T,
 \end{equation}
 holds terminal positional jitter $\le 50\,\mu\mathrm{m}$ and timing jitter
 $<50\,\mathrm{ps}$ relative to the burst envelope.
+
+\subsection{Godunov-PPM burn dynamics}
+\label{sec:ppm_burn}
+The static $35.01\%$ burn-yield assumption is replaced by a dependent
+output variable of the dynamic race between the photo-nuclear
+$S_{\mathrm{nuc}}$ source term and hydrodynamic rarefaction of the
+pellet, integrated on a Lagrangian Godunov grid with piecewise-parabolic
+(PPM) interface reconstruction, an HLLE approximate Riemann flux, and
+adaptive CFL $\le 0.8$ (\texttt{crates/shbt-power-target},
+\texttt{first\_principles.rs}). Ignition success is certified only when
+the volumetric integral of $\alpha$ energy deposition sustains
+$\eta_{\mathrm{avalon}} \ge 1.05$ until structural disassembly inside
+the $437.675$ ns macro-pulse envelope.
 
 \section{Multi-Channel Direct Energy Conversion}
 The $8{,}750\MW$ fusion output partitions into three recovery channels:
@@ -660,6 +676,18 @@ at $\eta_{\mathrm{rad}} = 50.0\%$, yielding $218.75\MW$.
 
 The three channels sum to a direct-conversion gross of $7{,}525\MW$ at a
 weighted efficiency $\eta_{\mathrm{conv}} = 86.0\%$.
+
+\subsection{PIC space charge and Hall-MHD stopping}
+\label{sec:pic_hall}
+The transient alpha sheath is resolved by a 2D axisymmetric
+Vlasov--Poisson PIC solver (Boris pusher, GMG V-cycle Poisson) coupled to
+thermionic neutralization at $n_{e,\mathrm{inj}} = 5.937\times10^{17}
+\mathrm{m^{-3}}$, $T_e = 25$ eV, with Sternglass SEE emission and the
+$-50$ kV suppressor saddle suppressing virtual anodes. The $13.125$ MJ
+fireball is stopped by HLLC+GLM Hall-MHD at $r_c = 1.508$ m inside the
+$0.8631$ m cushion ($3.5$ T), with magnetic-shear stabilization of
+flute modes $m \in [2,64]$ at $g_{\mathrm{eff}} = 9.79\times10^{11}$
+m/s$^2$ (\texttt{hall\_mhd.rs}).
 
 \section{Balance of Plant, Thermal Reclamation \& Master Power Ledger}
 \subsection{Supercritical helium coolant network}
@@ -964,6 +992,9 @@ $7{,}832.903\MW$ net. Band widths are proportional to power.}
 \label{fig:sankey}
 \end{figure*}
 
+\subsection{3D conjugate heat transfer and dual-stage TEG}
+\label{sec:cht}
+\input{p5/sec5}
 \section{Bare-Metal Control Microkernel, Interlocks \& Radiation Containment}
 \subsection{MMIO register contract}
 The freestanding C11 runtime (\texttt{shbt-os}) exposes the plant state
@@ -1088,6 +1119,24 @@ measured readouts. Result: \textbf{70/70 PASS}.
 \end{longtable}
 \end{scriptsize}
 \twocolumn
+
+\subsection{Commissioning stage-gate matrix}
+\label{sec:commissioning}
+The five-phase plant handover is enforced by the audit-embedded
+state machine (\texttt{metrology.rs}): \textbf{Stage 1} vacuum
+$\le 10^{-5}$ Pa with ECC trap verification; \textbf{Stage 2} sHe
+proof at $12.5$ MPa with $\Delta P_{\mathrm{decay}} < 0.005$ MPa/24h
+and $\Delta P_{\mathrm{core}} \le 0.3$ MPa; \textbf{Stage 3} Joule
+calorimetry $|\hat{\beta}_1 - 1| \le 0.0020$ across the $10$--$50$ MW
+five-tier ramp; \textbf{Stage 4} operando diagnostics verified linear
+to $24.14$ MA burst current; \textbf{Stage 5} full-power ascension to
+$\dot{Q}_{\mathrm{th}} = 1{,}325.0 \pm 2.68$ MW with twin residual
+$\le 1.80$ MW over 100 h.
+
+\paragraph{Extended audit checks}
+Beyond the 70 gates, the audit evaluates 70 extended checks covering
+the power2/power3/power4/power5 solver workbenches
+(\texttt{verification\_matrix.json}, \texttt{extended\_checks}).
 
 \subsection{Audit-note reconciliation}
 \paragraph{GATE-30 (collector diameter)}
