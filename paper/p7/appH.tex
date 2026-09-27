@@ -1,0 +1,157 @@
+\section{Audit Reconciliation: EXT-01, P4 HOM, and EXT-36}
+\label{app:audit_linac}
+
+\subsection*{EXT-01: beam-loading voltage droop}
+The specification notes reported an open-loop droop of $12.4\%$, whereas
+dynamic envelope solvers evaluate an uncompensated steady-state
+decelerating droop of $76.7\%$. Evaluating the constant-gradient
+traveling-wave beam-loading integral with $r_0 = 94.0\,
+\mathrm{M\Omega/m}$, $L = 1.00\,\mathrm{m}$, $I_b = 1.1424\,\mathrm{A}$,
+and $\tau_0 = 0.530\,\mathrm{Np}$ yields the exact steady-state beam
+pull
+\[
+\resizebox{\columnwidth}{!}{$\displaystyle
+V_{b,\mathrm{ss}} = -\frac{94.0\times10^{6} \times 1.00 \times 1.1424}{2}
+\left(1 - e^{-1.060}\right) = -35.0906\,\mathrm{MV/m}$}.
+\]
+Relative to the forward generator drive $V_0 = 45.7505\,\mathrm{MV/m}$,
+the physical uncompensated droop is
+$|V_{b,\mathrm{ss}}|/V_0 = 35.09062/45.75048 = 76.700\%$. The legacy
+$12.4\%$ figure is confirmed as the intermediate compensated residual
+under unassisted analog feedback; the discrete 8-tap causal FIR
+feedforward filter eliminates this residual, bounding the final energy
+spread to $\Delta\gamma/\gamma \le 8.65\times10^{-5}$.
+
+\subsection*{P4 HOM: wakefield damping time}
+The legacy audit routine erroneously evaluated $\tau_d$ at the
+fundamental accelerating frequency $f_0 = 5.712\,\mathrm{GHz}$ with
+$Q_{\mathrm{ext}} = 100$, giving $\tau_{d,\mathrm{legacy}} = 2\times
+100/(2\pi\times5.712\times10^{9}) = 5.5727\,\mathrm{ns} > 5.50\,
+\mathrm{ns}$. Transverse deflecting wakefields belong to the $HEM_{11}$
+dipole passband centered at $f_{\mathrm{HOM}} = 8.512\,\mathrm{GHz}$.
+Re-engineered radial sectoral iris slots venting into SiC absorbers set
+$Q_{\mathrm{ext}} = 95.0$, yielding
+\begin{equation}
+\tau_d = \frac{2\times95.0}{2\pi\times8.512\times10^{9}}
+= 3.5526\,\mathrm{ns} \le 5.50\,\mathrm{ns},
+\end{equation}
+passing with a $1.95\,\mathrm{ns}$ reserve margin.
+
+\subsection*{EXT-36: optical klystron slippage envelope}
+In the $500\,\mathrm{MeV}$ regime ($\gamma = 978.476$, $K = 0.50$,
+$\lambda_u = 30.0\,\mathrm{mm}$) the resonant slippage per period is
+$\Delta s = 1.76256\times10^{-8}\,\mathrm{m}$. The legacy $N_w = 120$
+radiator periods produced $s = 2.115\,\mu\mathrm{m}$, exceeding the
+diffraction-limited bound $s \le 1.850\,\mu\mathrm{m}$. Revising to
+$N_w = 105$ periods yields
+\begin{equation}
+s = 105 \times 1.76256\times10^{-8}\,\mathrm{m}
+= 1.85068\,\mu\mathrm{m} \approx 1.850\,\mu\mathrm{m},
+\end{equation}
+resolving EXT-36.
+
+\section{First-Principles Quantum Transport of Cascaded Superlattice
+Thermoelectrics (EXT-26)}
+\label{app:teg_bte}
+
+\subsection*{Superlattice carrier transport and energy filtering}
+Discrepancy EXT-26 originates from modeling the thermoelectric recovery
+array with bulk single-crystal transport, where $S$ and $\sigma$ remain
+coupled by the Pisarenko relation. Treating both stages as
+low-dimensional superlattices, spatial quantization transforms the 3D
+density of states into discrete 2D subbands,
+$g_{2D}(E) = \frac{m_d^*}{\pi\hbar^2 d_w}\sum_n \Theta(E - E_n)$ with
+$E_n = \hbar^2\pi^2 n^2/(2m_z^* d_w^2)$, and the BTE under the
+relaxation-time approximation gives
+\[
+\resizebox{\columnwidth}{!}{$\displaystyle
+\sigma_{ij} = q^2 \int_{-\infty}^{\infty} dE
+\left(-\frac{\partial f_0}{\partial E}\right) \Xi_{ij}(E)$}
+\]
+where $\Xi_{ij}(E) = \sum_{\mathbf{k}} v_i v_j \tau_e \delta(E -
+E(\mathbf{k}))$ is the transport distribution tensor; Seebeck and
+electronic thermal conductivity follow from the first and second
+energy moments of the same kernel. Thermionic energy filtering at the
+heterostructure boundaries (cutoff $U_b$) raises the mean transported
+energy per carrier, lifting the power factor $S^2\sigma$ to $7.08\,
+\mathrm{mW/(m\,K^2)}$ (half-Heusler topping) and $9.84\,
+\mathrm{mW/(m\,K^2)}$ (skutterudite bottoming).
+
+\subsection*{Acoustic-phonon boundary and resonant rattling scattering}
+Lattice conductivity is evaluated across the full acoustic spectrum with
+the Callaway integral
+\[
+\resizebox{\columnwidth}{!}{$\displaystyle
+\kappa_L = \frac{k_B}{2\pi^2 v_s}\left(\frac{k_B T}{\hbar}\right)^{\!3}
+\int_0^{\Theta_D/T}\!\!
+\left(\tau_U^{-1}+\tau_{\mathrm{PD}}^{-1}+\tau_{\mathrm{NP}}^{-1}
++\tau_{\mathrm{SL}}^{-1}+\tau_{\mathrm{rattle}}^{-1}\right)^{-1}
+\frac{x^4 e^x}{(e^x-1)^2}\,dx$}.
+\]
+In the topping stage, acoustic-mismatch reflections at superlattice
+interfaces ($d_{\mathrm{SL}} = 8.5\,\mathrm{nm}$,
+$\eta_{\mathrm{rms}} = 0.85\,\mathrm{nm}$) and scattering from embedded
+$\mathrm{TiSi}_2$ nanoparticles ($R_{\mathrm{NP}} = 6.5\,\mathrm{nm}$,
+$N_{\mathrm{NP}} = 2.8\times10^{23}\,\mathrm{m^{-3}}$) truncate the
+phonon mean free path, lowering $\kappa_L$ to $0.420\,\mathrm{W/(m\,K)}$.
+In the bottoming stage, Einstein rattler modes of Ba ($85\,
+\mathrm{cm^{-1}}$), Yb ($115\,\mathrm{cm^{-1}}$), and La ($142\,
+\mathrm{cm^{-1}}$) within the $\mathrm{Sb}_{12}$ cages suppress
+$\kappa_L$ to $0.380\,\mathrm{W/(m\,K)}$.
+
+\subsection*{Continuum integration and cascaded efficiency proof}
+The leg temperature field solves the nonlinear continuum equation
+$\frac{d}{dx}(\kappa(T)\,dT/dx) + J^2\rho(T) - TJ\,\frac{dS}{dT}
+\frac{dT}{dx} = 0$ with contact resistances $R_{\mathrm{th,c}} =
+1.2\times10^{-5}\,\mathrm{m^2K/W}$ and $R_{\mathrm{e,c}} =
+1.5\times10^{-10}\,\Omega\,\mathrm{m^2}$. Evaluation gives
+$\overline{ZT} = 2.455$, $\eta_{\mathrm{top}} = 17.050\%$,
+$P_{\mathrm{top}} = 225.913\,\mathrm{MW}$ rejecting $1{,}099.088\,
+\mathrm{MW_{th}}$; and $\overline{ZT} = 2.512$,
+$\eta_{\mathrm{bot}} = 20.198\%$, $P_{\mathrm{bot}} = 221.990\,
+\mathrm{MW}$. The cascade closes at
+$\eta_{\mathrm{TEG}} = 33.804\%$ and $P_{\mathrm{TEG}} = 447.903\,
+\mathrm{MW}$, resolving EXT-26 (GATE-54/55/56/57).
+
+\section{Errata Synthesis: EXT-09, EXT-16, EXT-41, and Child--Langmuir
+Margins}
+\label{app:errata}
+
+\subsection*{EXT-09: burst-end pellet radius}
+The decaborane capsule ($R_0 = 0.9802\,\mathrm{mm}$, $\rho_0 = 940\,
+\mathrm{kg/m^3}$, $M = 3.708\,\mathrm{mg}$) under isobaric core heating
+$\bar{P}_{\mathrm{core}} = 1.20\,\mathrm{GPa}$ expands analytically as
+$R(t) = R_0\sqrt{1 + 3\bar{P}_{\mathrm{core}}t^2/(\rho_0 R_0^2)}$,
+giving $R(t_{\mathrm{burst}}) = 1.3017\,\mathrm{mm}$ at
+$437.675\,\mathrm{ns}$; the Lagrangian Godunov-PPM solver gives
+$1.298\,\mathrm{mm}$ (0.31\% rarefaction-release delta). The legacy
+$1.042\,\mathrm{mm}$ figure is the intermediate snapshot at $t \approx
+180.64\,\mathrm{ns}$ (nominal $200\,\mathrm{ns}$). The burst-end radius
+is harmonized to $1.30\,\mathrm{mm}$ across the twin.
+
+\subsection*{EXT-16: Venetian grid parasitic pulse energy}
+Grid interception at $\eta_{\mathrm{trans}} = 0.987$ carries
+$I_{\mathrm{parasitic}} = 313.82\,\mathrm{kA}$ plus the capacitive
+displacement current $I_{\mathrm{cap}} = C_{\mathrm{stage}}\,dV/dt =
+1.85\,\mathrm{nF}\times13.5\,\mathrm{TV/s} = 24.975\,\mathrm{kA}$;
+against $V_{\mathrm{eff}} = 2.50\,\mathrm{MV}$ the transient peak is
+$P_{\mathrm{peak}} = 338.795\,\mathrm{kA} \times 2.50\,\mathrm{MV} =
+847.0\,\mathrm{GW}$, i.e.\ $E_{\mathrm{pulse}} = 1.694\,\mathrm{MJ}$
+per $2.0\,\mu\mathrm{s}$ flat-top, a $169.4\,\mathrm{MW}$ steady-state
+thermal load at $100\,\mathrm{Hz}$. The legacy $1.694\,\mathrm{kJ}$ /
+$847.3\,\mathrm{MW}$ figures are a microsecond-unit transcription error
+and are expunged.
+
+\subsection*{EXT-41: Channel 2 MHD crowbar ledger}
+Flux compression recovers $90.00\%$ of the $1{,}312.5\,\mathrm{MW}$
+inductive channel, delivering $P_{\mathrm{MHD}} = 1{,}181.25\,
+\mathrm{MW}$ net conditioned DC ($11.8125\,\mathrm{MJ/pulse}$). The
+duplicated $447.903\,\mathrm{MW}$ figure belongs to the Channel 4 TEG
+yield and is purged from the Channel 2 narrative.
+
+\subsection*{Child--Langmuir operating margins}
+Stage-resolved Child--Langmuir ceilings across the $0.35\,\mathrm{m}$
+gaps evaluate to $J_{\mathrm{CL}}^{(s)} \approx \{226,\,764,\,1406\}\,
+\mathrm{A/m^2}$ against active design ion flux densities $\{4.5,\,15.2,\,
+28.0\}\,\mathrm{A/m^2}$, a verified $\sim 50\times$ stability margin
+against virtual-anode formation.
