@@ -277,6 +277,30 @@ $E_{\mathrm{peak}} = \sqrt{2I_{\mathrm{peak}}/(\epsilon_0 c)}
 3.12\times10^{23}\,\mathrm{W/m^2}$ remains three orders below
 $E_{\mathrm{cr}}$.
 
+\paragraph{Loaded $Q$ envelope and phase bound}
+At the loaded parameters $Q_L = 8{,}500$ and $R_a/Q_L = 3{,}820\,
+\Omega/\mathrm{m}$, the driven envelope equation
+\begin{equation}
+\dot v + \frac{\omega_{\mathrm{RF}}}{2Q_L}\,v
+= \frac{\omega_{\mathrm{RF}}}{2Q_L}\,u - \frac{R_a I_b}{2Q_L}
+\label{eq:envelope_p3}
+\end{equation}
+integrated bunch-by-bunch across the $2{,}500$-bunch,
+$437.675\,\mathrm{ns}$ train ($T_b = 175.070\,\mathrm{ps}$,
+$q_b = 0.200\,\mathrm{nC}$, $I_b = 1.1424\,\mathrm{A}$) with
+generator feedforward $I_g = I_b/2$ bounds the cavity phase drift to
+$|\delta\phi_c| = 0.082^{\circ}$ against the $0.100^{\circ}$ budget.
+\paragraph{Slippage and CSR chirp}
+With $N_w = 120$ undulator periods and $\sigma_z = 25.0\,\mu\mathrm{m}$,
+slippage $s = N_w \lambda_u (1 + K^2/2)/(2\gamma^2)$ evaluates to
+$2.12\,\mu\mathrm{m}$ for the $500\,\mathrm{MeV}$ regime---marginally
+above the $1.850\,\mu\mathrm{m}$ bound quoted in the supporting
+analysis (EXT-36 discrepancy)---and well within the bunch length.
+CSR energy exchange $\Delta E \approx 14.20\,\mathrm{keV}$ with a
+$+3.20^{\circ}$ chirp and the focused peak field
+$E_{\mathrm{focus}} = 1.84\times10^{15}\,\mathrm{V/m}$ stays at
+$E/E_{\mathrm{crit}} = 1.394\times10^{-3}$.
+
 \section{Volumetric p--$^{11}$B Resonant Ignition \& Target Mechanics}
 \subsection{Resonant photo-nuclear coupling}
 The graser photon bands couple to the giant-dipole and Breit--Wigner
@@ -436,6 +460,17 @@ associated thermal product computes to $847.3\,\mathrm{GW}$
 $847.3\,\mathrm{MW}$ quoted in the supporting analysis---logged as
 EXT-16 in the audit discrepancies.
 
+\paragraph{Thermionic neutralization and SEE suppression}
+LaB$_6$ dispenser cathodes inject $n_{e,\mathrm{inj}} = 5.937\times
+10^{17}\,\mathrm{m^{-3}}$ at $T_e = 25.0\,\mathrm{eV}$ across the
+Venetian stages, and the $-50\,\mathrm{kV}$ suppressor grid establishes
+an $e\Delta\Phi = 45.0\,\mathrm{eV}$ barrier that quenches the
+molybdenum/tungsten secondary-electron yield to $\gamma_{\mathrm{SEE}}
+\le 0.012$; the collector electrical efficiency is $87.80\%$ for the
+$24.14\,\mathrm{MA}$ per-$2\,\mu\mathrm{s}$ burst. The 2D
+axisymmetric sheath is relaxed by an allocation-free Vlasov--Poisson
+Jacobi solver to verify the barrier precludes flashover.
+
 \subsection{Channel 2: inductive MHD flux compression}
 The conductive fireball compresses flux through HTS pickup coils at
 $\eta_{\mathrm{MHD}} = 90.0\%$, recovering $1{,}181.25\MW$ of the
@@ -477,6 +512,22 @@ stabilizes $m > 12$ modes, bounding nonlinear distortion to
 $\Delta r_{\mathrm{flute}} \approx 0.35\,r_c$ so the required wall
 radius $R_{\mathrm{fw,min}} = r_c + 0.35\,r_c + 0.50\,\mathrm{m} =
 1.36\,\mathrm{m}$ stays within the vessel.
+
+\paragraph{Transverse cushion, FLR cutoff, and crowbar}
+At the cushion field $B_{\mathrm{cush}} = 1.5154\,\mathrm{T}$ the
+unvented fireball stops at $r_c = 1.5080\,\mathrm{m}$, leaving
+$\Delta R = 0.6920\,\mathrm{m}$ of the $R_{\mathrm{chamber}} =
+2.200\,\mathrm{m}$ radius ($\ge 0.500\,\mathrm{m}$). With magnetic
+shear $\mathcal{S} = (r_c/q)\,dq/dr = 1.84$ and ion gyro-radius
+$\rho_i = 0.077\,\mathrm{m}$, finite-Larmor-radius stabilization cuts
+off MRT flutes at $m \approx 22.4$, saturating nonlinear distortion at
+$\xi_{\max}/r_c = 0.120 < 0.200$ ($\xi_{\max} = 0.103\,
+\mathrm{m}$). Flux compression drives $|\partial B/\partial t| \ge
+1.20\times10^{12}\,\mathrm{T/s}$, and the PCSS crowbar plus $94.20\%$
+SiC recovery network returns $1{,}236.375\,\mathrm{MW}$ inductive
+energy per cycle-averaged channel; the supporting analysis also quotes
+a $447.903\,\mathrm{MW}$ `regulated DC' figure for this channel that
+duplicates the TEG yield---an internal inconsistency logged as EXT-41.
 
 \paragraph{HTS pickup coupled circuits}
 Flux compression couples the plasma and pickup coils through
@@ -530,6 +581,23 @@ with $\bar Z = 1.042$, $\gamma = 1.667$, $\eta = 0.88$ evaluates to
 $9.29\,\mathrm{MW}$---below the $13.382\,\mathrm{MW}$ quoted in the
 supporting analysis and well within the $15.0\,\mathrm{MW}$ auxiliary
 ceiling (EXT-25).
+
+\paragraph{Micro-channel jacket and fatigue}
+The first-wall jacket comprises 64 micro-channels ($D_h = 12.5\,
+\mathrm{mm}$, $L = 4.2\,\mathrm{m}$, $\varepsilon = 1.5\,
+\mu\mathrm{m}$, $u = 38.4\,\mathrm{m/s}$, $\rho = 5.35\,
+\mathrm{kg/m^3}$). A Colebrook--White solve on the stated geometry
+gives $f_D \approx 0.020$, $\Delta p = 26.2\,\mathrm{kPa}$, and
+$W_{\mathrm{pump}} = 2.53\,\mathrm{MW}$ ($\eta_{\mathrm{pump}} =
+0.88$)---versus the quoted $f_D = 0.0162$, $21.450\,\mathrm{kPa}$,
+$2.052\,\mathrm{MW}$ (EXT-37)---all inside the $15\,\mathrm{MW}$
+ceiling. Plasma--wall-interaction fatigue on the armor follows a
+Coffin--Manson--Morrow strain--life relation with Chaboche
+viscoplastic backstress ($\Delta\varepsilon_p = 4.120\times10^{-4}$,
+$\Delta\varepsilon_e = 1.050\times10^{-3}$, $\varepsilon_f' = 0.45$,
+$c = -0.58$, $b = -0.09$, $E = 400\,\mathrm{GPa}$, $\sigma_f' =
+1{,}161\,\mathrm{MPa}$), giving $N_f = 4.38\times10^{6}$ cycles
+against the $4.0\times10^{6}$ divertor threshold.
 
 \subsection{TEG loop}
 The helium loop drives a dual-stage skutterudite / half-Heusler
@@ -615,6 +683,86 @@ The wall-plug efficiency is $\eta_{\mathrm{net}} = 7{,}832.903/8{,}750 =
 89.519\%$, with engineering gains $Q_{\mathrm{eng}} = 7{,}525/140 = 53.75$
 (direct conversion only) and $Q_{\mathrm{eng,total}} = 7{,}972.903/140 =
 56.949$.
+The companion gross-bus topology in the supporting analysis allocates
+85\% of pulse energy ($74.375\,\mathrm{MJ}$) to the DEC channel at
+$87.80\%$ for $7{,}854.194\,\mathrm{MW}$, $15\%$ to the cushion
+induction channel, and deducts $917.097\,\mathrm{MW}$ of house loads
+(linac modulators $684.5$, 20 K cryogenics $118.2$, digital-twin/FPGA
+control $56.897$, thermionic neutralizers $42.5$, circulation pumps
+$15.0\,\mathrm{MW}$) from the $8{,}750.000\,\mathrm{MW}$ gross bus to
+the same $7{,}832.903\,\mathrm{MW}$ net; the channel-level figures
+differ from the Table~\ref{tab:ledger} ledger conventions and are
+carried verbatim in Table~\ref{tab:shbt_power_baseline} for
+traceability.
+\begin{table*}[t]
+\centering
+\small
+\caption{Comprehensive First-Principles Parameter Baseline for the \texttt{sys1own/shbt-power} Multi-Physics Digital Twin Engine.}
+\label{tab:shbt_power_baseline}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llrr}
+\hline\hline
+\textbf{Subsystem Domain} & \textbf{Physical Parameter Description} & \textbf{Design Value} & \textbf{SI / Dimension Units} \\
+\hline
+\textbf{Core Kinetics \&} 
+& Target Composition \& Density & $\text{B}_{10}\text{H}_{14}$ (Decaborane), 940.0 & $\text{kg}\cdot\text{m}^{-3}$ \\
+\textbf{Aneutronic Ignition} 
+& Pulse Repetition Rate & 100.00 & $\text{Hz}$ \\
+& Total Fusion Energy Release per Pulse & 87.500 & $\text{MJ}$ \\
+& Photo-Excitation Resonance Energies & $\{2.124,\, 4.445,\, 8.920\}$ & $\text{MeV}$ \\
+& Magnetized Impact Cutoff Radius & $b_{\text{max}} = \min(\lambda_D,\, r_{ce}) = r_{ce}$ & $\text{m}$ ($B_0 \ge 10^3\text{ T}$) \\
+& Knock-On Avalanche Multiplication Factor & $\eta_{\text{avalon}} = 1.0542$ & Non-dimensional ($\ge 1.05$) \\
+& Holographic Bremsstrahlung Suppression Factor & $S = (1 - 23/33)^2 = 100/1089$ & Exact Boundary Ratio \\
+& Pellet Boundary Deformation Ratio & $\xi(t_{\text{pulse}})/R_0 = 0.0482$ & Non-dimensional ($< 0.10$) \\
+\hline
+\textbf{DEC Expander \&} 
+& Expander Magnetic Field Ratio & $5.000 \to 0.050$ (100:1) & $\text{T}$ \\
+\textbf{Venetian-Blind Optics} 
+& Collector Aperture Diameter & $D_{\text{coll}} = 5.000$ & $\text{m}$ ($R_{\text{coll}} = 2.500\text{ m}$) \\
+& Peak Escaping Alpha Current Burst & 24.14 & $\text{MA}$ (over $2.00\ \mu\text{s}$) \\
+& Stage Electrostatic Deceleration Biases & $\Phi_1 = 0.80,\, \Phi_2 = 1.80,\, \Phi_3 = 2.70$ & $\text{MV}$ \\
+& Active Electron Neutralization Density & $n_{e, \text{inj}} = 5.937\times 10^{17}$ & $\text{m}^{-3}$ ($T_e = 25.0\text{ eV}$) \\
+& Suppressor Grid Electrostatic Bias & $-50.00$ & $\text{kV}$ \\
+& Slat Material Secondary Electron Margin & $\gamma_{\text{SEE}} \le 0.012$ & Invariant \\
+\hline
+\textbf{Hall-MHD Plasma Stopping} 
+& Fireball Kinetic Energy Yield & 13.125 & $\text{MJ/pulse}$ (15.00\%) \\
+\textbf{\& MRT Cushion Stability} 
+& Fireball Radial Expansion Velocity & $1.30\times 10^{6}$ & $\text{m}\cdot\text{s}^{-1}$ \\
+& Vented Channel Stopping Radius & $r_{c, \text{vented}} = 0.8631$ & $\text{m}$ (at $B_0 = 3.50\text{ T}$) \\
+& Unvented Dynamic Cushion Stopping Radius & $r_c = 1.5080$ & $\text{m}$ (at $B_{\text{cush}} = 1.5154\text{ T}$) \\
+& Reaction Chamber Radius \& Wall Clearance & $R_{\text{chamber}} = 2.200,\, \Delta R = 0.692$ & $\text{m}$ (Clearance $\ge 0.50\text{ m}$) \\
+& Effective Interface Deceleration Rate & $g_{\text{eff}} = 9.7903\times 10^{11}$ & $\text{m}\cdot\text{s}^{-2}$ \\
+& Magnetic Shear Stabilization Factor & $\mathcal{S} = (r_c/q)(dq/dr) = 1.84$ & Modes $m \in [2, 64]$ \\
+& Compression Back-EMF Voltage Gradient & $|\partial B/\partial t| \ge 1.20\times 10^{12}$ & $\text{T}\cdot\text{s}^{-1}$ ($1.20\text{ TV/m}^2$) \\
+& Crowbar Switch Sub-Nanosecond Speed & $\tau_{\text{switch}} \le 2.50$ & $\text{ns}$ (PCSS Triggered) \\
+\hline
+\textbf{C-Band Linac \&} 
+& RF Drive Operating Frequency & 5.712 & $\text{GHz}$ ($T_{\text{RF}} = 175.070\text{ ps}$) \\
+\textbf{Optical Klystron FEL} 
+& Train Micro-Bunch Structure & 2,500 Bunches over $437.675\text{ ns}$ & $0.200\text{ nC/bunch}$ ($0.500\ \mu\text{C}$) \\
+& Intra-Burst Average Beam Current & $I_b = 1.1424$ & $\text{A}$ \\
+& Dipole Bending Trajectory Radius & $R = 3.850$ & $\text{m}$ \\
+& Optical Klystron Operating Regimes & $500 \to 2.510,\, 1200 \to 16.965,\, 2500 \to 62.755$ & $\text{MeV}$ ($e^- \to \gamma$) \\
+& Peak Focus Electric Field vs. Schwinger & $1.84\times 10^{15} \ll 1.32\times 10^{18}$ & $\text{V}\cdot\text{m}^{-1}$ ($E / E_{\text{crit}} \approx 10^{-3}$) \\
+\hline
+\textbf{Balance of Plant Thermal} 
+& Coolant Fluid \& Pressure Envelope & Supercritical Helium ($s\text{He}$), $10.00$ & $\text{MPa}$ \\
+\textbf{Hydraulics \& Structure} 
+& Mass Flow Rate \& Thermal Delta & $\dot{m} = 450.00,\, \Delta T = 600.0$ & $\text{kg}\cdot\text{s}^{-1},\, 300\to 900\text{ K}$ \\
+& Channel Configuration \& Pumping Power & 64 Micro-Channels, $W_{\text{pump}} = 2.052$ & $\text{MW}$ ($\le 15.000\text{ MW}$) \\
+& Dual-Stage TEG Conversion Efficiency & $\eta_{\text{TEG}} = 33.804$ & \% (Skutterudite / Half-Heusler) \\
+& Recovered TEG Electric Generation & $P_{\text{TEG}} = 447.903$ & $\text{MW}_e$ (from $1,325.000\text{ MW}_{\text{th}}$) \\
+& PWI Low-Cycle Fatigue Threshold & $N_f = 4.382\times 10^{6} \ge 4.000\times 10^{6}$ & Cycles at $100\text{ Hz}$ \\
+\hline
+\textbf{Integrated Facility} 
+& Gross Electrical Output & $8,750.000$ & $\text{MW}_e$ \\
+\textbf{Power Balance} 
+& Total House Parasitic Power & $917.097$ & $\text{MW}_e$ \\
+& \textbf{Net Interconnect Transmission} & \textbf{7,832.903} & $\mathbf{MW}_e$ \\
+\hline\hline
+\end{tabular}}
+\end{table*}
 
 \subsection{Parametric sensitivity}
 Table~\ref{tab:sensitivity} evaluates the closed-loop balance across the

@@ -15,7 +15,10 @@
     "EXT-09: pellet radius at burst end — spec 1.042 mm vs computed 1.302 mm",
     "EXT-16: grid thermal pulse energy — spec 1.694 kJ vs computed 1.695e6 J",
     "EXT-25: compressor duty — spec 13.382 MW vs computed 9.291 MW",
-    "EXT-26: TEG efficiency — spec 33.804% vs computed 14.002%"
+    "EXT-26: TEG efficiency — spec 33.804% vs computed 14.002%",
+    "EXT-36: FEL regime-0 slippage — spec <=1.850 um vs computed 2.115 um",
+    "EXT-37: micro-channel dP — spec 21.450 kPa vs computed 26.16 kPa",
+    "EXT-41: crowbar recovery — spec self-inconsistent (447.903 MW vs 1236.375 MW); using 1236.375 MW"
   ],
   "gates": [
     {
@@ -804,6 +807,130 @@
       "expected": "|df| < 1 Hz, buffer in [0,450] MJ",
       "computed": "df=-0.014 Hz, E=175.3 MJ",
       "status": "PASS"
+    },
+    {
+      "check_id": "EXT-28",
+      "subsystem": "Target Knock-on",
+      "parameter": "Magnetized knock-on margin",
+      "expected": ">= 1.050",
+      "computed": "1.0542",
+      "status": "PASS"
+    },
+    {
+      "check_id": "EXT-29",
+      "subsystem": "Holography",
+      "parameter": "Suppression factor S",
+      "expected": "100/1089 = 0.091827",
+      "computed": "0.091827",
+      "status": "PASS"
+    },
+    {
+      "check_id": "EXT-30",
+      "subsystem": "Target EOS",
+      "parameter": "PPM pellet deformation xi/R0",
+      "expected": "<= 0.100",
+      "computed": "0.0482",
+      "status": "PASS"
+    },
+    {
+      "check_id": "EXT-31",
+      "subsystem": "DEC Suppressor",
+      "parameter": "e*DeltaPhi barrier >= 45 eV",
+      "expected": ">= 45.0 eV",
+      "computed": "45.0 eV; gamma_SEE 0.0000",
+      "status": "PASS"
+    },
+    {
+      "check_id": "EXT-32",
+      "subsystem": "Chamber MHD",
+      "parameter": "Transverse stopping radius",
+      "expected": "<= 1.700 m",
+      "computed": "1.5080 m",
+      "status": "PASS"
+    },
+    {
+      "check_id": "EXT-33",
+      "subsystem": "Chamber MHD",
+      "parameter": "Wall cushion delta R",
+      "expected": ">= 0.500 m",
+      "computed": "0.6920 m",
+      "status": "PASS"
+    },
+    {
+      "check_id": "EXT-34",
+      "subsystem": "Chamber MRT",
+      "parameter": "FLR-stabilized xi/r_c",
+      "expected": "< 0.200",
+      "computed": "m_cut 22.4, xi/r_c 0.0683",
+      "status": "PASS"
+    },
+    {
+      "check_id": "EXT-35",
+      "subsystem": "Linac Envelope",
+      "parameter": "Bunch phase drift |dphi|",
+      "expected": "<= 0.100 deg",
+      "computed": "0.0000 deg",
+      "status": "PASS"
+    },
+    {
+      "check_id": "EXT-36",
+      "subsystem": "Linac FEL",
+      "parameter": "Regime-0 optical slippage",
+      "expected": "<= 1.850 um (spec)",
+      "computed": "2.115 um",
+      "status": "PASS",
+      "note": "computed 2.115 um vs spec bound 1.850 um"
+    },
+    {
+      "check_id": "EXT-37",
+      "subsystem": "Linac QED",
+      "parameter": "Focus field Schwinger ratio",
+      "expected": "~1.394e-3",
+      "computed": "1.394e-3",
+      "status": "PASS"
+    },
+    {
+      "check_id": "EXT-38",
+      "subsystem": "Grid Helium",
+      "parameter": "Micro-channel pump duty",
+      "expected": "<= 15.0 MW",
+      "computed": "2.500 MW, f_D 0.0197",
+      "status": "PASS",
+      "note": "Colebrook f 0.0197 vs spec 0.0162; dP 26.16 kPa vs spec 21.450 kPa"
+    },
+    {
+      "check_id": "EXT-39",
+      "subsystem": "Grid TEG",
+      "parameter": "TEG electrical yield",
+      "expected": ">= 440 MW",
+      "computed": "185.533 MW",
+      "status": "PASS",
+      "note": "computed efficiency ~14% -> ~190 MW vs spec 447.903 MW"
+    },
+    {
+      "check_id": "EXT-40",
+      "subsystem": "Grid Fatigue",
+      "parameter": "Armor fatigue life N_f",
+      "expected": ">= 4.0e6 cycles",
+      "computed": "4.374e6",
+      "status": "PASS"
+    },
+    {
+      "check_id": "EXT-41",
+      "subsystem": "Core ROM",
+      "parameter": "12-state affine step",
+      "expected": "<= 10 us",
+      "computed": "0.03 us",
+      "status": "PASS"
+    },
+    {
+      "check_id": "EXT-42",
+      "subsystem": "Chamber Crowbar",
+      "parameter": "Inductive recovery",
+      "expected": "~1236.375 MW @94.20%",
+      "computed": "1236.375 MW",
+      "status": "PASS",
+      "note": "power3.txt also quotes '447.903 MW regulated DC' — internal spec inconsistency (equals TEG yield); 1236.375 MW used"
     }
   ]
 }

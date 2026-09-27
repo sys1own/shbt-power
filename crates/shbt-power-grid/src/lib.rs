@@ -10,6 +10,7 @@
 pub mod helium_network;
 pub mod interconnect;
 pub mod teg_nodal;
+pub mod fatigue;
 
 use shbt_power_core::constants::*;
 use shbt_power_core::{PhysicsSubsystem, PlantStateSnapshot};

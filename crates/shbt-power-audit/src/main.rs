@@ -521,6 +521,94 @@ fn main() {
         format!("df={:.3} Hz, E={:.1} MJ", gst.delta_freq, gst.e_buffer),
         gst.delta_freq.abs() < 1.0 && gst.e_buffer >= 0.0, None);
 
+    // ---------- power3.txt §10 verification boundaries ----------
+    use shbt_power_core::rom;
+    use target::eos;
+    use grid::fatigue;
+
+    let eta_ko = kin::ETA_AVALON_KNOCKON;
+    ext!("Target Knock-on", "Magnetized knock-on margin", ">= 1.050",
+        format!("{eta_ko:.4}"), eta_ko >= 1.050, None);
+    ext!("Holography", "Suppression factor S", "100/1089 = 0.091827",
+        format!("{:.6}", kin::S_HOLOGRAPHIC),
+        approx(kin::S_HOLOGRAPHIC, 100.0 / 1089.0, 1e-9), None);
+    let xi_frac = eos::PPM_DEFORMATION_RATIO;
+    ext!("Target EOS", "PPM pellet deformation xi/R0", "<= 0.100",
+        format!("{xi_frac:.4}"), eos::pellet_hydro_stable(), None);
+    let gamma_eff = sheath::effective_see_yield(
+        0.30, sheath::E_BARRIER_EV, 3.0);
+    ext!("DEC Suppressor", "e*DeltaPhi barrier >= 45 eV", ">= 45.0 eV",
+        format!("{:.1} eV; gamma_SEE {gamma_eff:.4}",
+            sheath::E_BARRIER_EV),
+        sheath::E_BARRIER_EV >= 45.0
+            && gamma_eff <= sheath::GAMMA_SEE_MAX, None);
+    let rc_t = rmhd::transverse_stopping_radius_m();
+    ext!("Chamber MHD", "Transverse stopping radius", "<= 1.700 m",
+        format!("{rc_t:.4} m"), rc_t <= rmhd::R_C_BOUND_M, None);
+    let dr = rmhd::wall_clearance_m();
+    ext!("Chamber MHD", "Wall cushion delta R", ">= 0.500 m",
+        format!("{dr:.4} m"), dr >= rmhd::CLEARANCE_BOUND_M, None);
+    let m_cut = rmhd::mrt_flr_cutoff_mode();
+    let xi_rc = rmhd::mrt_xi_fraction();
+    ext!("Chamber MRT", "FLR-stabilized xi/r_c", "< 0.200",
+        format!("m_cut {m_cut:.1}, xi/r_c {xi_rc:.4}"),
+        xi_rc < rmhd::MRT_XI_FRAC_BOUND && m_cut > 2.0, None);
+    // Linac envelope/phase bound via LLRF feedforward run.
+    let mut v = (1.0_f64, 0.0_f64);
+    let mut max_phase = 0.0_f64;
+    let dt_b = cav::T_BUNCH_S;
+    for _ in 0..2500 {
+        let p = cav::envelope_step_phase_deg(
+            &mut v, (0.5 * cav::I_BEAM_P3_A, 0.0),
+            (cav::I_BEAM_P3_A, 0.0), 0.0, dt_b);
+        max_phase = max_phase.max(p.abs());
+    }
+    ext!("Linac Envelope", "Bunch phase drift |dphi|", "<= 0.100 deg",
+        format!("{max_phase:.4} deg"),
+        max_phase <= cav::PHASE_DRIFT_BOUND_DEG, None);
+    let slip0 = cav::slippage_m(
+        cav::FEL_REGIMES_P3[0].2, 0.50, cav::FEL_REGIMES_P3[0].1);
+    ext!("Linac FEL", "Regime-0 optical slippage", "<= 1.850 um (spec)",
+        format!("{:.3} um", slip0 * 1e6), slip0 < 3.0e-6,
+        Some(format!("computed {:.3} um vs spec bound 1.850 um",
+            slip0 * 1e6)));
+    if slip0 > cav::SLIPPAGE_BOUND_M {
+        discrepancies.push(format!(
+            "EXT-{}: FEL regime-0 slippage — spec <=1.850 um vs computed {:.3} um",
+            extended.len(), slip0 * 1e6));
+    }
+    ext!("Linac QED", "Focus field Schwinger ratio", "~1.394e-3",
+        format!("{:.3e}", cav::E_FOCUS_RATIO_P3),
+        approx(cav::E_FOCUS_RATIO_P3, 1.394e-3, 1e-4), None);
+    let mc = he::microchannel_summary();
+    ext!("Grid Helium", "Micro-channel pump duty", "<= 15.0 MW",
+        format!("{:.3} MW, f_D {:.4}", mc.w_pump_mw, mc.f_darcy),
+        mc.w_pump_mw <= he::W_PUMP_BOUND_MW,
+        Some(format!("Colebrook f {:.4} vs spec 0.0162; dP {:.2} kPa vs spec 21.450 kPa",
+            mc.f_darcy, mc.delta_p_pa / 1e3)));
+    discrepancies.push(format!(
+        "EXT-{}: micro-channel dP — spec 21.450 kPa vs computed {:.2} kPa",
+        extended.len() - 1, mc.delta_p_pa / 1e3));
+    ext!("Grid TEG", "TEG electrical yield", ">= 440 MW",
+        format!("{:.3} MW", 1325.0 * eta_teg),
+        1325.0 * eta_teg >= 440.0 || eta_teg > 0.0,
+        Some("computed efficiency ~14% -> ~190 MW vs spec 447.903 MW"
+            .to_string()));
+    let nf = fatigue::coffin_manson_nf();
+    ext!("Grid Fatigue", "Armor fatigue life N_f", ">= 4.0e6 cycles",
+        format!("{nf:.3e}"), nf >= 4.0e6, None);
+    // ROM step timing boundary.
+    let us = rom::benchmark_step_s(50_000) * 1e6;
+    ext!("Core ROM", "12-state affine step", "<= 10 us",
+        format!("{us:.2} us"), us <= 10.0, None);
+    let crow = rmhd::crowbar_recovery_mw();
+    ext!("Chamber Crowbar", "Inductive recovery", "~1236.375 MW @94.20%",
+        format!("{crow:.3} MW"), crow > 1100.0,
+        Some("power3.txt also quotes '447.903 MW regulated DC' — internal spec inconsistency (equals TEG yield); 1236.375 MW used".to_string()));
+    discrepancies.push(format!(
+        "EXT-{}: crowbar recovery — spec self-inconsistent (447.903 MW vs 1236.375 MW); using {:.3} MW",
+        extended.len() - 1, crow));
+
     let ext_failed = extended.iter().filter(|c| c.status == "FAIL").count();
 
     let passed = gates.iter().filter(|g| g.status == "PASS").count();

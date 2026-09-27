@@ -3,6 +3,7 @@
 //! minimum-jerk trajectory profile (paper/main.tex §5E, paper/supplementary.tex §9).
 
 pub mod kinetics;
+pub mod eos;
 
 use shbt_power_core::constants::*;
 use shbt_power_core::{PhysicsSubsystem, PlantStateSnapshot};
