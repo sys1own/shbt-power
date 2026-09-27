@@ -188,6 +188,17 @@ fn shbt_power_chamber_stub(_d: &DecSubsystem) -> f64 {
     P_FUSION_MW * FRAC_MHD * ETA_MHD
 }
 
+
+// ---------------------------------------------------------------------------
+// power6: per-stage impedance matrix fed by the 2D PIC sheath workbench
+// (shbt-power-solvers::dec_pic).
+// ---------------------------------------------------------------------------
+
+/// Venetian-blind stage impedances [ohm] = V_stage / J_design_stage.
+pub fn dec_stage_impedance_matrix_ohm() -> [f64; 3] {
+    shbt_power_solvers::dec_pic::stage_impedances_ohm()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

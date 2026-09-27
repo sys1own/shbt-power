@@ -36,6 +36,7 @@ members = [
     "crates/shbt-power-holography",
     "crates/shbt-power-telemetry",
     "crates/shbt-power-audit",
+    "crates/shbt-power-solvers",
     "bindings/shbt-power-py",
 ]
 

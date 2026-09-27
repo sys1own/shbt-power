@@ -1,0 +1,25 @@
+\section{Multi-Channel Breit--Wigner Ladder, Solbrig Kernel, and
+Stewart--Pyatt Continuum Lowering}
+The power6 solver advances five $^{12}\mathrm{C}^*$ compound levels
+($E_x = 2.124$, $4.439$, $8.921$, $16.106$, $16.570$~MeV) with radiative
+and alpha partial widths, broadened by the Solbrig transmission kernel
+\begin{equation}
+\resizebox{\columnwidth}{!}{$\displaystyle
+\sigma_{\text{eff}}(E,T) = \frac{1}{\Delta\sqrt{\pi}}
+\int_0^\infty \sigma(E')\frac{\sqrt{E'}}{\sqrt{E}}
+\left[e^{-(\sqrt{E'}-\sqrt{E})^2/\Delta^2}
+- e^{-(\sqrt{E'}+\sqrt{E})^2/\Delta^2}\right]dE'
+$}
+\end{equation}
+with $\Delta(E,T_{\text{eff}}) = \sqrt{4m_aEk_BT_{\text{eff}}/(m_a+m_T)}$
+and the Debye-spectrum effective temperature $T_{\text{eff}}(0) =
+\tfrac{3}{8}\Theta_D = 69.375$~K for $\Theta_D = 185$~K decaborane.
+Stewart--Pyatt continuum lowering
+\begin{equation}
+\resizebox{\columnwidth}{!}{$\displaystyle
+\Delta I_z = \frac{(z+1)e^2}{4\pi\epsilon_0 a_i^*}
+\left[\tfrac{3}{2}\frac{(1+(a_i^*/\lambda_D)^3)^{2/3}-1}
+{(a_i^*/\lambda_D)^3}\right]
+$}
+\end{equation}
+pressure-ionizes the solid prior to thermal heating.

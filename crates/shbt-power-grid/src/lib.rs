@@ -227,6 +227,23 @@ impl PhysicsSubsystem for GridSubsystem {
     }
 }
 
+
+// ---------------------------------------------------------------------------
+// power6: supercritical-helium CHT hydraulic surrogate
+// (shbt-power-solvers::thermal_fea::cht_surrogate) — Churchill friction
+// factor, core Delta p and circulator pumping power.
+// ---------------------------------------------------------------------------
+pub use shbt_power_solvers::thermal_fea::cht_surrogate::{
+    ChtSurrogateSolver, MicroChannelConfig,
+};
+
+/// Evaluates (Delta p [Pa], W_pump [W]) for the nominal 450 kg/s, 10 MPa
+/// sHe loop; spec targets: Delta p = 0.282 MPa, W_pump = 14.22 MW <= 15 MW.
+#[inline]
+pub fn she_loop_hydraulics_p6(cfg: MicroChannelConfig, m_dot: f64, rho: f64, mu: f64, eta: f64) -> (f64, f64) {
+    ChtSurrogateSolver::new(cfg).evaluate_hydraulics(m_dot, rho, mu, eta)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

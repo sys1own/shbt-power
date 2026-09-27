@@ -1,0 +1,13 @@
+\section{Expander Vector Potentials and Boris-PIC Poisson Formulation}
+The $(r,z)$ PIC advance applies the relativistic Boris pusher with
+Strang splitting: half-kick by $\mathbf{E}$, rotation in $\mathbf{B}$,
+half-kick by $\mathbf{E}$, preserving phase-space volume over the
+$8.0$~m trumpet expansion ($5.0 \to 0.05$~T).  The electrostatic sheath
+potential is resolved by an $O(N)$ multigrid solve of
+$\nabla^2\Phi = -(n_\alpha z_\alpha - n_e)e/\epsilon_0$ subject to the
+three Venetian-blind Dirichlet rails ($0.8$, $1.8$, $2.7$~MV) and the
+$-50$~kV suppressor saddle ($e\Delta\Phi \ge 20$~keV).  Thermionic
+injection $n_{e,\text{inj}} = 5.937\times10^{17}$~m$^{-3}$ clamps
+$J_{\text{eff}} \approx 308~\text{A/m}^2 < J_{\text{CL}} =
+579.59~\text{A/m}^2$, and Sternglass--Joy slat secondaries are
+reflected upstream by the saddle point.

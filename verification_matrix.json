@@ -21,7 +21,8 @@
     "EXT-41: crowbar recovery — spec self-inconsistent (447.903 MW vs 1236.375 MW); using 1236.375 MW",
     "EXT-47: CL stage table — spec J_design 4.5/15.2/28.0 A/m^2 vs computed ceilings 226/762/1400 A/m^2",
     "EXT-52: HOM choke — spec tau_d<5.5 ns at Q_ext<=100 vs computed 5.573 ns at Q=100 (requires Q_ext <= 98.7)",
-    "EXT-63: sHe core DeltaP — spec 283.4 kPa vs computed 189934.6 MPa for 64x5.35mm channels at 850.51 kg/s"
+    "EXT-63: sHe core DeltaP — spec 283.4 kPa vs computed 189934.6 MPa for 64x5.35mm channels at 850.51 kg/s",
+    "EXT-80: sHe loop geometry — spec table implies ~4.4e5 channels across cold plate + slat array; per-leg pumping rows inconsistent with the 14.22 MW total"
   ],
   "gates": [
     {
@@ -1162,6 +1163,111 @@
       "parameter": "P5-EXT-12 EOS/BFP/PPM interfaces",
       "expected": "solid w>1 branch, b_max>0, CFL <= 0.8",
       "computed": "trait objects constructed + bounds evaluated",
+      "status": "PASS"
+    },
+    {
+      "check_id": "EXT-71",
+      "subsystem": "Target Surrogate",
+      "parameter": "P6-EXT-01 f_burn + eta_avalon design point",
+      "expected": "f_burn >= 0.3501, eta_avalon >= 1.05",
+      "computed": "f_burn 0.3501, eta 1.1088, peak 4.224 MeV",
+      "status": "PASS"
+    },
+    {
+      "check_id": "EXT-72",
+      "subsystem": "Target Nuclear",
+      "parameter": "P6-EXT-02 Solbrig kernel + BW ladder",
+      "expected": "T_eff(0) = 69.375 K, sigma(672 keV) finite > 0",
+      "computed": "T_eff0 69.375 K, sigma 9.264e-29",
+      "status": "PASS"
+    },
+    {
+      "check_id": "EXT-73",
+      "subsystem": "Linac HOM",
+      "parameter": "P6-EXT-03 SiC dipole damping tau_d",
+      "expected": "~= 7.48 ns (~42.7 buckets)",
+      "computed": "7.479 ns = 42.7 buckets",
+      "status": "PASS"
+    },
+    {
+      "check_id": "EXT-74",
+      "subsystem": "Linac BBU",
+      "parameter": "P6-EXT-04 2500-bunch centroid bound",
+      "expected": "Delta x_c <= 10.0 um",
+      "computed": "max |x| = 0.88 um",
+      "status": "PASS"
+    },
+    {
+      "check_id": "EXT-75",
+      "subsystem": "Linac Wakefield",
+      "parameter": "P6-EXT-05 reduced wake quality gates",
+      "expected": "GATE-11/12/13 all Passed",
+      "computed": "Passed",
+      "status": "PASS"
+    },
+    {
+      "check_id": "EXT-76",
+      "subsystem": "DEC PIC",
+      "parameter": "P6-EXT-06 expander beam + suppressor + CL margins",
+      "expected": "D = 5.000 m, saddle ok, J < J_CL",
+      "computed": "D 5.000 m, Z = [177777.77777777778, 118421.05263157895, 96428.57142857143] ohm",
+      "status": "PASS"
+    },
+    {
+      "check_id": "EXT-77",
+      "subsystem": "Chamber GLM-MHD",
+      "parameter": "P6-EXT-07 3D stagnation radius + cushion",
+      "expected": "r_c = 1.508 m, cushion >= 0.50 m",
+      "computed": "r_c 1.5080 m, cushion 0.692 m",
+      "status": "PASS"
+    },
+    {
+      "check_id": "EXT-78",
+      "subsystem": "Chamber MRT",
+      "parameter": "P6-EXT-08 flute saturation m=2..64",
+      "expected": "h_spike <= 0.180 m",
+      "computed": "max h_spike 0.0956 m",
+      "status": "PASS"
+    },
+    {
+      "check_id": "EXT-79",
+      "subsystem": "Chamber Crowbar",
+      "parameter": "P6-EXT-09 94.20% SiC crowbar DC yield",
+      "expected": "~= 1,181.25 MW",
+      "computed": "1181.25 MW",
+      "status": "PASS"
+    },
+    {
+      "check_id": "EXT-80",
+      "subsystem": "Thermal FEA",
+      "parameter": "P6-EXT-10 diamond N_f + shielded W erosion",
+      "expected": "N_f ~= 9.85e13, erosion ~= 0.0118 mm/yr",
+      "computed": "N_f 9.837e13, erosion 0.0118 mm/yr",
+      "status": "PASS"
+    },
+    {
+      "check_id": "EXT-81",
+      "subsystem": "Grid CHT",
+      "parameter": "P6-EXT-11 Churchill sHe loop Delta p + W_pump",
+      "expected": "Delta p ~= 0.282 MPa, W_pump <= 15 MW",
+      "computed": "Delta p 0.292 MPa, W 14.74 MW",
+      "status": "PASS",
+      "note": "reproducing the spec Delta p = 0.282 MPa table requires ~4.4e5 micro-channels; per-leg W_pump rows (9.32/4.90 MW) are not consistent with W = m_dot*Dp/(rho*eta) = 14.22 MW"
+    },
+    {
+      "check_id": "EXT-82",
+      "subsystem": "Telemetry GUM",
+      "parameter": "P6-EXT-12 covariance budget u_c / U95",
+      "expected": "u_c = 3.923 MW, U = 7.846 MW",
+      "computed": "P 1309.990 MW, u_c 3.9233 MW, U 7.847 MW",
+      "status": "PASS"
+    },
+    {
+      "check_id": "EXT-83",
+      "subsystem": "Telemetry Calibration",
+      "parameter": "P6-EXT-13 ADC transfers + SECDED encoder",
+      "expected": "transfer fns in-range, check byte populated",
+      "computed": "encoded check byte 0xbb",
       "status": "PASS"
     }
   ]
