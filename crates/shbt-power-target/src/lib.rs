@@ -2,6 +2,8 @@
 //! and 100 Hz electromagnetic injection kinematics with a fifth-order
 //! minimum-jerk trajectory profile (paper/main.tex §5E, paper/supplementary.tex §9).
 
+pub mod kinetics;
+
 use shbt_power_core::constants::*;
 use shbt_power_core::{PhysicsSubsystem, PlantStateSnapshot};
 

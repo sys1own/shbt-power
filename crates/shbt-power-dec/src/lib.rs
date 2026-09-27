@@ -3,6 +3,8 @@
 //! three-stage Venetian-blind electrostatic collection, and WBG panels
 //! (paper/main.tex §5, paper/supplementary.tex §6).
 
+pub mod sheath;
+
 use shbt_power_core::constants::*;
 use shbt_power_core::{PhysicsSubsystem, PlantStateSnapshot};
 

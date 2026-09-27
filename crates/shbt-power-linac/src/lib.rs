@@ -6,6 +6,8 @@
 //! integrates intra-train transient beam loading, and evaluates the
 //! three-regime FEL Doppler equation for E_gamma in [2.510, 16.965] MeV.
 
+pub mod cavity_dynamics;
+
 use shbt_power_core::constants::*;
 use shbt_power_core::{PhysicsSubsystem, PlantStateSnapshot};
 

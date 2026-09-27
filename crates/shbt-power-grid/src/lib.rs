@@ -5,6 +5,10 @@
 //! LANR ledger transferred from `sys1own/shbt-cf`/`sys1own/shbt-sglt`
 //! (`module_ledger.rs`): 555.03 W net per module -> 999.054 kW array.
 
+pub mod helium_network;
+pub mod interconnect;
+pub mod teg_nodal;
+
 use shbt_power_core::constants::*;
 use shbt_power_core::{PhysicsSubsystem, PlantStateSnapshot};
 
