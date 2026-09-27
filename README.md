@@ -49,47 +49,47 @@ Net wall-plug efficiency **89.519%**; engineering gain
 ```
                           SHBT-Graser Plant Signal & Energy Flow
  ────────────────────────────────────────────────────────────────────────────
-                        ┌──────────────────────────┐
+                        ┌───────────────────────────┐
    LANR Starter Grid    │  450 MJ Supercapacitor    │      ±800 kV HVDC
    (shbt-cf, 1,800 ×    │  Buffer + Synthetic       │────► Grid Export Bus
     555.03 W = 999 kW)─►│  Inertia (4–5% droop)     │      7,832.903 MW net
                         └───────┬──────────▲────────┘            ▲
                                 │ 125 MW   │ 7,972.903 MW gross │
                                 ▼          │                    │
-   Electromagnetic Railgun   ┌─────────────┴───┐   ┌────────────┴─────────┐
+   Electromagnetic Railgun   ┌─────────────┴────┐   ┌────────────┴─────────┐
    (250 m/s, min-jerk,       │ 5.712 GHz C-Band │   │  DEC + TEG Returns   │
     ≤50 µm jitter)           │ Linac → Optical  │   │  6,125 + 1,181.25    │
         │                    │ Klystron Graser  │   │  + 218.75 + 447.903  │
         ▼  B₁₀H₁₄ pellet     │ (25 MW optical)  │   └──────────▲───────────┘
-   ┌─────────┐  3.708 mg     └───────┬─────────┘              │
-   │ Injector│───────────────────────▼                        │
-   └─────────┘            ┌────────────────────┐              │
-                          │ Reaction Chamber   │              │
-                          │ p+¹¹B → 3α + 8.68  │              │
-                          │ MeV, 35.0% burn    │              │
-                          └────┬───┬───┬───────┘              │
-              80% α 7,000 MW   │   │   │  15% MHD 1,312.5 MW  │
+   ┌─────────┐  3.708 mg     └───────┬──────────┘              │
+   │ Injector│───────────────────────▼                         │
+   └─────────┘            ┌────────────────────┐               │
+                          │ Reaction Chamber   │               │
+                          │ p+¹¹B → 3α + 8.68  │               │
+                          │ MeV, 35.0% burn    │               │
+                          └────┬───┬───┬───────┘               │
+              80% α 7,000 MW   │   │   │  15% MHD 1,312.5 MW   │
               ┌────────────────▼   │   ▼                       │
-              │  100:1 Expander    │  ┌──────────────┐        │
-              │  (5.0→0.05 T,      │  │ HTS Pickup   │        │
-              │   D=5.000 m)       │  │ Coils η=90%  │────────┤
-              ▼                    │  └──────────────┘        │
-   ┌─────────────────────┐         │                          │
-   │ 3-Stage Venetian DEC│         │  5% radiant 437.5 MW     │
-   │ 0.8/1.8/2.7 MV,     │         │  ┌──────────────┐        │
-   │ thermionic sheath,  │─────────┼─►│ WBG Radiovolt│────────┤
-   │ −50 kV suppressor   │         │  │ η=50%        │        │
-   └─────────────────────┘         │  └──────────────┘        │
-                                   │                          │
-                   residual heat   │  ┌──────────────────┐    │
+              │  100:1 Expander    │  ┌──────────────┐         │
+              │  (5.0→0.05 T,      │  │ HTS Pickup   │         │
+              │   D=5.000 m)       │  │ Coils η=90%  │─────────┤
+              ▼                    │  └──────────────┘         │
+   ┌─────────────────────┐         │                           │
+   │ 3-Stage Venetian DEC│         │  5% radiant 437.5 MW      │
+   │ 0.8/1.8/2.7 MV,     │         │  ┌──────────────┐         │
+   │ thermionic sheath,  │─────────┼─►│ WBG Radiovolt│─────────┤
+   │ −50 kV suppressor   │         │  │ η=50%        │         │
+   └─────────────────────┘         │  └──────────────┘         │
+                                   │                           │
+                   residual heat   │  ┌───────────────────┐    │
                    1,325 MW        └─►│ He Loop 10 MPa    │    │
                                       │ 450 kg/s 300→900K │    │
                                       │ → CoSb₃/ZrNiSn TEG│────┘
-                                      └──────────────────┘
+                                      └───────────────────┘
               ┌────────────────────────────────────────────┐
-              │ shbt-os C11 kernel: 128 B MMIO @0x70000000, │
-              │ SECDED ECC, CRC-32C, PCSS crowbar <2.5 ns,  │
-              │ ADM 3+1 metric stabilizer |det g+1|≤1e-12   │
+              │ shbt-os C11 kernel: 128 B MMIO @0x70000000,│
+              │ SECDED ECC, CRC-32C, PCSS crowbar <2.5 ns, │
+              │ ADM 3+1 metric stabilizer |det g+1|≤1e-12  │
               └────────────────────────────────────────────┘
 ```
 
