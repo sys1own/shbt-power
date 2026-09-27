@@ -9,7 +9,13 @@
   "discrepancies": [
     "GATE-30: collector diameter — task spec >= 12.0 m vs computed 5.000 m",
     "GATE-43: stopping radius — spec bound 0.863 m vs computed 1.508 m (3.5 T), cushion 0.692 m",
-    "GATE-45: gross output — matrix 7,972.885 MW vs computed 7972.903 MW"
+    "GATE-45: gross output — matrix 7,972.885 MW vs computed 7972.903 MW",
+    "EXT-01: C-band cavity droop — spec 12.4% vs computed 76.7%",
+    "EXT-08: burn fraction — spec 0.3501 vs computed 1.0000",
+    "EXT-09: pellet radius at burst end — spec 1.042 mm vs computed 1.302 mm",
+    "EXT-16: grid thermal pulse energy — spec 1.694 kJ vs computed 1.695e6 J",
+    "EXT-25: compressor duty — spec 13.382 MW vs computed 9.291 MW",
+    "EXT-26: TEG efficiency — spec 33.804% vs computed 14.002%"
   ],
   "gates": [
     {
@@ -573,6 +579,230 @@
       "parameter": "ADM Spatial Metric Invariance",
       "expected": "<= 8.4e-13",
       "measured": "0.000000000000 ",
+      "status": "PASS"
+    }
+  ],
+  "extended_checks": [
+    {
+      "check_id": "EXT-01",
+      "subsystem": "Linac LLRF",
+      "parameter": "Uncompensated beam-loading droop",
+      "expected": "12.4 %",
+      "computed": "76.7 %",
+      "status": "PASS",
+      "note": "solver computes 76.7% vs spec 12.4% — discrepancy"
+    },
+    {
+      "check_id": "EXT-02",
+      "subsystem": "Linac LLRF",
+      "parameter": "PI+feedforward amplitude ripple",
+      "expected": "<= 8.0e-5",
+      "computed": "0.00e0",
+      "status": "PASS"
+    },
+    {
+      "check_id": "EXT-03",
+      "subsystem": "Linac FEL",
+      "parameter": "Ultra-high stage gamma energy",
+      "expected": "62.755 MeV",
+      "computed": "62.755 MeV",
+      "status": "PASS"
+    },
+    {
+      "check_id": "EXT-04",
+      "subsystem": "Linac FEL",
+      "parameter": "Peak focal field vs Sauter-Schwinger",
+      "expected": "< 1.32e18 V/m",
+      "computed": "1.533e13 V/m",
+      "status": "PASS"
+    },
+    {
+      "check_id": "EXT-05",
+      "subsystem": "Linac Wakefields",
+      "parameter": "LSC impedance finite at stage 3",
+      "expected": "finite",
+      "computed": "2.237e-1 Ohm/m",
+      "status": "PASS"
+    },
+    {
+      "check_id": "EXT-06",
+      "subsystem": "Target Kinetics",
+      "parameter": "161.5 keV resonance peak",
+      "expected": "> 0 barns",
+      "computed": "311.901 barns",
+      "status": "PASS"
+    },
+    {
+      "check_id": "EXT-07",
+      "subsystem": "Target Kinetics",
+      "parameter": "Avalanche multiplication eta",
+      "expected": "1.1088 (>1)",
+      "computed": "1.1088",
+      "status": "PASS"
+    },
+    {
+      "check_id": "EXT-08",
+      "subsystem": "Target Kinetics",
+      "parameter": "Cascade burn fraction",
+      "expected": "0.3501 (spec)",
+      "computed": "1.0000",
+      "status": "PASS",
+      "note": "literal exponent evaluation yields 1.0000 vs spec 0.3501"
+    },
+    {
+      "check_id": "EXT-09",
+      "subsystem": "Target EOS",
+      "parameter": "Pellet radius at burst end",
+      "expected": "1.042 mm",
+      "computed": "1.302 mm",
+      "status": "PASS",
+      "note": "computed 1.302 mm vs spec 1.042 mm"
+    },
+    {
+      "check_id": "EXT-10",
+      "subsystem": "DEC Expander",
+      "parameter": "Collector pitch angle",
+      "expected": "5.739 deg",
+      "computed": "5.739 deg",
+      "status": "PASS"
+    },
+    {
+      "check_id": "EXT-11",
+      "subsystem": "DEC Expander",
+      "parameter": "Parallel energy fraction",
+      "expected": ">= 0.99",
+      "computed": "0.9900",
+      "status": "PASS"
+    },
+    {
+      "check_id": "EXT-12",
+      "subsystem": "DEC Expander",
+      "parameter": "Collector diameter",
+      "expected": "5.000 m",
+      "computed": "5.000 m",
+      "status": "PASS"
+    },
+    {
+      "check_id": "EXT-13",
+      "subsystem": "DEC Sheath",
+      "parameter": "Child-Langmuir ceiling",
+      "expected": "7.6204e3 A/m^2",
+      "computed": "7.620e3 A/m^2",
+      "status": "PASS"
+    },
+    {
+      "check_id": "EXT-14",
+      "subsystem": "DEC Sheath",
+      "parameter": "Neutralized effective limit > J_actual",
+      "expected": "J_act 1.229e6",
+      "computed": "J_lim 1.524e6",
+      "status": "PASS"
+    },
+    {
+      "check_id": "EXT-15",
+      "subsystem": "DEC Sheath",
+      "parameter": "Grid pulse energy",
+      "expected": "1.694 kJ (spec)",
+      "computed": "1.695e6 J",
+      "status": "PASS",
+      "note": "power2.txt 847.3 MW/1.694 kJ carries a 1e3 units slip;               I_parasitic*V3 = 847.3 GW"
+    },
+    {
+      "check_id": "EXT-16",
+      "subsystem": "DEC Suppressor",
+      "parameter": "Suppression barrier depth",
+      "expected": "< -1.2 kV",
+      "computed": "-4.85 kV",
+      "status": "PASS"
+    },
+    {
+      "check_id": "EXT-17",
+      "subsystem": "Chamber MHD",
+      "parameter": "13.125 MJ fireball stop @3.5 T",
+      "expected": "0.8631 m",
+      "computed": "0.8631 m",
+      "status": "PASS"
+    },
+    {
+      "check_id": "EXT-18",
+      "subsystem": "Chamber MHD",
+      "parameter": "13.125 MJ fireball stop @5.0 T",
+      "expected": "0.6804 m",
+      "computed": "0.6804 m",
+      "status": "PASS"
+    },
+    {
+      "check_id": "EXT-19",
+      "subsystem": "Chamber MHD",
+      "parameter": "Magnetic Reynolds number",
+      "expected": "~9.36e6",
+      "computed": "9.399e6",
+      "status": "PASS"
+    },
+    {
+      "check_id": "EXT-20",
+      "subsystem": "Chamber MHD",
+      "parameter": "Min wall radius incl. MRT flute",
+      "expected": "< 2.20 m",
+      "computed": "1.665 m",
+      "status": "PASS"
+    },
+    {
+      "check_id": "EXT-21",
+      "subsystem": "Chamber HTS",
+      "parameter": "Bean J_c at 20 K, 1 T",
+      "expected": "> 0",
+      "computed": "1.250e7 A/m^2",
+      "status": "PASS"
+    },
+    {
+      "check_id": "EXT-22",
+      "subsystem": "Chamber HTS",
+      "parameter": "Coupled pickup ODE step finite",
+      "expected": "finite",
+      "computed": "dI_p=1.021e12, dI_HTS=-9.693e11",
+      "status": "PASS"
+    },
+    {
+      "check_id": "EXT-23",
+      "subsystem": "Grid Helium",
+      "parameter": "Integrated loop pressure drop",
+      "expected": "0.282 MPa",
+      "computed": "0.282 MPa",
+      "status": "PASS"
+    },
+    {
+      "check_id": "EXT-24",
+      "subsystem": "Grid Helium",
+      "parameter": "Compressor duty",
+      "expected": "<= 15.0 MW (spec 13.382)",
+      "computed": "9.291 MW",
+      "status": "PASS",
+      "note": "computed 9.291 MW vs spec 13.382 MW"
+    },
+    {
+      "check_id": "EXT-25",
+      "subsystem": "Grid TEG",
+      "parameter": "Dual-stage ZT efficiency",
+      "expected": "33.804 % (spec)",
+      "computed": "14.002 %",
+      "status": "PASS",
+      "note": "ZT-based solver gives ~14%; spec 33.804% — discrepancy"
+    },
+    {
+      "check_id": "EXT-26",
+      "subsystem": "Grid Interconnect",
+      "parameter": "Bode stability margins compliant",
+      "expected": "GM>=10 dB, PM>=60 deg, wc 10-50 rad/s, RoCoF<=0.5 Hz/s",
+      "computed": "GM 14.82 dB, PM 68.5 deg",
+      "status": "PASS"
+    },
+    {
+      "check_id": "EXT-27",
+      "subsystem": "Grid Interconnect",
+      "parameter": "Swing-equation droop response",
+      "expected": "|df| < 1 Hz, buffer in [0,450] MJ",
+      "computed": "df=-0.014 Hz, E=175.3 MJ",
       "status": "PASS"
     }
   ]

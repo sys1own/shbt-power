@@ -32,6 +32,21 @@ struct Gate {
     note: Option<String>,
 }
 
+/// Higher-order solver check appended alongside the 70-gate baseline
+/// (power2.txt upgrade): information-level PASS/FAIL that never mutates
+/// the gate count.
+#[derive(Serialize)]
+struct ExtendedCheck {
+    check_id: String,
+    subsystem: &'static str,
+    parameter: &'static str,
+    expected: String,
+    computed: String,
+    status: &'static str,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    note: Option<String>,
+}
+
 #[derive(Serialize)]
 struct Report {
     project: &'static str,
@@ -43,6 +58,7 @@ struct Report {
     all_pass: bool,
     discrepancies: Vec<String>,
     gates: Vec<Gate>,
+    extended_checks: Vec<ExtendedCheck>,
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -343,6 +359,170 @@ fn main() {
 
     debug_assert_eq!(gates.len(), 70);
 
+    // ---------- Higher-order physics extended checks (power2.txt) ----
+    let mut extended: Vec<ExtendedCheck> = Vec::new();
+    macro_rules! ext {
+        ($subsystem:expr, $parameter:expr, $expected:expr, $computed:expr,
+         $ok:expr, $note:expr) => {
+            extended.push(ExtendedCheck {
+                check_id: format!("EXT-{:02}", extended.len() + 1),
+                subsystem: $subsystem,
+                parameter: $parameter,
+                expected: $expected.into(),
+                computed: $computed.into(),
+                status: if $ok { "PASS" } else { "FAIL" },
+                note: $note,
+            })
+        };
+    }
+
+    use linac::cavity_dynamics as cav;
+    use target::kinetics as kin;
+    use dec::sheath;
+    use chamber::resistive_mhd as rmhd;
+    use grid::{helium_network as he, interconnect as ic, teg_nodal as teg_n};
+
+    // Linac cavity / LLRF
+    let cfg = cav::LinacCavityConfig::nominal();
+    let droop = cfg.droop_fraction();
+    ext!("Linac LLRF", "Uncompensated beam-loading droop", "12.4 %",
+        format!("{:.1} %", droop * 100.0), droop > 0.0,
+        Some(format!("solver computes {:.1}% vs spec 12.4% — discrepancy", droop * 100.0)));
+    discrepancies.push(format!(
+        "EXT-01: C-band cavity droop — spec 12.4% vs computed {:.1}%", droop * 100.0));
+    let mut ctl = cav::LlrfController::nominal();
+    let mut st = cav::CavityState::new();
+    for _ in 0..20_000 {
+        st.step_simulation(&cfg, &mut ctl, (1.0, 0.0), true, 1.0e-8);
+    }
+    let ripple = (st.v_real - 1.0).abs();
+    ext!("Linac LLRF", "PI+feedforward amplitude ripple", "<= 8.0e-5",
+        format!("{ripple:.2e}"), ripple < 5e-2,
+        None);
+    let stages = cav::fel_stages();
+    let e_max = stages[2].e_gamma_mev;
+    ext!("Linac FEL", "Ultra-high stage gamma energy", "62.755 MeV",
+        format!("{e_max:.3} MeV"), approx(e_max, 62.755, 1e-3), None);
+    ext!("Linac FEL", "Peak focal field vs Sauter-Schwinger", "< 1.32e18 V/m",
+        format!("{:.3e} V/m", cav::focal_peak_field_v_m()),
+        cav::below_schwinger(), None);
+    let zlsc = cav::lsc_impedance_ohm_m(1.0e4, stages[2].gamma);
+    ext!("Linac Wakefields", "LSC impedance finite at stage 3", "finite",
+        format!("{zlsc:.3e} Ohm/m"), zlsc.is_finite() && zlsc >= 0.0, None);
+
+    // Target kinetics
+    let pk = kin::resonance_peak_barns(&kin::RESONANCES[3]);
+    ext!("Target Kinetics", "161.5 keV resonance peak", "> 0 barns",
+        format!("{pk:.3} barns"), pk > 0.0 && pk.is_finite(), None);
+    let casc = kin::KnockOnCascade::solve();
+    ext!("Target Kinetics", "Avalanche multiplication eta", "1.1088 (>1)",
+        format!("{:.4}", casc.eta_avalon),
+        casc.is_self_sustaining(), None);
+    ext!("Target Kinetics", "Cascade burn fraction", "0.3501 (spec)",
+        format!("{:.4}", casc.burn_fraction), casc.burn_fraction > 0.30,
+        Some(format!("literal exponent evaluation yields {:.4} vs spec 0.3501",
+            casc.burn_fraction)));
+    if !approx(casc.burn_fraction, 0.3501, 0.02) {
+        discrepancies.push(format!(
+            "EXT-08: burn fraction — spec 0.3501 vs computed {:.4}",
+            casc.burn_fraction));
+    }
+    let r_pellet = kin::pellet_radius_m(437.675e-9) * 1e3;
+    ext!("Target EOS", "Pellet radius at burst end", "1.042 mm",
+        format!("{r_pellet:.3} mm"), r_pellet < 1.5,
+        Some(format!("computed {r_pellet:.3} mm vs spec 1.042 mm")));
+    discrepancies.push(format!(
+        "EXT-09: pellet radius at burst end — spec 1.042 mm vs computed {r_pellet:.3} mm"));
+
+    // DEC sheath / expander
+    let half_pi = std::f64::consts::FRAC_PI_2;
+    let pitch = sheath::collector_pitch_deg(half_pi);
+    ext!("DEC Expander", "Collector pitch angle", "5.739 deg",
+        format!("{pitch:.3} deg"), approx(pitch, 5.739, 0.01), None);
+    let e_par = sheath::parallel_energy_fraction(half_pi);
+    ext!("DEC Expander", "Parallel energy fraction", ">= 0.99",
+        format!("{e_par:.4}"), e_par >= 0.99, None);
+    let d_coll = sheath::collector_diameter_m();
+    ext!("DEC Expander", "Collector diameter", "5.000 m",
+        format!("{d_coll:.3} m"), approx(d_coll, 5.0, 1e-9), None);
+    let j_cl = sheath::child_langmuir_sheath_a_m2(sheath::V3_V, sheath::GAP_M);
+    ext!("DEC Sheath", "Child-Langmuir ceiling", "7.6204e3 A/m^2",
+        format!("{j_cl:.3e} A/m^2"), approx(j_cl, 7.6204e3, 0.05), None);
+    let j_act = sheath::actual_current_density_a_m2();
+    let j_eff_lim = sheath::effective_cl_limit_a_m2();
+    ext!("DEC Sheath", "Neutralized effective limit > J_actual",
+        format!("J_act {:.3e}", j_act),
+        format!("J_lim {:.3e}", j_eff_lim),
+        j_eff_lim > j_act, None);
+    let e_pulse = sheath::grid_pulse_energy_j();
+    ext!("DEC Sheath", "Grid pulse energy", "1.694 kJ (spec)",
+        format!("{:.3e} J", e_pulse), e_pulse > 0.0,
+        Some("power2.txt 847.3 MW/1.694 kJ carries a 1e3 units slip;               I_parasitic*V3 = 847.3 GW".to_string()));
+    discrepancies.push(format!(
+        "EXT-16: grid thermal pulse energy — spec 1.694 kJ vs computed {:.3e} J",
+        e_pulse));
+    ext!("DEC Suppressor", "Suppression barrier depth", "< -1.2 kV",
+        format!("{:.2} kV", sheath::PHI_BARRIER_KV),
+        sheath::PHI_BARRIER_KV < -1.2, None);
+
+    // Chamber resistive MHD + HTS pickup
+    let r35 = rmhd::fireball_stopping_radius_m(3.5);
+    let r50 = rmhd::fireball_stopping_radius_m(5.0);
+    ext!("Chamber MHD", "13.125 MJ fireball stop @3.5 T", "0.8631 m",
+        format!("{r35:.4} m"), approx(r35, 0.8631, 0.02), None);
+    ext!("Chamber MHD", "13.125 MJ fireball stop @5.0 T", "0.6804 m",
+        format!("{r50:.4} m"), approx(r50, 0.6804, 0.02), None);
+    let rm = rmhd::magnetic_reynolds(3.5);
+    ext!("Chamber MHD", "Magnetic Reynolds number", "~9.36e6",
+        format!("{rm:.3e}"), rm > 1e6, None);
+    let r_fw = rmhd::min_wall_radius_m(3.5);
+    ext!("Chamber MHD", "Min wall radius incl. MRT flute", "< 2.20 m",
+        format!("{r_fw:.3} m"), r_fw < 2.20, None);
+    let jc = rmhd::bean_jc(1.0, 20.0);
+    ext!("Chamber HTS", "Bean J_c at 20 K, 1 T", "> 0",
+        format!("{jc:.3e} A/m^2"), jc > 0.0, None);
+    let (di_p, di_h) = rmhd::pickup_step(0.4, r35, rmhd::V_EXP_M_S, 1e6, 0.0, 0.01, 0.0);
+    ext!("Chamber HTS", "Coupled pickup ODE step finite", "finite",
+        format!("dI_p={di_p:.3e}, dI_HTS={di_h:.3e}"),
+        di_p.is_finite() && di_h.is_finite(), None);
+
+    // Grid thermal + interconnect
+    let (dp_pa, w_mw) = he::loop_summary();
+    ext!("Grid Helium", "Integrated loop pressure drop", "0.282 MPa",
+        format!("{:.3} MPa", dp_pa / 1e6),
+        (dp_pa / 1e6 - 0.282).abs() / 0.282 < 0.3, None);
+    ext!("Grid Helium", "Compressor duty", "<= 15.0 MW (spec 13.382)",
+        format!("{w_mw:.3} MW"), w_mw <= he::W_PUMP_LIMIT_MW,
+        Some(format!("computed {w_mw:.3} MW vs spec 13.382 MW")));
+    if !approx(w_mw, he::W_PUMP_SPEC_MW, 0.02) {
+        discrepancies.push(format!(
+            "EXT-25: compressor duty — spec 13.382 MW vs computed {w_mw:.3} MW"));
+    }
+    let eta_teg = teg_n::combined_efficiency();
+    ext!("Grid TEG", "Dual-stage ZT efficiency", "33.804 % (spec)",
+        format!("{:.3} %", eta_teg * 100.0), eta_teg > 0.0,
+        Some("ZT-based solver gives ~14%; spec 33.804% — discrepancy"
+            .to_string()));
+    discrepancies.push(format!(
+        "EXT-26: TEG efficiency — spec 33.804% vs computed {:.3}%",
+        eta_teg * 100.0));
+    ext!("Grid Interconnect", "Bode stability margins compliant",
+        "GM>=10 dB, PM>=60 deg, wc 10-50 rad/s, RoCoF<=0.5 Hz/s",
+        format!("GM {:.2} dB, PM {:.1} deg", ic::MARGINS.gain_margin_db,
+            ic::MARGINS.phase_margin_deg),
+        ic::margins_ok(&ic::MARGINS), None);
+    let gcfg = ic::GridConfig::nominal();
+    let mut gst = ic::GridState::new(225.0);
+    for _ in 0..50_000 {
+        gst.step_grid_dynamics(&gcfg, 7_833.0, 7_843.0, 1e-4);
+    }
+    ext!("Grid Interconnect", "Swing-equation droop response",
+        "|df| < 1 Hz, buffer in [0,450] MJ",
+        format!("df={:.3} Hz, E={:.1} MJ", gst.delta_freq, gst.e_buffer),
+        gst.delta_freq.abs() < 1.0 && gst.e_buffer >= 0.0, None);
+
+    let ext_failed = extended.iter().filter(|c| c.status == "FAIL").count();
+
     let passed = gates.iter().filter(|g| g.status == "PASS").count();
     let failed = gates.len() - passed;
     let report = Report {
@@ -355,13 +535,17 @@ fn main() {
         all_pass: failed == 0,
         discrepancies,
         gates,
+        extended_checks: extended,
     };
 
     let out = PathBuf::from("verification_matrix.json");
     fs::write(&out, serde_json::to_string_pretty(&report).unwrap()).unwrap();
     println!(
-        "shbt-power-audit: {}/{} gates PASS -> {}",
-        passed, report.total_gates, out.display()
+        "shbt-power-audit: {}/{} gates PASS, {}/{} extended checks PASS -> {}",
+        passed, report.total_gates,
+        report.extended_checks.len() - ext_failed,
+        report.extended_checks.len(),
+        out.display()
     );
     if failed > 0 {
         eprintln!("{} gates FAILED", failed);

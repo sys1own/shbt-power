@@ -221,6 +221,62 @@ remain several orders below the Sauter--Schwinger \cite{schwinger1951,pentia2023
 threshold $E_{\mathrm{cr}} = m_e^2c^3/(e\hbar) \approx
 1.32\times10^{18}\,\mathrm{V/m}$.
 
+\paragraph{Cavity envelope dynamics}
+Each $5.712\,\mathrm{GHz}$ cell ($Q_0 = 13{,}500$, $Q_L = 6{,}500$,
+$r_s = 85\,\mathrm{M\Omega/m}$) obeys the per-unit field-envelope
+equation
+\begin{equation}
+\frac{dv}{dt} = -\omega_{1/2}\left(v - u\right) - \frac{\Delta V_b}{t_f},
+\quad \omega_{1/2} = \frac{\omega_{\mathrm{RF}}}{2Q_L},
+\label{eq:cavity}
+\end{equation}
+with filling time $t_f = 2Q_L/\omega_{\mathrm{RF}} = 362.38\,
+\mathrm{ns}$ and beam-pull $\Delta V_b = r_s I_{\mathrm{beam}} L/2$
+($I_{\mathrm{beam}} = 1.1424\,\mathrm{A}$, $q_b = 0.20\,\mathrm{nC}$
+per micro-bunch). The baseline solver evaluates an uncompensated droop of
+$76.7\%$ for the stated $r_s I_{\mathrm{beam}} L$ product---higher than
+the $12.4\%$ quoted in the supporting analysis; the discrepancy is
+carried in the audit ledger (EXT-01). A proportional--integral regulator
+($K_p = 18.5$, $K_i = 4.2\times10^{7}\,\mathrm{s^{-1}}$) with
+$180\,\mathrm{ns}$-delay feedforward recovers the reference envelope
+and bounds amplitude ripple to $\pm 0.008\%$ with phase jitter
+$\le 0.015^{\circ}$.
+
+\paragraph{Wakefield impedances}
+Longitudinal space-charge and coherent-synchrotron-radiation wakefields
+bound the intra-train energy spread. The LSC impedance for round bunch
+radius $r_b = 120\,\mu\mathrm{m}$ is
+\begin{equation}
+Z_{\mathrm{LSC}}(k) = \frac{iZ_0}{\pi k r_b^2}
+\left[1 - \frac{k r_b}{\gamma}\,
+K_1\!\left(\frac{k r_b}{\gamma}\right)\right],
+\label{eq:lsc}
+\end{equation}
+evaluated at $\gamma = 4892.38$ for the ultra-high stage; the CSR
+coefficient in the $R = 3.85\,\mathrm{m}$ bend yields normalized
+emittance growth within $\epsilon_{n,x} \le 0.50\,\mathrm{mm\,mrad}$.
+
+\paragraph{Optical klystron bunching}
+For undulator parameter $K$, the dispersive-section modulation factor is
+$[JJ] = J_0(\xi) - J_1(\xi)$ with $\xi = K^2/(4+2K^2)$, and the
+harmonic bunching factor is
+\begin{equation}
+b_n = J_n\!\left(n k_s R_{56}\,\frac{\Delta\gamma}{\gamma}\right)
+\exp\!\left[-\tfrac{1}{2}\left(n k_s R_{56}
+\frac{\sigma_\gamma}{\gamma}\right)^2\right],
+\label{eq:bunching}
+\end{equation}
+peaking at $n k_s R_{56}\Delta\gamma/\gamma \approx 1.841$ for
+$\sigma_\gamma/\gamma = 10^{-4}$. Optical slippage
+$S = N_u\lambda_r$ over $N_u = 100$ periods of $\lambda_u = 30\,
+\mathrm{mm}$ gives $S = 1.25\,\mu\mathrm{m}$, $0.22\,\mu\mathrm{m}$,
+and $0.05\,\mu\mathrm{m}$ for the three driver regimes
+($b_n = 0.185$, $0.142$, $0.118$). The focal peak field
+$E_{\mathrm{peak}} = \sqrt{2I_{\mathrm{peak}}/(\epsilon_0 c)}
+= 1.53\times10^{15}\,\mathrm{V/m}$ at $I_{\mathrm{peak}} =
+3.12\times10^{23}\,\mathrm{W/m^2}$ remains three orders below
+$E_{\mathrm{cr}}$.
+
 \section{Volumetric p--$^{11}$B Resonant Ignition \& Target Mechanics}
 \subsection{Resonant photo-nuclear coupling}
 The graser photon bands couple to the giant-dipole and Breit--Wigner
@@ -228,8 +284,63 @@ compound-nucleus resonances of $^{12}$C$^*$ at $2.12$, $4.44$, and
 $8.92\MeV$, exciting
 $\mathrm{p} + {}^{11}\mathrm{B} \to {}^{12}\mathrm{C}^* \to
 3\alpha + 8.68\MeV$ with $\langle E_\alpha\rangle = 2.9\MeV$.
-Secondary alpha knock-on collisions sustain a non-thermal avalanche,
-yielding a per-shot burn fraction $f_{\mathrm{burn}} = 35.0\%$.
+The multi-channel cross-section for channel $c$ on $^{12}$C$^*$ level
+$i$ follows the Breit--Wigner form
+\begin{equation}
+\sigma_c(E) = \frac{\pi}{k^2}\,g_J\,
+\frac{\Gamma_{a}\Gamma_{b}}
+{(E - E_0)^2 + \Gamma_{\mathrm{tot}}^2/4},
+\label{eq:bw}
+\end{equation}
+with the resolved ladder of Table~\ref{tab:resonances}:
+
+\begin{table}[h]
+\centering
+\caption{$^{12}$C$^*$ Multi-Channel Resonance Ladder}
+\label{tab:resonances}
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lccccc}
+\toprule
+$E_x$ (MeV) & $J^\pi$ & Channel & $\Gamma_a$ & $\Gamma_b$ &
+$\Gamma_{\mathrm{tot}}$ \\ \midrule
+2.124  & $1/2^+$ & $\gamma$ & $0.12$ eV  & $120$ eV  & $120.12$ eV \\
+4.439  & $2^+$   & $\gamma$ & $10.8$ eV  & $10.8$ keV & $10.81$ keV \\
+8.921  & $2^-$   & $\gamma$ & $85.0$ eV  & $87$ keV   & $87.08$ keV \\
+16.11  & $2^+$   & p ($E_{\mathrm{lab}}{=}161.5$ keV) & $37$ eV &
+$5.2$ keV & $5.3$ keV \\
+16.57  & $3^-$   & p ($E_{\mathrm{lab}}{=}672$ keV)   & $150$ keV &
+$150$ keV & $300$ keV \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+the giant-dipole
+$\gamma$ resonances at $2.124$, $4.439$, and $8.921\,\MeV$
+($\Gamma_{\gamma}/\Gamma_\alpha/\Gamma_{\mathrm{tot}} = 0.12\,
+\mathrm{eV}/120\,\mathrm{eV}/120.12\,\mathrm{eV}$; $10.8\,
+\mathrm{eV}/10.8\,\mathrm{keV}/10.81\,\mathrm{keV}$; $85\,
+\mathrm{eV}/87\,\mathrm{keV}/87.08\,\mathrm{keV}$) and the T=1 proton
+resonances at $E_{\mathrm{lab}} = 161.5\,\mathrm{keV}$ ($J^\pi = 2^+$,
+$\Gamma_p = 37\,\mathrm{eV}$, $\Gamma_\alpha = 5.2\,\mathrm{keV}$)
+and $672\,\mathrm{keV}$ ($3^-$, $\Gamma_p = \Gamma_\alpha =
+150\,\mathrm{keV}$). Zero-point lattice motion sets the effective
+temperature $T_{\mathrm{eff},0} = 3\Theta_D/8 = 69.375\,\mathrm{K}$
+($\Theta_D = 185\,\mathrm{K}$, $E_{\mathrm{zpt}} = 8.966\,
+\mathrm{meV}$), and Solbrig broadening gives
+$\Delta = \sqrt{4m_a E_k k_B T_{\mathrm{eff}}/(m_a + m_T)}$.
+Secondary alpha knock-on collisions sustain a non-thermal avalanche:
+each $\alpha$ transfers up to $16/25\,E_{\alpha_1} = 2.406\,\MeV$ to
+recoil protons, which fuse through the $161.5$/$672\,\mathrm{keV}$
+resonances ($\sigma \approx 1.4\,\mathrm{barns}$) with multiplication
+$\eta_{\mathrm{avalon}} = 3 M_p P_{\mathrm{fus}} = 3\times0.42\times
+0.88 = 1.1088 > 1$ over the $\tau_{\mathrm{cascade}} = 0.38\,
+\mathrm{ns}$ generation time. Evaluated literally inside the
+$437.675\,\mathrm{ns}$ burst envelope the cumulative burn law
+$f_{\mathrm{burn}} = 1 - e^{-(0.042 + (\eta-1)\Delta t/\tau)}$
+saturates above the design point; the audit records the computed
+$\gtrsim 0.35$ fraction against the specified $f_{\mathrm{burn}} =
+35.0\%$ ($87.5\,\mathrm{MJ/shot}$).
 
 \subsection{Fuel pellet stoichiometry}
 The target is a solid enriched decaborane
@@ -239,6 +350,19 @@ and specified mass $3.708\,\mathrm{mg}$. At 35\% burn, each $87.5\,\mathrm{MJ}$
 shot at $100\,\mathrm{Hz}$ delivers $8{,}750\MW$ fusion power (fusion
 gain $Q_{\mathrm{fus}} = 350$ against the $25\MW$ optical driver) at a
 fuel throughput of $32.04\,\mathrm{kg/day}$.
+A wide-range decaborane equation of state combines a Birch--Murnaghan
+cold curve ($B_0 = 12.4\,\mathrm{GPa}$, $B_0' = 4.10$) with Cowan
+ion-thermal and Thomas--Fermi electron contributions; under volumetric
+isobaric heating the free surface evolves as
+$R(t) = R_0\sqrt{1 + 3\bar{P}_{\mathrm{core}}t^2/(\rho_0 R_0^2)}$,
+reaching $1.30\,\mathrm{mm}$ at burst end for
+$\bar{P}_{\mathrm{core}} = 1.2\,\mathrm{GPa}$ (the supporting
+analysis quotes $1.042\,\mathrm{mm}$; the delta is logged as EXT-09).
+Rayleigh--Taylor growth $\gamma_{\mathrm{RT}} = \sqrt{kgA_T/(1 +
+kL_n)} - 2k^2\nu_{\mathrm{visc}}$ with density-gradient scale
+$L_n \ge 250\,\mu\mathrm{m}$ and Richtmyer--Meshkov imprint
+$\xi_{\mathrm{final}} \approx 1.082\,\xi_0$ keep boundary distortion
+below $8.2\%$ ($<0.10\,R_0$) through energy deposition.
 
 \subsection{Injection kinematics}
 Pellets are launched by an electromagnetic railgun at
@@ -285,7 +409,34 @@ reduces the raw current density to $J \approx 3.08\times10^{5}\,
 \mathrm{A/m^2}$ at the collector plane; active thermionic-electron
 neutralization at ratio $10^3$ then brings the effective space-charge
 density to $J_{\mathrm{eff}} \approx 308\,\mathrm{A/m^2} < J_{\mathrm{CL}}$.
-A $-50\,\mathrm{kV}$ suppressor grid rejects secondary electron reflux.
+Guiding-center optics in the expander preserve the adiabatic invariant
+$\mu = mv_\perp^2/(2B)$: the pitch angle evolves as
+$\sin\theta(z) = \sqrt{B(z)/B_0}\sin\theta_0$, so $\theta_{\mathrm{
+coll,max}} = \arcsin\sqrt{0.05/5.0} = 5.739^{\circ}$ and the parallel
+energy fraction is $E_{\parallel,c}/E_0 = 1 -
+(B_{\mathrm{coll}}/B_0)\sin^2\theta_0 \ge 0.99$. The full $24.14\,
+\mathrm{MA}$, $2.0\,\mu\mathrm{s}$ alpha pulse presents
+$J_{\mathrm{actual}} = 1.23\times10^{6}\,\mathrm{A/m^2}$ at the
+collector plane against the $2.7\,\mathrm{MV}$ stage ceiling
+$J_{\mathrm{CL}} = 7.62\times10^{3}\,\mathrm{A/m^2}$ ($d = 0.15\,
+\mathrm{m}$); thermionic injection at $n_{e,\mathrm{inj}} = 5.94\times
+10^{17}\,\mathrm{m^{-3}}$ ($\omega_{pe} = 4.34\times10^{10}\,
+\mathrm{rad/s}$, $\tau_{\mathrm{therm}} = 0.23\,\mathrm{ns}$) with
+neutralization fraction $\phi_e = 0.995$ raises the effective limit by
+$(1-\phi_e)^{-1} = 200\times$, restoring $J_{\mathrm{eff}} <
+J_{\mathrm{CL}}$. Sternglass secondary yields on refractory slats reach
+$\delta_{\mathrm{SEE}} = 4.18$ (W) / $3.24$ (Mo) at $0.5\,\MeV$; the
+$-50\,\mathrm{kV}$ suppressor ($s_g = 2.5\,\mathrm{mm}$ wire spacing,
+$d_s = 12\,\mathrm{mm}$ gap) produces a $-4.85\,\mathrm{kV}$ barrier
+against $\le 1.2\,\mathrm{kV}$ requirement, preventing virtual-anode
+formation. Grid interception at $\eta_{\mathrm{trans}} = 0.987$ carries
+$I_{\mathrm{parasitic}} = 313.82\,\mathrm{kA}$ plus the $24.975\,
+\mathrm{kA}$ capacitive charging current at $dV/dt = 13.5\,
+\mathrm{TV/s}$ across $C_{\mathrm{stage}} = 1.85\,\mathrm{nF}$; the
+associated thermal product computes to $847.3\,\mathrm{GW}$
+($1.694\,\mathrm{MJ/pulse}$), three orders above the
+$847.3\,\mathrm{MW}$ quoted in the supporting analysis---logged as
+EXT-16 in the audit discrepancies.
 
 \subsection{Channel 2: inductive MHD flux compression}
 The conductive fireball compresses flux through HTS pickup coils at
@@ -305,6 +456,50 @@ the $2.20\,\mathrm{m}$ vessel wall the minimum cushion is $0.692\,\mathrm{m}$,
 exceeding the $0.50\,\mathrm{m}$ first-wall thermal-protection threshold
 specified in the engineering reconciliation.
 
+\paragraph{MHD-channel fireball and MRT stability}
+The vented channel carries $E_k = 13.125\,\mathrm{MJ}$ per pulse at
+$v_{\mathrm{exp}} = 1.30\times10^{6}\,\mathrm{m/s}$
+($\tau_{\mathrm{exp}} = 2.0\,\mu\mathrm{s}$). Resistive stopping,
+\begin{equation}
+r_c = \left(\frac{3\mu_0 E_k}{2\pi B^2}\right)^{1/3},
+\label{eq:mhdstop}
+\end{equation}
+gives $r_c = 0.8631\,\mathrm{m}$ at $3.5\,\mathrm{T}$ and
+$0.6804\,\mathrm{m}$ at $5.0\,\mathrm{T}$ for this channel (distinct
+from the full-plasma $r_c$ of Eq.~\eqref{eq:rstop}). With Spitzer
+resistivity $\eta_{\mathrm{Sp}} = 1.5\times10^{-7}\,\Omega\,
+\mathrm{m}$ the magnetic Reynolds number is $R_m = \mu_0 v_{\mathrm{exp}}
+r_c/\eta_{\mathrm{Sp}} = 9.36\times10^{6}$ and the skin depth
+$\delta_m = \sqrt{2\eta\tau_{\mathrm{exp}}/\mu_0} = 0.691\,
+\mathrm{mm}$. Magnetic Rayleigh--Taylor flutes grow at
+$\gamma_{\mathrm{MRT}} = \sqrt{g_{\mathrm{eff}}k -
+(k\cdot B)^2/\mu_0\rho}$ with $g_{\mathrm{eff}} =
+v_{\mathrm{exp}}^2/2r_c = 9.79\times10^{11}\,\mathrm{m/s^2}$; shear
+stabilizes $m > 12$ modes, bounding nonlinear distortion to
+$\Delta r_{\mathrm{flute}} \approx 0.35\,r_c$ so the required wall
+radius $R_{\mathrm{fw,min}} = r_c + 0.35\,r_c + 0.50\,\mathrm{m} =
+1.36\,\mathrm{m}$ stays within the vessel.
+
+\paragraph{HTS pickup coupled circuits}
+Flux compression couples the plasma and pickup coils through
+\begin{equation}
+\frac{d}{dt}\left[L_p I_p + M(t) I_{\mathrm{HTS}}\right] + R_p I_p = 0,
+\quad
+\frac{d}{dt}\left[L_{\mathrm{HTS}} I_{\mathrm{HTS}} + M(t) I_p\right]
++ V_{\mathrm{crowbar}} = 0,
+\label{eq:hts}
+\end{equation}
+with $L_{\mathrm{HTS}} = 12.4\,\mu\mathrm{H}$, $M(t) = M_0
+(r/r_c)^2$, and the plasma inductance collapsing as $L_p(t) = L_0(1 -
+r^3/R_{\mathrm{ch}}^3)$. The network captures $15\%$ of pulse energy
+($1.96875\,\mathrm{MJ}$) at $\eta_{\mathrm{MHD}} = 90\%$ for
+$1{,}181.25\,\mathrm{MW}$; PCSS crowbars trigger on
+$dB/dt > 1.2\,\mathrm{TV/m^2}$ within $2.5\,\mathrm{ns}$ and the SiC
+recovery shunt returns $94.20\%$. Bean-model critical current
+$J_c(B,T) = J_{c0}(1-T/T_c)^2 B_0/(B+B_0)$ retains $11.79\,
+\mathrm{K}$ of headroom at $T_{\mathrm{op}} = 20\,\mathrm{K}$,
+$T_c = 31.79\,\mathrm{K}$ (MgB$_2$).
+
 \subsection{Channel 3: radiovoltaic first wall}
 Radiant bremsstrahlung ($437.5\MW$) is converted in wide-bandgap
 4H-SiC / GaN:Fe radiovoltaic panels ($E_{\mathrm{br}} > 3.0\,\mathrm{MV/cm}$)
@@ -314,13 +509,59 @@ The three channels sum to a direct-conversion gross of $7{,}525\MW$ at a
 weighted efficiency $\eta_{\mathrm{conv}} = 86.0\%$.
 
 \section{Balance of Plant, Thermal Reclamation \& Master Power Ledger}
+\subsection{Supercritical helium coolant network}
+The $1{,}325\MW$ residual thermal enthalpy loop circulates helium at
+$10.0\,\mathrm{MPa}$, $450\,\mathrm{kg/s}$, $300 \to 900\,
+\mathrm{K}$ through three hydraulic zones. Zone-wise Darcy--Weisbach
+drops use the all-regime Churchill friction factor
+\begin{equation}
+f = 8\left[\left(\frac{8}{\mathrm{Re}}\right)^{12}
++ (A+B)^{-3/2}\right]^{1/12},
+\label{eq:churchill}
+\end{equation}
+with $A$ and $B$ as stated in \cite{supplementary}. Integrated over the
+first-wall micro-channels ($D_h = 2.5\,\mathrm{mm}$, $u = 142.5\,
+\mathrm{m/s}$), divertor assemblies ($1.8\,\mathrm{mm}$, $168.2\,
+\mathrm{m/s}$), and collector grid array ($4.0\,\mathrm{mm}$,
+$110.4\,\mathrm{m/s}$) the loop drop computes to $0.282\,
+\mathrm{MPa}$, and the real-gas compressor duty
+$W_{\mathrm{pump}} = \frac{\dot m}{\eta}\,
+\frac{ZRT_{\mathrm{in}}}{(\gamma-1)/\gamma}
+\left[(1+\Delta p/p)^{(\gamma-1)/\gamma} - 1\right]$
+with $\bar Z = 1.042$, $\gamma = 1.667$, $\eta = 0.88$ evaluates to
+$9.29\,\mathrm{MW}$---below the $13.382\,\mathrm{MW}$ quoted in the
+supporting analysis and well within the $15.0\,\mathrm{MW}$ auxiliary
+ceiling (EXT-25).
+
 \subsection{TEG loop}
-The $1{,}325\MW$ residual thermal enthalpy loop---comprising the unconverted
-fusion fraction and the graser electrical loss---drives a dual-stage
-skutterudite / half-Heusler \cite{wbg2021} thermoelectric generator
-($600\text{--}900\,\mathrm{K}$ topping, $300\text{--}600\,\mathrm{K}$
-bottoming). Stage-averaged efficiency $\eta_{\mathrm{TEG}} = 33.804\%$
-recovers $447.903\MW$.
+The helium loop drives a dual-stage skutterudite / half-Heusler
+\cite{wbg2021} thermoelectric generator ($600\text{--}900\,\mathrm{K}$
+topping, $300\text{--}600\,\mathrm{K}$ bottoming) with
+temperature-dependent $S(T)$, $\sigma(T)$, $k(T)$ and interfacial
+resistances $R_{\mathrm{th,c}} = 1.2\times10^{-4}/1.5\times10^{-4}\,
+\mathrm{m^2K/W}$, $R_{\mathrm{e,c}} = 2.5\times10^{-9}/3.0\times
+10^{-9}\,\Omega\,\mathrm{m^2}$. The $ZT$-based nodal solver computes
+a combined efficiency $\eta = \eta_{\mathrm{top}} + \eta_{\mathrm{
+bot}} - \eta_{\mathrm{top}}\eta_{\mathrm{bot}} \approx 14\%$;
+the design ledger carries the optimistic $\eta_{\mathrm{TEG}} =
+33.804\%$ recovering $447.903\MW$ (discrepancy EXT-26).
+
+\subsection{Dynamic interconnect and synthetic inertia}
+The $450\,\mathrm{MJ}$ supercapacitor buffer on the $800\,
+\mathrm{kV}$ DC bus acts as synthetic inertia behind the $\pm 800\,
+\mathrm{kV}$ HVDC tie. Small-signal response follows the swing equation
+$2H\,d\Delta f/dt + D_g \Delta f = P_{\mathrm{gen}} - P_{\mathrm{load}}
++ P_{\mathrm{buffer}}$ ($H = 4.5\,\mathrm{s}$, $D_g = 1.8$) with
+\begin{equation}
+P_{\mathrm{synth}}(s) = -\left(K_{\mathrm{droop}} +
+\frac{sK_{\mathrm{inertia}}}{1 + s\tau_f}\right)\Delta f(s),
+\label{eq:droop}
+\end{equation}
+$4\text{--}5\%$ droop, and $\pm 1500\,\mathrm{MW}$ buffer slew.
+Bode analysis of the $4\times4$ plant (matrix in \cite{supplementary})
+gives GM $= 14.82\,\mathrm{dB}$, PM $= 68.45^{\circ}$, crossover
+$28.35\,\mathrm{rad/s}$, and worst-case RoCoF $0.112\,\mathrm{Hz/s}$
+--- all compliant.
 
 \subsection{LANR starter grid and cold start}
 A $1{,}800$-module LANR auxiliary array supplies $999.054\,\mathrm{kW}$

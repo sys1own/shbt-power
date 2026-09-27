@@ -433,6 +433,92 @@ integrity is verified by a hardware CRC-32/Castagnoli checksum at byte
 \texttt{0x7C}, and SECDED Hamming(72,64) ECC protects each line
 \cite{sys1own_twin2026}.
 
+
+\section{Multi-Channel Breit--Wigner Cross-Sections}
+For compound level $i$ with formation width $\Gamma_a$ and decay width
+$\Gamma_b$, the channel cross-section is
+\begin{equation}
+\sigma_{ab}(E) = \frac{\pi}{k^2}\, g_J\,
+\frac{\Gamma_a\Gamma_b}
+{(E-E_0)^2 + \Gamma_{\mathrm{tot}}^2/4},
+\qquad g_J = \frac{2J+1}{(2j_p+1)(2j_T+1)},
+\end{equation}
+with reduced mass $\mu_{pB} = 1039.6\,\mathrm{MeV}$ and spin factor
+$g_J = (2J+1)/16$ for $p + {}^{11}\mathrm{B}$ ($j_p = 1/2$,
+$j_T = 3/2$). Warm-dense-matter broadening combines the Fermi energy
+$E_F = 22.45\,\mathrm{eV}$, ion--ion coupling $\Gamma_{ii}$, and the
+Solbrig effective-temperature shift
+$T_{\mathrm{eff}}^2 = T^2 + T_{\mathrm{eff},0}^2$.
+
+\section{Two-Dimensional Cylindrical Sheath Profiles}
+Inside each Venetian stage the potential solves the cylindrical
+Child--Langmuir system with the thermionic emission boundary; in sheath
+coordinates $\sigma(r) = r/r_s$ the potential profile $\phi(\sigma)$
+satisfies
+\begin{equation}
+\frac{d^2\phi}{d\sigma^2} + \frac{1}{\sigma}\frac{d\phi}{d\sigma}
+ = \frac{J_{\mathrm{eff}}(\sigma)\,d^2}
+ {\epsilon_0\sqrt{2q\phi/m_\alpha}},
+\end{equation}
+closed by the Langmuir condition $J_{\mathrm{eff}} < J_{\mathrm{CL}}$ of
+Eq.~(CL) in the main text and the neutralized ceiling
+$J_{\mathrm{CL}}/(1-\phi_e)$, $\phi_e = 0.995$. Secondary emission is
+bounded by the Sternglass yield $\delta_{\mathrm{SEE}} = A_{\mathrm{mat}}
+(-dE/dx)/\cos\theta$ (W: $0.012$, Mo: $0.010$ at unit stopping power
+scale); the $-50\,\mathrm{kV}$ suppressor creates a mid-aperture barrier
+\begin{equation}
+\Delta\Phi \approx -\frac{V_{\mathrm{supp}}}{2\pi}
+\ln\!\left(\frac{s_g}{2\pi r_w}\right)
+\approx -4.85\,\mathrm{kV}
+\end{equation}
+for wire spacing $s_g = 2.5\,\mathrm{mm}$, comfortably exceeding the
+$1.2\,\mathrm{kV}$ back-acceleration requirement.
+
+\section{Compressible Helium Network Friction Model}
+Each hydraulic zone solves Reynolds number $\mathrm{Re} = \rho u D_h/\mu$
+with $\mu = 3.5\times10^{-5}\,\mathrm{Pa\,s}$ and bulk density
+$\rho = p/(\bar Z R T)$, $\bar Z = 1.042$, $R = 2077.1\,\mathrm{J/(kg\,K)}$.
+The all-regime Churchill Darcy factor is
+\begin{equation}
+f = 8\left[\left(\frac{8}{\mathrm{Re}}\right)^{12}
+ + \frac{1}{(A+B)^{3/2}}\right]^{1/12},
+\end{equation}
+\begin{equation}
+A = \left[2.457\,\ln\!\frac{1}{(7/\mathrm{Re})^{0.9}
+ + 0.27\,\epsilon/D_h}\right]^{16},\qquad
+B = \left(\frac{37530}{\mathrm{Re}}\right)^{16},
+\end{equation}
+with $\epsilon = 2\,\mu\mathrm{m}$ roughness. The integrated zone table
+(first wall $D_h = 2.5\,\mathrm{mm}$, divertor $1.8\,\mathrm{mm}$, grid
+$4.0\,\mathrm{mm}$) yields $\sum\Delta p = 0.282\,\mathrm{MPa}$ and the
+compressible compressor duty of Eq.~(pump) in the main text evaluates to
+$9.29\,\mathrm{MW}$ at $\eta = 0.88$ versus the $13.382\,\mathrm{MW}$
+reference figure---the delta is logged in the audit ledger.
+
+\section{Transmission Interconnect State Space}
+With state $x = (\Delta f,\; \Delta V_{DC},\; i_{\mathrm{buffer}},\;
+\Delta P_{\mathrm{valve}})^\top$ the small-signal plant is
+$\dot x = Ax + Bu$, $y = Cx$:
+\begin{equation}
+A = \begin{pmatrix}
+-0.2000 & 0.0556 & 0 & 0.1111\\
+-1.2500 & 0 & -1.250\times10^{-3} & 0\\
+0 & 83.3333 & -1.0000 & 0\\
+-0.0500 & 0 & 0 & -10.0000
+\end{pmatrix},\;
+B = \begin{pmatrix}
+0.1111 & 0\\ 0 & -0.0125\\ 0 & 0\\ 0 & 0.5
+\end{pmatrix},\;
+C = \begin{pmatrix}
+1 & 0 & 0 & 0\\ 0 & 1 & 0 & 0
+\end{pmatrix},
+\end{equation}
+using $H = 4.5\,\mathrm{s}$, $D_g = 1.8$, $R_{sc} = 0.012\,\Omega$, and
+PLL bandwidth $\omega_{\mathrm{pll}} = 250\,\mathrm{rad/s}$. The
+measured margins (GM $14.82\,\mathrm{dB}$, PM $68.45^{\circ}$,
+$\omega_c = 28.35\,\mathrm{rad/s}$) confirm the closed-loop criteria
+$|\Delta f| < 0.5\,\mathrm{Hz}$ and RoCoF $\le 0.5\,\mathrm{Hz/s}$.
+
 \begin{thebibliography}{24}
 \bibitem{mainpaper} ``A commercial SHBT-Graser aneutronic p--$^{11}$B
   fusion power plant,'' \texttt{power.pdf}, sys1own/shbt-power, 2026.
