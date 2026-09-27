@@ -722,7 +722,8 @@ m/s$^2$ (\texttt{hall\_mhd.rs}).
 
 \section{Balance of Plant, Thermal Reclamation \& Master Power Ledger}
 \subsection{Micro-channel PCHE core and supercritical helium network}
-The $1{,}325\MW$ residual thermal enthalpy loop circulates helium at
+\begin{sloppypar}
+The $1{,}325\MW$ residual thermal-enthalpy loop circulates helium at
 $10.0\,\mathrm{MPa}$, $450\,\mathrm{kg/s}$, $300 \to 900\,
 \mathrm{K}$ through a high-effectiveness Printed Circuit Heat Exchanger
 (PCHE) core of diffusion-bonded Incoloy~800H plates etched with
@@ -732,10 +733,10 @@ semi-circular micro-channels of diameter $d = 1.50\,\mathrm{mm}$
 64 primary reactor sectors, the core incorporates $1{,}057{,}728$
 distribution passages ($16{,}527$ per sector) branching into $440{,}000$
 active high-temperature core passages, holding fluid velocities within
-$30.0 \le u \le 45.0\,\mathrm{m/s}$ at the cold distribution interface
+$30.0$--$45.0\,\mathrm{m/s}$ at the cold-distribution interface
 ($\rho_{\mathrm{in}} = 16.05\,\mathrm{kg/m^3}$) over an active passage
 length $L = 3.20\,\mathrm{m}$. Zone-wise Darcy--Weisbach drops use the
-all-regime Churchill friction factor
+all-regime Churchill friction factor\end{sloppypar}
 \begin{equation}
 f = 8\left[\left(\frac{8}{\mathrm{Re}}\right)^{12}
 + (A+B)^{-3/2}\right]^{1/12},
@@ -1010,7 +1011,7 @@ traceability.
 & Coolant Fluid \& Pressure Envelope & Supercritical Helium ($s\text{He}$), $10.00$ & $\text{MPa}$ \\
 \textbf{Hydraulics \& Structure} 
 & Mass Flow Rate \& Thermal Delta & $\dot{m} = 450.00,\, \Delta T = 600.0$ & $\text{kg}\cdot\text{s}^{-1},\, 300\to 900\text{ K}$ \\
-& Channel Configuration \& Pumping Power & 64 Micro-Channels, $W_{\text{pump}} = 2.052$ & $\text{MW}$ ($\le 15.000\text{ MW}$) \\
+& PCHE Core (440,000 channels, $D_h = 0.9165\text{ mm}$) & $\Delta p = 282.0\text{ kPa}$, $W_{\text{pump}} = 9.29\text{ MW}$ (installed $14.22\text{ MW}$) & $\le 15.000\text{ MW}$ Auxiliary Ceiling \\
 & Dual-Stage TEG Conversion Efficiency & $\eta_{\text{TEG}} = 33.804$ & \% (Skutterudite / Half-Heusler) \\
 & Recovered TEG Electric Generation & $P_{\text{TEG}} = 447.903$ & $\text{MW}_e$ (from $1,325.000\text{ MW}_{\text{th}}$) \\
 & PWI Low-Cycle Fatigue Threshold & $N_f = 4.382\times 10^{6} \ge 4.000\times 10^{6}$ & Cycles at $100\text{ Hz}$ \\
@@ -1088,7 +1089,7 @@ $7{,}832.903\MW$ net. Band widths are proportional to power.}
 \label{fig:sankey}
 \end{figure*}
 
-\subsection{3D conjugate heat transfer and dual-stage TEG}
+\subsection{Supercritical Helium Loop Hydraulic Network and TEG Power Generation}
 \label{sec:cht}
 \input{p5/sec5}
 \input{p6/sec5}

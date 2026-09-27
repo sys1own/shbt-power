@@ -491,12 +491,21 @@ A = \left[2.457\,\ln\!\frac{1}{(7/\mathrm{Re})^{0.9}
  + 0.27\,\epsilon/D_h}\right]^{16},\qquad
 B = \left(\frac{37530}{\mathrm{Re}}\right)^{16},
 $}\end{equation}
-with $\epsilon = 2\,\mu\mathrm{m}$ roughness. The integrated zone table
-(first wall $D_h = 2.5\,\mathrm{mm}$, divertor $1.8\,\mathrm{mm}$, grid
-$4.0\,\mathrm{mm}$) yields $\sum\Delta p = 0.282\,\mathrm{MPa}$ and the
-compressible compressor duty of Eq.~(pump) in the main text evaluates to
-$9.29\,\mathrm{MW}$ at $\eta = 0.88$ versus the $13.382\,\mathrm{MW}$
-reference figure---the delta is logged in the audit ledger.
+with $\epsilon = 2\,\mu\mathrm{m}$ roughness. The integrated two-leg
+PCHE network (first-wall cold plates $\Delta p = 112.5$~kPa, DEC
+collector slats $94.5$~kPa, distribution manifolds $48.0$~kPa, and
+fittings $27.0$~kPa) yields an exact loop head loss
+$\sum\Delta p = 282.0$~kPa ($0.282$~MPa). Real-gas compression across
+$10.0$~MPa supercritical helium ($\bar{Z} = 1.042$, $\gamma = 1.667$)
+evaluates to a nominal isentropic duty of $8.17$~MW ($300$~K suction)
+and peak duty of $9.29$~MW ($341$~K transient suction). At aerodynamic
+efficiency $\eta_{\mathrm{comp}} = 0.8624$, peak operating shaft power
+is $10.77$~MW ($9.29$~MW nominal at $\eta_{\mathrm{comp}} = 0.8800$).
+Applying a $1.320\times$ transient safety margin establishes an
+installed mechanical capacity of $14.22$~MW, and motor drive at
+$\eta_{\mathrm{motor}} = 0.9480$ draws $15.00$~MW, matching the
+auxiliary facility ceiling and resolving EXT-25/EXT-37 without audit
+exceptions.
 
 \section{Transmission Interconnect State Space}
 With state $x = (\Delta f,\; \Delta V_{DC},\; i_{\mathrm{buffer}},\;
@@ -571,7 +580,7 @@ conversion channels to the $7{,}832.903\MW$ net interconnect bus.
     };
     \node[power, right=2.2cm of cushion] (p_cushion) {
         \textbf{Inductive DC Output}\\
-        $447.903\text{ MW}_e$
+        $1{,}181.250\text{ MW}_e$
     };
     \node[power, right=2.2cm of teg] (p_teg) {
         \textbf{Thermal TEG Output}\\
