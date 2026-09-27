@@ -4,3 +4,9 @@ kernel/build/
 crates/shbt-power-telemetry/bin/*.so
 __pycache__/
 *.pyc
+paper/*.aux
+paper/*.log
+paper/*.fls
+paper/*.fdb_latexmk
+paper/*.out
+paper/main.pdf

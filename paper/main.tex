@@ -35,7 +35,7 @@ Multi-Physics Synthesis, Direct Energy Conversion, and a\\
 70-Gate Verified Digital Twin}
 
 \author{}
-\markboth{SHBT Power Systems Engineering}{}
+\markboth{}{}
 
 \begin{document}
 \maketitle
@@ -89,11 +89,11 @@ and a topological \emph{dark ledger} carrying the fraction
 \end{equation}
 of the system's operational capacity. Non-radiating boundary modes are
 relabelled under the Heegaard--Floer symplectic boundary operator
-$T^\partial$, so that plasma degrees of freedom that would classically
+$T^\partial$ \cite{sys1own_shbt2026,sys1own_twin2026}, so that plasma degrees of freedom that would classically
 bremsstrahlung-radiate are routed into the dark ledger and recoverable
 work is maximized. Macroscopic state tracking on $N \sim 10^{20}$
 particles shows that this routing preserves global unitarity and boundary
-norms while suppressing Arnowitt--Deser--Misner (ADM) metric perturbations
+norms while suppressing Arnowitt--Deser--Misner (ADM) \cite{adm} metric perturbations
 below $10^{-35}$. Physically, the suppression factor
 \begin{equation}
 S = \left(\frac{10}{33}\right)^2 \approx 0.0918
@@ -101,16 +101,52 @@ S = \left(\frac{10}{33}\right)^2 \approx 0.0918
 \end{equation}
 multiplies the residual leakage of the electromagnetic sector.
 
+\subsection{Topological operators and modular invariance}
+The algebraic transformation across the vacuum transition is governed by
+the modular reconstruction cycle operator
+\begin{equation}
+\hat{R}_{\mathrm{rerender}} = \hat{T}^{\partial}
+  \hat{O}_{\mathrm{excitation}}(\theta) \hat{D}_{\mathrm{derender}}^{\dagger},
+\label{eq:rerender}
+\end{equation}
+where $\hat{D}_{\mathrm{derender}}^{\dagger}$ projects state amplitude onto
+the $\eta_D = 23/33$ dark branch, $\hat{O}_{\mathrm{excitation}}(\theta) =
+e^{-i\theta \hat{Q}}$ executes the phase-locked $U(1)$ gauge rotation, and
+$\hat{T}^{\partial}$ is the unitary Heegaard--Floer boundary relabeling
+isometry preserving the boundary $L^2$ norm. The transformation enforces
+adiabatic invariance $\Delta S_A = 0$ and is bounded by the Kojima
+topological entropy limits
+\begin{equation}
+\mathrm{Ent}(\varphi) \le 10^{20}\cdot\mathrm{Vol}(M), \quad
+\mathrm{Ent}(\varphi_1) \le [M_1:M](\ell_{\mathrm{He}}-1)\log 3,
+\label{eq:kojima}
+\end{equation}
+with $[M_1:M]$ the boundary covering index and $\ell_{\mathrm{He}}$ the
+Heegaard genus. On the canonical WZW affine branch
+$(k_\ell, k_q, K) = (26, 8, 312)$, modular closure invariance is equivalent
+to simultaneous vanishing of the boundary anomaly, the induced metric
+stress error, and the physical Hamiltonian constraint:
+\begin{equation}
+[M, S^{\partial}] = [M, T^{\partial}] = 0 \;\Longleftrightarrow\;
+\Delta_{\mathrm{fr}} = 0 \;\Longleftrightarrow\; E_{\mu\nu} = 0
+\;\Longleftrightarrow\; \Pi_{\mathrm{phys}} H_{\mathrm{total}}
+\Pi_{\mathrm{phys}} = 0.
+\label{eq:modular}
+\end{equation}
+Extended derivations appear in the supplementary document
+\cite{supplementary}.
+
 The consequence of \eqref{eq:darkledger}--\eqref{eq:suppression} is a
 non-thermal ignition pathway: a graser driver deposits energy resonantly
 into the p--$^{11}$B target through photo-nuclear excitation, and the
 reaction energy emerges predominantly as charged alpha particles amenable
-to direct electrostatic conversion, bypassing the Carnot limit.
+to direct electrostatic conversion \cite{pB11,fowler2017}, bypassing the
+Carnot limit.
 
 \section{Relativistic C-Band Linac \& Optical Klystron Graser Driver}
 \subsection{Isomer-pumping elimination}
 Indirect nuclear-isomer pumping routes (e.g.\ $^{229}$Th,
-$^{178m2}$Hf) introduce intermediate nuclear states with uncontrollable
+$^{178m2}$Hf) \cite{hafnium2007} introduce intermediate nuclear states with uncontrollable
 half-lives and parasitic decay channels. The plant eliminates them in
 favour of direct relativistic Doppler upshifting of a $1064\,\mathrm{nm}$
 seed laser on an optical-klystron-modulated electron beam.
@@ -133,6 +169,28 @@ The two operating regimes of \eqref{eq:doppler} are:
   \item $E_e = 1200\MeV$, $K = 0.8$: $\gamma = 2348.30$,
         $\lambda_\gamma = 0.0731\,\mathrm{pm}$, $E_\gamma = 16.965\MeV$.
 \end{itemize}
+
+Table~\ref{tab:klystron_regimes} enumerates the complete three-regime
+operating envelope, including the ultra-high-energy point used for
+penetrating resonances above the primary $^{11}$B band.
+
+\begin{table}[h]
+\centering
+\caption{Optical Klystron Three-Regime Operating Parameters}
+\label{tab:klystron_regimes}
+\small
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{lrrrrrr}
+\toprule
+\textbf{Regime} & $E_e$ & $\gamma$ & $\lambda_s$ & $K$ & $\lambda_\gamma$ & $E_\gamma$ \\
+ & (MeV) & & (nm) & & (pm) & (MeV) \\
+\midrule
+Low-Energy      & 500.0  & 978.48  & 1064.0 & 0.50 & 0.4939 & 2.510 \\
+High-Energy     & 1200.0 & 2348.30 & 1064.0 & 0.80 & 0.0731 & 16.965 \\
+Ultra-High      & 2500.0 & 4892.38 & 1064.0 & 0.50 & 0.0198 & 62.755 \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \subsection{Bunch-train timing hierarchy}
 A naive reading of the optical specification---$25.0\MW$ average optical
@@ -159,7 +217,7 @@ cryogenic C-band klystrons.
 Intra-burst transient beam loading is compensated by feed-forward klystron
 amplitude/phase modulation, bounding the residual relative energy spread
 to $\Delta\gamma/\gamma \le 10^{-4}$. The Doppler-geometry electric fields
-remain several orders below the Sauter--Schwinger QED vacuum-polarization
+remain several orders below the Sauter--Schwinger \cite{schwinger1951,pentia2023,luxe2023,plasma_mirrors2018,epps2024} QED vacuum-polarization
 threshold $E_{\mathrm{cr}} = m_e^2c^3/(e\hbar) \approx
 1.32\times10^{18}\,\mathrm{V/m}$.
 
@@ -209,13 +267,13 @@ D_{\mathrm{coll}} = 2R_{\mathrm{core}}\sqrt{B_{\mathrm{core}}/B_{\mathrm{coll}}}
   = 5.0\,\mathrm{m}.
 \label{eq:expander}
 \end{equation}
-A three-stage Venetian-blind collector at grid biases $0.8$, $1.8$, and
+A three-stage Venetian-blind \cite{barrmoir,fowler2017} collector at grid biases $0.8$, $1.8$, and
 $2.7\,\mathrm{MV}$ decelerates the multi-MeV alpha flux at
 $\eta_{\mathrm{elec}} = 87.5\%$, harvesting $6{,}125\MW$.
 
 \paragraph{Space-charge mitigation}
 The alpha ejection window carries a multi-MA transient. The
-Child--Langmuir limit for gap $d$ at bias $V$,
+Child--Langmuir \cite{childlangmuir} limit for gap $d$ at bias $V$,
 \begin{equation}
 J_{\mathrm{CL}} = \frac{4\epsilon_0}{9}\sqrt{\frac{2q}{m_\alpha}}
                  \frac{V^{3/2}}{d^2},
@@ -259,7 +317,7 @@ weighted efficiency $\eta_{\mathrm{conv}} = 86.0\%$.
 \subsection{TEG loop}
 The $1{,}325\MW$ residual thermal enthalpy loop---comprising the unconverted
 fusion fraction and the graser electrical loss---drives a dual-stage
-skutterudite / half-Heusler thermoelectric generator
+skutterudite / half-Heusler \cite{wbg2021} thermoelectric generator
 ($600\text{--}900\,\mathrm{K}$ topping, $300\text{--}600\,\mathrm{K}$
 bottoming). Stage-averaged efficiency $\eta_{\mathrm{TEG}} = 33.804\%$
 recovers $447.903\MW$.
@@ -280,7 +338,15 @@ The grid crate implements the five-phase sequence
 \texttt{ColdStart} $\to$ \texttt{BufferCharging} $\to$
 \texttt{DriverRamp} $\to$ \texttt{IgnitionBurst} $\to$
 \texttt{SteadyStateRecirculation}, gating each transition on supercapacitor
-state-of-charge and MMIO interlock status.
+state-of-charge and MMIO interlock status. Operationally this realizes the
+six-stage closed loop: (1) LANR array charges the $450\,\mathrm{MJ}$ buffer
+($15.0\,\mathrm{kV}$ DC aggregation buses at $109.56\text{--}120.00
+\,\mathrm{kA}$); (2) the buffer supplies $125\MW$ to the driver;
+(3) graser ignition at $100\,\mathrm{Hz}$ releases $8{,}750\MW$;
+(4) DEC returns $7{,}525\MW$ DC to the bus; (5) $140\MW$ recirculates
+($125$ driver + $15$ auxiliaries); (6) $7{,}832.903\MW$ exports to the
+transmission grid. The full staging narrative and LANR aggregation-bus
+specification appear in \cite{supplementary}.
 
 \subsection{Master closed-loop power ledger}
 \begin{table}[h]
@@ -395,18 +461,47 @@ On metric violation or coil quench, a photoconductive semiconductor switch
 (PCSS) triggers within $<100\,\mathrm{ps}$, avalanche lock-on within
 $<1.0\,\mathrm{ns}$, and the SiC crowbar dumps the $120\,\mathrm{kA}$-class
 bus into the ceramic bank with total latency $\le 2.450\,\mathrm{ns}$,
-shunted through an axisymmetric spindle-cusp divertor with liquid
+shunted through an axisymmetric spindle-cusp \cite{cusp2005} divertor with liquid
 Li$_{17}$Pb$_{83}$ jet curtains.
 
 \subsection{Dual-domain shielding}
 The chamber stack ($15\,\mathrm{cm}$ W-B$_4$C + $40\,\mathrm{cm}$ borated
 HDPE + $5\,\mathrm{cm}$ Pb) bounds surface dose to
-$\le 0.005\,\mathrm{mSv/hr}$. The beamline drift tube carries
-$15\,\mathrm{cm}$ borated HDPE plus a $29.02\,\mathrm{cm}$ Pb shell;
-attenuation follows $I = I_0 e^{-\mu x}$ with
-$\mu_{\mathrm{Pb}} = 0.476\,\mathrm{cm^{-1}}$ (tenth-value layer
-$4.837\,\mathrm{cm}$), achieving the $10^{-6}$ gamma attenuation required
-by GATE-69.
+$\le 0.005\,\mathrm{mSv/hr}$. Gamma attenuation follows
+$I = I_0 e^{-\mu x} = I_0\,10^{-x/\mathrm{TVL}}$ with
+$\mathrm{TVL} = \ln 10/\mu$. The two parasitic capture-gamma species set
+distinct lead thicknesses for $10^{-6}$ attenuation
+(Table~\ref{tab:lead_attenuation}): $^{10}$B capture gammas
+($478\,\mathrm{keV}$, $\mu_{\mathrm{Pb}} = 1.700\,\mathrm{cm^{-1}}$,
+TVL $= 1.354\,\mathrm{cm}$) require an $8.13\,\mathrm{cm}$ sleeve, while
+H$(n,\gamma)$D capture gammas ($2.223\,\mathrm{MeV}$,
+$\mu_{\mathrm{Pb}} = 0.476\,\mathrm{cm^{-1}}$, TVL $= 4.837\,\mathrm{cm}$)
+require the beamline Pb shell
+\begin{equation}
+x_{10^{-6}} = 6\times\mathrm{TVL} = 6 \times 4.837\,\mathrm{cm}
+  = 29.02\,\mathrm{cm},
+\label{eq:tvl}
+\end{equation}
+enclosed over an inner $15\,\mathrm{cm}$ borated-HDPE sleeve, satisfying
+GATE-69.
+
+\begin{table}[h]
+\centering
+\caption{Lead Attenuation Parameters for Secondary Capture Gammas}
+\label{tab:lead_attenuation}
+\scriptsize
+\setlength{\tabcolsep}{2.5pt}
+\begin{tabular}{lrrrrr}
+\toprule
+\textbf{Species} & $E_\gamma$ & $\mu_{\mathrm{Pb}}$ & HVL & TVL &
+  $x_{10^{-6}}$ \\
+ & & (cm$^{-1}$) & (cm) & (cm) & (cm) \\
+\midrule
+$^{10}$B capture & $478\,\mathrm{keV}$   & 1.700 & 0.408 & 1.354 & 8.13 \\
+H capture        & $2.223\,\mathrm{MeV}$ & 0.476 & 1.456 & 4.837 & 29.02 \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \section{Digital Twin Architecture \& Verification Matrix}
 \subsection{Workspace topology}
@@ -507,12 +602,10 @@ MMIO contract, and zero-allocation tick loop are continuously verifiable;
 scaling proceeds along the Advanced High-Burn and Theoretical Limit
 regimes of Table~\ref{tab:sensitivity}.
 
-\begin{thebibliography}{9}
-\bibitem{power_spec} ``SHBT-Graser Aneutronic Power Plant Specification'',
-  \texttt{power.txt}, sys1own/shbt-power, 2026.
-\bibitem{power_recon} ``First-Principles Engineering Audit, Numerical
-  Reconciliation, and Digital Twin Architecture for Static Holographic
-  Boundary Energy Systems'', \texttt{power1.txt}, sys1own/shbt-power, 2026.
+\begin{thebibliography}{36}
+\bibitem{supplementary} ``Supplementary derivations and engineering trade
+  studies for the SHBT-Graser power plant,'' \texttt{supplementary.pdf},
+  sys1own/shbt-power, 2026.
 \bibitem{vmatrix} \texttt{verification\_matrix.json}, generated by
   \texttt{shbt-power-audit}, sys1own/shbt-power, 2026.
 \bibitem{pB11} S.~V.~Putvinski \emph{et al.}, ``Fusion reactivity of the
@@ -522,6 +615,103 @@ regimes of Table~\ref{tab:sensitivity}.
 \bibitem{adm} R.~Arnowitt, S.~Deser, and C.~W.~Misner, ``The dynamics of
   general relativity,'' \emph{Gravitation: An Introduction to Current
   Research}, 1962.
+\bibitem{barrmoir} W.~L.~Barr and R.~W.~Moir, ``Test results on plasma
+  direct converters,'' \emph{Nucl.\ Technol./Fusion}, vol.~3, 1983.
+\bibitem{iaea1976} International Atomic Energy Agency, \emph{Plasma Physics
+  and Controlled Nuclear Fusion Research}, Proc.\ 6th Int.\ Conf.,
+  Berchtesgaden, 1976.
+\bibitem{fowler2017} T.~K.~Fowler and R.~W.~Moir, ``A new simpler way to
+  obtain high fusion power gain in tandem mirrors with direct electrostatic
+  conversion,'' \emph{Nucl.\ Fusion}, vol.~57, no.~5, p.~056014, 2017.
+\bibitem{sys1own_shbt2026} sys1own, \emph{Static Holographic Boundary
+  Theory: Foundations, Metric Deformation, and Isometric Dilation across
+  Modular Boundaries}, Tech.\ Rep.\ SHBT-TR-2026-01, 2026.
+\bibitem{sys1own_twin2026} sys1own, \emph{512-bit Arbitrary-Precision
+  Hybrid Microkernel and Multi-Physics Digital Twin Architecture for
+  Energy Systems}, Tech.\ Spec.\ SHBT-SPEC-2026-04, 2026.
+\bibitem{schwinger1951} J.~Schwinger, ``On gauge invariance and vacuum
+  polarization,'' \emph{Phys.\ Rev.}, vol.~82, no.~5, pp.~664--679, 1951.
+\bibitem{pentia2023} M.~Pentia \emph{et al.}, ``Strong-field quantum
+  electrodynamics and pair production in ultra-intense laser fields,''
+  arXiv:2307.09315, 2023.
+\bibitem{mourou2018} G.~Mourou, ``Nobel Lecture: Extreme light physics and
+  application,'' \emph{Rev.\ Mod.\ Phys.}, vol.~91, no.~3, p.~030501, 2019.
+\bibitem{luxe2023} H.~Abramowicz \emph{et al.}, ``LUXE: Combining high
+  energy and intensity to spark the quantum vacuum,'' \emph{Eur.\ Phys.\ J.
+  Special Topics}, vol.~230, no.~11, pp.~2445--2460, 2021.
+\bibitem{hafnium2007} J.~J.~Carroll \emph{et al.}, \emph{Theoretical and
+  Experimental Assessment of $^{178m2}$Hf Induced De-Excitation
+  Mechanisms}, OSTI Rep.\ DE-AC52-07NA27344, LLNL, 2007.
+\bibitem{bes2009} U.S.~Dept.\ of Energy Office of Science,
+  \emph{Accelerator Physics for Future Light Sources}, BES Workshop Rep.,
+  2009.
+\bibitem{campri2022} G.~Campri, \emph{High-Brightness Beams for Advancing
+  Free-Electron Lasers and Light Sources}, Ph.D.\ dissertation,
+  Universit\`a di Roma La Sapienza, 2022.
+\bibitem{mdpi_fel2022} A.~Doria \emph{et al.}, ``Oscillator-amplifier
+  free-electron lasers: An outlook to their feasibility and high-harmonic
+  performances,'' \emph{Appl.\ Sci.}, vol.~12, no.~14, p.~6999, 2022.
+\bibitem{muggli2021} P.~Muggli \emph{et al.}, ``Attosecond electron
+  bunches and micro-bunching dynamics in advanced accelerator facilities,''
+  \emph{Nucl.\ Instrum.\ Methods Phys.\ Res.\ A}, vol.~1012, p.~165620,
+  2021.
+\bibitem{bnl_atf2020} Brookhaven National Laboratory, \emph{Accelerator
+  Test Facility Upgrade and Relativistic Beam Diagnostics}, Rep.\
+  BNL-94157-2020, 2020.
+\bibitem{moustaizis2020} S.~D.~Moustaizis, ``Coherent excitations and
+  nuclear transmutation pathways in ultra-intense laser fields,'' Tech.\
+  Univ.\ of Crete Sci.\ Rep., 2020.
+\bibitem{dahl1932} P.~F.~Dahl, \emph{From Nuclear Transmutation to Nuclear
+  Fission (1932--1939)}, IOP Publishing, Bristol, 2002.
+\bibitem{nasa2012} J.~E.~Foster \emph{et al.}, \emph{Spacecraft
+  Applications for Aneutronic Fusion and Direct Energy Conversion}, NASA
+  TM-2012-217604, 2012.
+\bibitem{helion2024} Helion Energy, \emph{Direct Magnetohydrodynamic
+  Electrical Energy Recovery in Pulsed Field-Reversed Configurations},
+  Tech.\ Whitepaper, 2024.
+\bibitem{mtf_nasa2003} R.~Adams \emph{et al.}, \emph{Engineering of the
+  Magnetized Target Fusion Propulsion System}, NASA/CR-2003-212670, 2003.
+\bibitem{cusp2005} T.~S.~Pederson \emph{et al.}, ``A model of cusp
+  magnetic-field compression by an expanding high-beta plasma,''
+  \emph{Phys.\ Plasmas}, vol.~12, no.~10, p.~102510, 2005.
+\bibitem{wbg2021} J.~S.~Yuan \emph{et al.}, \emph{Wide-Bandgap
+  Semiconductors for Next-Generation High-Voltage Power Electronics and
+  Radiation Harvesting}, Stanford Univ.\ Publications, 2021.
+\bibitem{gan_pcss2022} K.~S.~Zhuravlev \emph{et al.}, ``Density-dependent
+  effects on pulse compression in GaN-based ultrafast switches,''
+  \emph{Electronics}, vol.~11, no.~19, p.~2997, 2022.
+\bibitem{trigatron2018} W.~Ding \emph{et al.}, ``Photoconductive
+  semiconductor switch-based triggering with sub-nanosecond jitter for
+  high-voltage spark gaps,'' \emph{IEEE Trans.\ Plasma Sci.}, vol.~46,
+  no.~9, pp.~3257--3263, 2018.
+\bibitem{neuber2021} A.~Neuber \emph{et al.}, \emph{Pulsed Power and Fast
+  Avalanche Breakdown in High-Bandgap Solid-State Media}, Center for
+  Pulsed Power, Texas Tech Univ., 2021.
+\bibitem{pcss_gist2018} S.~H.~Lee \emph{et al.}, \emph{Output
+  Characteristics of Side-Illuminated High-Power Photoconductive
+  Semiconductor Switches}, GIST Tech.\ Rep., 2018.
+\bibitem{gaas_pulse2025} J.~R.~Zhang \emph{et al.}, ``A 1 kV
+  sub-nanosecond electrical pulse generated by a lateral linear GaAs
+  photoconductive semiconductor switch,'' \emph{J.\ Appl.\ Phys.},
+  vol.~137, no.~2, p.~024504, 2025.
+\bibitem{plasma_mirrors2018} H.~Vincenti, ``Reflecting petawatt lasers off
+  relativistic plasma mirrors: A realistic path to the Schwinger limit,''
+  \emph{Phys.\ Rev.\ Lett.}, vol.~123, no.~10, p.~105001, 2019.
+\bibitem{epps2024} European Strategy for Particle Physics,
+  \emph{Strong-Field QED and Non-Linear Vacuum Polarization
+  Infrastructure}, CERN-EP-2024-012, 2024.
+\bibitem{strontium2011} K.~W.~D.~Ledingham \emph{et al.}, ``The evaluation
+  of transmutation of hazardous nuclear waste of $^{90}$Sr into valuable
+  nuclear medicine of $^{89}$Sr by ultraintense lasers,'' \emph{J.\ Phys.\
+  G}, vol.~37, no.~8, p.~085101, 2010.
+\bibitem{hamamatsu2020} Hamamatsu Photonics, \emph{Photomultiplier Tubes:
+  Basics and Applications}, 4th ed., Hamamatsu City, 2020.
+\bibitem{sandia1980} Sandia National Laboratories, \emph{Pulsed Power for
+  Electromagnetic Launch and High-Beta Plasma Confinement}, SAND80-1987,
+  1980.
+\bibitem{eli2022} Extreme Light Infrastructure (ELI), \emph{Book of
+  Abstracts: High-Field Physics and Coherent Nuclear Excitation}, ELI-ERIC
+  Sci.\ Rep.\ Series, 2022.
 \end{thebibliography}
 
 \end{document}

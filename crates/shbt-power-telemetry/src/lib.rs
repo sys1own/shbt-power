@@ -1,6 +1,6 @@
 //! shbt-power-telemetry — SHBT-POWER-MMIO register driver, zero-copy SPSC
 //! shared-memory telemetry ring, and CRC-32/Castagnoli integrity
-//! (power.txt §6, power1.txt §12).
+//! (paper/main.tex §6, paper/supplementary.tex §12).
 //!
 //! C-ABI layout and SPSC ring semantics transferred from
 //! `sys1own/shbt-recon`; SECDED/MMIO anchoring from `sys1own/shbt-qc`.

@@ -1,6 +1,6 @@
 //! End-to-end closed-loop integration test: drives all subsystems through
 //! the 5-phase handover FSM and asserts the master ledger invariants
-//! (power.txt §6-§8).
+//! (paper/main.tex §6-§8).
 
 use shbt_power_chamber::ChamberSubsystem;
 use shbt_power_core::{PhysicsSubsystem, PlantStateSnapshot};

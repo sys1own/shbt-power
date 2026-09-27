@@ -2,7 +2,7 @@
 
 Multi-physics digital twin of the SHBT-Graser aneutronic p-11B fusion power
 plant (8,750 MW fusion / 7,832.903 MW net export), implementing the
-specification in `power.txt` + `power1.txt` and the 70-gate verification
+specification in `paper/main.tex` + `paper/supplementary.tex` and the 70-gate verification
 matrix.
 
 ## Layout

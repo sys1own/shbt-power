@@ -1,7 +1,7 @@
 //! shbt-power-dec — direct energy conversion: alpha-stream kinetics, the
 //! 100:1 magnetic expander trumpet, Child-Langmuir space-charge sheath,
 //! three-stage Venetian-blind electrostatic collection, and WBG panels
-//! (power.txt §5, power1.txt §6).
+//! (paper/main.tex §5, paper/supplementary.tex §6).
 
 use shbt_power_core::constants::*;
 use shbt_power_core::{PhysicsSubsystem, PlantStateSnapshot};

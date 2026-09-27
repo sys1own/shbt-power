@@ -1,5 +1,5 @@
 """shbt_power.sweep — five-regime parametric efficiency sensitivity analysis
-(power.txt §6, tab:sensitivity_analysis)."""
+(paper/main.tex §6, tab:sensitivity_analysis)."""
 
 from __future__ import annotations
 
