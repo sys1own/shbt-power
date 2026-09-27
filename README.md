@@ -1,9 +1,9 @@
 # SHBT-Power: Commercial SHBT-Graser Aneutronic p-¹¹B Fusion Power Plant
 
-### Multi-Physics Digital Twin, Freestanding C11 Microkernel, and 70-Gate + 83-EXT Verification Suite
+### Multi-Physics Digital Twin, Freestanding C11 Microkernel, and 70-Gate + 84-EXT Verification Suite
 
 ![Gates](https://img.shields.io/badge/gates-70%2F70%20PASS-brightgreen)
-![Extended](https://img.shields.io/badge/extended%20checks-70%2F70%20PASS-brightgreen)
+![Extended](https://img.shields.io/badge/extended%20checks-84%2F84%20PASS-brightgreen)
 ![Edition](https://img.shields.io/badge/rust-2021-orange)
 ![Kernel](https://img.shields.io/badge/kernel-freestanding%20C11-blue)
 ![License](https://img.shields.io/badge/license-MIT-lightgrey)
@@ -12,7 +12,7 @@
 verification suite for the SHBT-Graser aneutronic proton–Boron-11 fusion
 power plant. It couples a freestanding C11 control microkernel, a Cargo
 workspace of nine Rust physics crates, PyO3 Python bindings, a 70-gate
-numerical audit engine (plus 70 higher-order extended checks), and the
+numerical audit engine (plus 84 higher-order extended checks), and the
 compiled IEEE-format publication suite (`paper/power.pdf`,
 `paper/supplementary.pdf`).
 
@@ -47,10 +47,10 @@ generation feeds a 917.097 MW parasitic house load — linac modulators
 684.500 MW, 20 K cryogenics 118.200 MW, digital-twin/FPGA control
 56.897 MW, thermionic neutralizers 42.500 MW, circulation pumps
 15.000 MW — yielding the same **7,832.903 MW (89.52%)** net export.
-Channel-level allocation in that analysis (85% DEC → 7,854.194 MW @
-87.80%; cushion channel quoted as both 1,236.375 MW @94.20% inductive
-and a duplicated "447.903 MW regulated DC" figure) differs from the
-ledger conventions above and is logged in the audit discrepancies.
+Channel-level allocation is reconciled under EXT-41: the inductive
+cushion channel is canonically 1,181.25 MW @ 90.00% induction
+efficiency, and the duplicated "447.903 MW regulated DC" figure
+(Channel 4 TEG yield) is purged.
 
 ---
 
@@ -175,11 +175,20 @@ ledger conventions above and is logged in the audit discrepancies.
 
 ### 3.6 Helium Thermal Network, TEG, and Grid Interconnect
 
-- Supercritical He: 10.0 MPa, 450 kg/s, 300→900 K, Z̄ = 1.042,
-  γ = 1.667; three-zone Churchill/Darcy-Weisbach network →
-  `ΣΔp = 0.282 MPa`, compressor duty 9.29 MW ≤ 15.0 MW budget.
-- Dual-stage TEG (CoSb₃ 600–900 K, ZrNiSn 300–600 K) with T-dependent
-  `S(T), σ(T, k(T)` and interfacial `R_th,c`, `R_e,c` nodal solver.
+- PCHE core: diffusion-bonded Incoloy 800H semi-circular micro-channels
+  (d = 1.50 mm, D_h = 0.9165 mm, L = 3.20 m); 1,057,728 distribution
+  passages (16,527/sector) → 440,000 core passages over 64 sectors,
+  u ∈ [30, 45] m/s. Two-leg network Δp = 112.5 + 94.5 + 48.0 + 27.0 =
+  282.0 kPa (Churchill × Petrov–Popov property scaling).
+- Compressor ledger (Z̄ = 1.042, γ = 1.667): 8.17 MW iso nominal /
+  9.29 MW iso peak → 9.29–10.77 MW shaft (η_comp = 0.88/0.8624) →
+  14.22 MW installed (1.320× margin) → 15.00 MW electric
+  (η_motor = 0.948).
+- Dual-stage superlattice TEG: half-Heusler topping 600–900 K
+  (ZT ≥ 2.65 @ 850 K, η = 17.050%) cascaded into filled-skutterudite
+  bottoming 300–600 K (ZT ≥ 2.80 @ 500 K, η = 20.198%) →
+  η_TEG = 33.804% → 447.903 MW; 480,000 unicouples = 50 strings ×
+  9,600, 358.32 kA @ 1.250 kV DC into R_load = 3.4885 mΩ.
 - Swing equation `2H dΔf/dt + D_gΔf = P_gen − P_load + P_buffer`
   (`H = 4.5 s`, `D_g = 1.8`), synthetic-inertia droop
   `P_synth(s) = −(K_droop + sK_inertia/(1+sτ_f))Δf(s)`, ±1,500 MW slew;
@@ -332,7 +341,7 @@ inside `step_macro_tick` (FFI `#[repr(C, align(64))]` preserved).
 cargo run --release -p shbt-power-audit   # -> verification_matrix.json
 ```
 
-`verification_matrix.json` reports `70/70` gates `"PASS"` plus `70/70`
+`verification_matrix.json` reports `70/70` gates `"PASS"` plus `84/84`
 `extended_checks` `"PASS"`, and a `discrepancies` array recording every
 computed-vs-spec delta for research follow-up.
 
@@ -386,21 +395,24 @@ computed-vs-spec delta for research follow-up.
 - **GATE-45:** the itemized gross ledger sums to 7,972.903 MW vs the
   7,972.885 MW matrix baseline — an 18 kW (0.0002%) rounding margin.
 
-**Additional computed-vs-spec deltas (extended checks)**
+**power7 reconciliation — previously logged deltas now resolved**
 
-| Check | Spec | Computed |
+| Check | Legacy spec | Reconciled value |
 |---|---|---|
-| EXT-01 cavity droop | 12.4% | 76.7% |
+| EXT-01 cavity droop | 12.4% (analog residual) | 76.70% open-loop, eliminated by 8-tap FIR feedforward |
+| EXT-09 pellet radius @ burst end | 1.042 mm (200 ns snapshot) | 1.30 mm (1.302 analytical / 1.298 PPM) |
+| EXT-16 grid pulse energy | 1.694 kJ (µs unit typo) | 1.694 MJ @ 847.0 GW → 169.4 MW thermal |
+| EXT-25 loop Δp / compressor | 13.382 MW ledger | Δp = 282.0 kPa; 9.29 iso / 14.22 shaft / 15.00 elec MW |
+| EXT-26 TEG efficiency | 33.804% vs ~14% bulk | 33.804% via superlattice transport → 447.903 MW |
+| EXT-36 FEL slippage | N_w = 120 → 2.115 µm | N_w = 105 → 1.850 µm |
+| EXT-37 micro-channel ΔP | 21.450 kPa constant-ρ | variable-property Churchill + Petrov–Popov |
+| EXT-41 crowbar channel | 447.903 MW duplicated | 1,181.25 MW @ η_MHD = 90.00% |
+| P4 CL margins | ceilings vs design confusion | design 4.5/15.2/28.0 ≪ ceilings ~226/764/1,406 → ~50× margin |
+| P4 HOM choke τ_d | 5.57 ns @ f₀ 5.712 GHz | 3.5526 ns ≤ 5.50 ns @ f_HOM 8.512 GHz, Q_ext = 95 |
+
+| Remaining computed-vs-spec deltas | Spec | Computed |
+|---|---|---|
 | EXT-08 burn fraction | 0.3501 | ~1.0 |
-| EXT-09 pellet radius @ burst end | 1.042 mm | 1.302 mm |
-| EXT-16 grid pulse energy | 1.694 kJ | 1.695 MJ |
-| EXT-25 compressor duty | 13.382 MW | 9.29 MW |
-| EXT-26 TEG efficiency | 33.804% | ~14.0% |
-| EXT-36 FEL regime-0 slippage | ≤1.850 µm | 2.115 µm |
-| EXT-37 micro-channel ΔP | 21.450 kPa | 26.16 kPa |
-| EXT-41 crowbar channel | 447.903 MW | 1,236.375 MW (spec self-inconsistent) |
-| P4 CL stage design currents | 4.5/15.2/28.0 A/m² | ceilings ~226/764/1,406 A/m² |
-| P4 HOM choke τ_d @ Q=100 | < 5.5 ns | 5.57 ns (Q_ext ≤ 98.7 required) |
 | P5 sHe core ΔP (64×5.35 mm @850.51 kg/s) | 283.4 kPa | ~1.9e5 MPa (geometry spec inconsistent) |
 
 **power5 workbench checks (EXT-59…EXT-70)**

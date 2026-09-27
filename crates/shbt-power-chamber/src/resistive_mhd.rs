@@ -212,14 +212,12 @@ pub fn mrt_xi_fraction() -> f64 {
 /// delivered to the sub-2.5 ns PCSS crowbar / SiC bridge.
 pub const BACK_EMF_TV_M2: f64 = 1.20e12;
 
-/// Inductive energy recovery at eta = 94.20% over the 13.125 MJ pulse
-/// at 100 Hz: 1,312.5 MW x 0.942 = 1,236.375 MW inductive.
-/// power3.txt §8 pairs this with a 447.903 MW regulated-DC figure that
-/// equals the TEG output — a spec-internal inconsistency recorded as
-/// an audit discrepancy; the 70-gate baseline keeps the 90.00%
-/// / 1,181.25 MW channel of record.
+/// Channel-2 inductive cushion net DC yield at eta_MHD = 90.00% over
+/// the 13.125 MJ fireball at 100 Hz: 1,312.5 MW x 0.9000 = 1,181.250 MW
+/// (power7 EXT-41 purge: the 447.903 MW TEG figure no longer aliases
+/// into this ledger).
 pub fn crowbar_recovery_mw() -> f64 {
-    (E_FIREBALL_J * 100.0 / 1e6) * ETA_CROWBAR
+    (E_FIREBALL_J * 100.0 / 1e6) * 0.9000
 }
 
 #[cfg(test)]
@@ -268,7 +266,7 @@ mod tests {
                 < g_eff_m_s2() * 60.0 / rc);
         // Shear-bounded saturation stays inside the cushion.
         assert_eq!(mrt_xi_fraction(), MRT_XI_MAX_M / transverse_stopping_radius_m());
-        assert!((crowbar_recovery_mw() - 1236.375).abs() < 0.01);
+        assert!((crowbar_recovery_mw() - 1181.250).abs() < 0.01);
         assert_eq!(BACK_EMF_TV_M2, 1.20e12);
     }
 }

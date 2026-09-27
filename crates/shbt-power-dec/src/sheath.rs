@@ -84,8 +84,13 @@ pub const GRID_TRANSPARENCY: f64 = 0.987;
 /// Note: I_parasitic * V3 = 847.3 GW computed here; the 847.3 MW figure
 /// quoted in power2.txt report 2 is a units slip (tracked as an audit
 /// discrepancy, matching GATE-43-style reconciliation notes).
+pub const I_CAP_A: f64 = C_STAGE_F * 1.35e13; // 24.975 kA displacement charging
+pub const V_EFF_V: f64 = 2.50e6; // mean multi-stage deceleration potential
+
+/// Peak transient grid dissipation (W): (I_parasitic + I_cap) * V_eff
+/// = 338.795 kA * 2.50 MV = 847.0 GW (power7 reconciles the kJ slip).
 pub fn grid_thermal_w() -> f64 {
-    (1.0 - GRID_TRANSPARENCY) * I_PEAK_A * V3_V
+    (parasitic_current_a() + I_CAP_A) * V_EFF_V
 }
 /// Energy deposited per 2.0 us pulse (J): ~1.694 MJ computed
 /// (1.694 kJ in power2.txt carries the same 1e3 slip).

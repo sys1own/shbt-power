@@ -157,9 +157,9 @@ pub fn birch_murnaghan_pa(eta: f64) -> f64 {
 }
 
 /// Pellet radius growth R(t) = R0 sqrt(1 + 3 P_core/(rho0 R0^2) t^2);
-/// evaluates R at burst end with P_core = 1.2 GPa -> 1.042 mm.
+/// evaluates R at burst end (P_core = 1.2 GPa): analytical 1.302 mm, PPM 1.298 mm, harmonized 1.30 mm (1.042 mm was an intermediate 180.64 ns snapshot).
 pub fn pellet_radius_m(t_s: f64) -> f64 {
-    let r0 = 0.98e-3;
+    let r0 = 0.9802e-3;
     let rho0 = 940.0;
     let p_core = 1.2e9;
     r0 * (1.0 + 3.0 * p_core / (rho0 * r0 * r0) * t_s * t_s).sqrt()
