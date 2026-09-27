@@ -1,5 +1,5 @@
 //! shbt-power-linac — 5.712 GHz C-band linac macro-burst hierarchy and
-//! optical-klystron Doppler upshifting solver (power.txt §3, power1.txt §2).
+//! optical-klystron Doppler upshifting solver (paper/main.tex §3, paper/supplementary.tex §2).
 //!
 //! Synthesizes the 2,500-bunch macro-burst train (175.070 ps spacing,
 //! 437.675 ns envelope, 571.2 GW burst power, 25.0 MW average at 100 Hz),

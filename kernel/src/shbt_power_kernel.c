@@ -1,6 +1,6 @@
 /*
  * shbt_power_kernel.c — freestanding C11 microkernel runtime for the
- * SHBT-Graser p-11B power plant (power.txt §6).
+ * SHBT-Graser p-11B power plant (paper/main.tex §6).
  *
  * Implements the 128-byte SHBT-POWER-MMIO register service at
  * 0x70000000: CRC-32/Castagnoli integrity, sub-2.5 ns PCSS solid-state

@@ -1,6 +1,6 @@
 //! shbt-power-grid — 1,800-module LANR starter array, 450 MJ supercapacitor
 //! buffer, five-phase handover FSM, dual-stage TEG reclamation, and the
-//! master closed-loop net-grid ledger (power.txt §6, power1.txt §4/§11).
+//! master closed-loop net-grid ledger (paper/main.tex §6, paper/supplementary.tex §4/§11).
 //!
 //! LANR ledger transferred from `sys1own/shbt-cf`/`sys1own/shbt-sglt`
 //! (`module_ledger.rs`): 555.03 W net per module -> 999.054 kW array.
@@ -122,7 +122,7 @@ impl PlantLedger {
         let p_rad = P_FUSION_MW * FRAC_RAD;
         let direct = p_alpha * ETA_ELEC + p_mhd * ETA_MHD + p_rad * ETA_RAD;
         let eta_conv = direct / P_FUSION_MW;
-        // Thermal feed: unconverted fusion + driver losses (power.txt §6).
+        // Thermal feed: unconverted fusion + driver losses (paper/main.tex §6).
         let thermal_in = P_FUSION_MW * (1.0 - eta_conv) + (P_GRASER_ELEC_MW - P_GRASER_BEAM_MW);
         let p_teg = teg.harvest_mw(thermal_in);
         let gross = direct + p_teg;
@@ -140,7 +140,7 @@ impl PlantLedger {
         }
     }
 
-    /// Parametric regime evaluation (power.txt §6 sensitivity analysis).
+    /// Parametric regime evaluation (paper/main.tex §6 sensitivity analysis).
     pub fn regime(q_fusion: f64, eta_graser: f64, eta_conv: f64, teg: &TegArray) -> Self {
         let p_fus = P_GRASER_BEAM_MW * q_fusion;
         let direct = p_fus * eta_conv;

@@ -1,7 +1,7 @@
 //! shbt-power-holography — macroscopic Stinespring dilation, dark-ledger
 //! partitioning, Heegaard-Floer boundary relabeling, Kojima entropy
-//! ceiling, and real-time ADM 3+1 metric stabilization (power.txt §2,
-//! power1.txt §10).
+//! ceiling, and real-time ADM 3+1 metric stabilization (paper/main.tex §2,
+//! paper/supplementary.tex §10).
 //!
 //! Stinespring logic transferred from `sys1own/shbt-recon`
 //! (macroscopic dilation over N_local ~ 1e20, eta_A = 10/33,

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""shbt-power master test runner (power.txt §8).
+"""shbt-power master test runner (paper/main.tex §8).
 
 Pipeline:
   1. cargo test --workspace (Rust unit + integration suites)

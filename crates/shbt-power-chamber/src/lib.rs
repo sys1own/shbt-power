@@ -1,5 +1,5 @@
 //! shbt-power-chamber — resistive-MHD plasma fireball stopping radius and
-//! first-wall heat-flux solver (power.txt §5, power1.txt §7).
+//! first-wall heat-flux solver (paper/main.tex §5, paper/supplementary.tex §7).
 //!
 //! The conductive fireball expands against the spindle-cusp containment
 //! field and halts where magnetic pressure `B^2/2mu0` balances the plasma
@@ -23,7 +23,7 @@ pub fn cushion_m(r_stop: f64) -> f64 {
     R_WALL_M - r_stop
 }
 
-/// Radiant flash per shot (J): 17.5 MJ per power1.txt §7 (reconciled
+/// Radiant flash per shot (J): 17.5 MJ per paper/supplementary.tex §7 (reconciled
 /// energy split, distinct from the 5% steady radiant DEC channel).
 pub fn first_wall_fluence_j_cm2() -> f64 {
     let e_rad_j = 17.5e6;

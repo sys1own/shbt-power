@@ -1,5 +1,5 @@
 //! shbt-power-audit — master GATE-01..GATE-70 numerical verification engine
-//! (power.txt §7, power1.txt §11).
+//! (paper/main.tex §7, paper/supplementary.tex §11).
 //!
 //! `cargo run --release -p shbt-power-audit` evaluates all 70 acceptance
 //! gates against the physics crates and writes a schema-compliant
@@ -195,7 +195,7 @@ fn main() {
         "%", 3);
     if !approx(decs.trumpet.d_coll_m, 12.0, 1e-9) {
         g30.note = Some(format!(
-            "spec D_collector >= 12.0 m; flux-conserved 100:1 expander gives {:.3} m (power1.txt reconciles to 5.0 m)",
+            "spec D_collector >= 12.0 m; flux-conserved 100:1 expander gives {:.3} m (paper/supplementary.tex reconciles to 5.0 m)",
             decs.trumpet.d_coll_m
         ));
         discrepancies.push(format!(
@@ -249,7 +249,7 @@ fn main() {
         "m @3.5T", 3);
     if ch.r_stop_min > 0.863 {
         g43.note = Some(format!(
-            "physical stopping radius {:.3} m (3.5 T) / {:.3} m (4.0 T) exceeds the 0.863 m bound in the task brief; power1.txt derives {:.3} m at 3.5 T with {:.3} m cushion in the 2.20 m chamber",
+            "physical stopping radius {:.3} m (3.5 T) / {:.3} m (4.0 T) exceeds the 0.863 m bound in the task brief; paper/supplementary.tex derives {:.3} m at 3.5 T with {:.3} m cushion in the 2.20 m chamber",
             ch.r_stop_min, ch.r_stop_nominal, r_worst, R_WALL_M - r_worst
         ));
         discrepancies.push(format!(

@@ -1,6 +1,6 @@
 //! shbt-power-py — PyO3 C-extension exporting `PyShbtDigitalTwin`, a
 //! zero-copy handle over the multi-physics plant state for the Python
-//! orchestration layer (power.txt §6).
+//! orchestration layer (paper/main.tex §6).
 // pyo3 0.20's #[pymethods] emits a non-local impl; harmless, allowed here.
 #![allow(non_local_definitions)]
 

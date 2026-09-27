@@ -1,6 +1,6 @@
 /* linker.ld — contiguous SRAM arena for the shbt-power microkernel.
  * MMIO register arena anchored at SHBT_POWER_BASE_ADDR = 0x70000000
- * (power.txt §6); the kernel image loads low and the 128-byte register
+ * (paper/main.tex §6); the kernel image loads low and the 128-byte register
  * block is owned by the device mapping.
  */
 

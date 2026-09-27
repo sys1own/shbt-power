@@ -1,5 +1,5 @@
 # shbt-power workspace manifest — SHBT-Graser aneutronic p-11B power plant
-# multi-physics digital twin (power.txt, power1.txt).
+# multi-physics digital twin (paper/main.tex, paper/supplementary.tex).
 
 [package]
 name = "shbt-power"

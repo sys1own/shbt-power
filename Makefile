@@ -1,4 +1,4 @@
-# shbt-power unified build system (power.txt §8).
+# shbt-power unified build system (paper/main.tex §8).
 #  - kernel/: C11 freestanding microkernel (MMIO @ 0x70000000)
 #  - crates/: Rust workspace (multi-physics digital twin + audit engine)
 #  - bindings/shbt-power-py: PyO3 C-extension
