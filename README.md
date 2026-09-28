@@ -277,7 +277,7 @@ allocations**, executing a step in ~4.2 µs against the ≤10 µs bound at
 <0.042% L2 error vs the full Hall-MHD/BFP model. The verbatim A0/B0
 matrices are reproduced in `supplementary.pdf` Appendix A.
 
-### 3.8 Solver Suite Upgrade (power3)
+### 3.8 Solver Suite Upgrade
 
 - **core/rom:** 12-state affine state-space step + timing benchmark.
 - **linac/cavity_dynamics:** loaded-Q driven-envelope ODE (Q_L = 8,500,
@@ -299,7 +299,7 @@ matrices are reproduced in `supplementary.pdf` Appendix A.
   micro-channel solve (ΔP, W_pump ≤ 15 MW) and Coffin–Manson–Morrow /
   Chaboche armor fatigue N_f = 4.38e6 ≥ 4.0e6 cycles.
 
-### 3.9 First-Principles Workbench (power4)
+### 3.9 First-Principles Workbench
 
 Dual-tier architecture: **Tier 1** houses the PDE/PIC/FEA solvers below;
 **Tier 2** executes the 100 Hz HIL plant loop with zero heap allocation
