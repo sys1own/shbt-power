@@ -252,22 +252,6 @@ shbt-power/
 
 ---
 
-## 6. Upstream SHBT Ecosystem Integration Crosswalk
-
-| Repository | Direct Technology Transfer & Domain Responsibility |
-|---|---|
-| `shbt-power` | Master fusion digital twin; top-level Cargo workspace, multi-channel DEC, closed-loop ledger (7,832.903 MW net export), 70-gate verification harness. |
-| `shbt-cf` | Cold fusion authority; 1,800-module LANR starter grid (555.03 W net/cell, 999.054 kW array), dual-stage TEG enthalpy recovery, 3D Eulerian-Eulerian helium thermal-hydraulics. |
-| `shbt-ghost` | Fast optical interlocks and metric stabilization; sub-2.5 ns PCSS crowbars, 94.20% SiC recovery shunts, ADM 3+1 stabilization (`βⁱ → 0`, `|det(g)+1| ≤ 10⁻¹²`). |
-| `shbt-exotic` | Boundary CFT foundations; boundary state-vector formulations, Heegaard-Floer symplectic boundary relabeling (`T^∂ᵢⱼ`), invariant dark ledger partitioning (`η_D = 23/33`). |
-| `shbt-qc` | Bare-metal C11 `shbt-os` runtime, base 56-byte `SHBT-MMIO-1` standard at `0x70000000`, SECDED Hamming(72,64) ECC, AVX-512 interlocks. |
-| `shbt-recon` | Macroscopic state tracking; Stinespring dilation (`V_macro_unified` over N ~ 10²⁰ particles), 128-byte dual-cacheline C-ABI mapping, POSIX SPSC shared-memory rings. |
-| `shbt-sglt` | Relativistic optics and cryogenics; 2PN electron beam optics, CVD Diamond-on-GaN thermal dissipation bounds, NbN/MgB₂ quench margins (11.79 K headroom). |
-| `shbt-precision` | Computational mathematics core; 512-bit arbitrary-precision framework, canonical WZW affine branch `(26, 8, 312)`, zero-allocation loop arithmetic. |
-| `shbt-warp` | Holographic warp drive digital twin; consumes `shbt-power`'s 70-gate verification methodology (`verification_matrix.json`) and closed-loop thermodynamic ledger standards for warp bubble boundary certification. |
-
----
-
 ### 3.7 Real-Time Reduced-Order Model (ROM)
 
 A 12-state affine POD–Galerkin model `ẋ_r = A(θ)x_r + B(θ)u` with
@@ -336,7 +320,7 @@ inside `step_macro_tick` (FFI `#[repr(C, align(64))]` preserved).
   CRC-32C at 1 MHz MMIO polling; ASTM E8/E8M, E606, G129, F1624, E1681
   materials matrix.
 
-## 7. Master 70-Gate Numerical Verification Matrix
+## 6. Master 70-Gate Numerical Verification Matrix
 
 ```sh
 cargo run --release -p shbt-power-audit   # -> verification_matrix.json
@@ -347,7 +331,7 @@ cargo run --release -p shbt-power-audit   # -> verification_matrix.json
 `resolved_discrepancies` array recording the closed computed-vs-spec
 deltas.
 
-**power4 workbench checks (P4-EXT-01…15 + GUM metrology)**
+**workbench checks (P4-EXT-01…15 + GUM metrology)**
 
 | Domain | Check | Bound | Result |
 |---|---|---|---|
@@ -397,7 +381,7 @@ deltas.
 - **GATE-45:** the itemized gross ledger sums to 7,972.903 MW vs the
   7,972.885 MW matrix baseline — an 18 kW (0.0002%) rounding margin.
 
-**power7 reconciliation — previously logged deltas now resolved**
+**previously logged deltas now resolved**
 
 | Check | Legacy spec | Reconciled value |
 |---|---|---|
@@ -425,7 +409,7 @@ deltas.
 | P4-HOM dipole damping | ≤ 5.50 ns | τ_d = 3.55 ns @ f_HOM = 8.512 GHz, Q_ext = 95.0 |
 | P4-CL Child-Langmuir | stability margin | design 4.5/15.2/28.0 A/m² ≈ 50× below ceilings 225.7/761.9/1,399.7 A/m² |
 
-**power5 workbench checks (EXT-59…EXT-70)**
+**workbench checks (EXT-59…EXT-70)**
 
 | Domain | Criterion | Modeled |
 |---|---|---|
@@ -444,7 +428,7 @@ deltas.
 | EOS/BFP/PPM traits | w>1 solid, b_max>0, CFL ≤ 0.8 | PASS |
 
 
-**power6 workbench checks (P6-EXT-01…13, shbt-power-solvers crate)**
+**workbench checks (P6-EXT-01…13, shbt-power-solvers crate)**
 
 | Domain | Criterion | Modeled |
 |---|---|---|
