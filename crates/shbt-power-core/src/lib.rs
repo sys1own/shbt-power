@@ -56,10 +56,22 @@ pub struct PlantStateSnapshot {
     pub p_recirc_mw: f64,
     /// Net grid export (MW).
     pub p_net_mw: f64,
-    /// 450 MJ buffer state of charge (0..1).
+    /// 450 MJ synthetic-inertia buffer state of charge (0..1).
     pub supercap_soc: f64,
-    /// LANR starter array net output (kW).
-    pub lanr_net_kw: f64,
+    /// Isomer battery core temperature (K).
+    pub battery_core_temp_k: f64,
+    /// Cryogenic headroom below the Mössbauer de-pinning threshold (K).
+    pub battery_cryo_headroom_k: f64,
+    /// Isomer battery state of charge (0..1).
+    pub battery_soc: f64,
+    /// Battery bootstrap bus discharge voltage (kV).
+    pub battery_bus_voltage_kv: f64,
+    /// Quiescent isomer decay heat (kW).
+    pub battery_decay_heat_kw: f64,
+    /// Mössbauer recoil-free fraction f_M.
+    pub mossbauer_recoil_frac: f64,
+    /// Borrmann anomalous transmission suppression factor eps_B.
+    pub borrmann_suppress_factor: f64,
     /// Plasma stopping radius (m).
     pub stopping_radius_m: f64,
     /// ADM 3+1 lapse determinant error |det(g) + 1|.
@@ -75,7 +87,7 @@ pub struct PlantStateSnapshot {
     /// Emergency interlock latch.
     pub interlock_latch: u32,
     /// 64-byte alignment padding.
-    pub _pad: [u32; 5],
+    pub _pad: [u32; 11],
 }
 
 impl Default for PlantStateSnapshot {
@@ -92,7 +104,13 @@ impl Default for PlantStateSnapshot {
             p_recirc_mw: 0.0,
             p_net_mw: 0.0,
             supercap_soc: 0.0,
-            lanr_net_kw: 0.0,
+            battery_core_temp_k: constants::CRYO_CORE_TEMP_K,
+            battery_cryo_headroom_k: constants::CRYO_HEADROOM_K,
+            battery_soc: 1.0,
+            battery_bus_voltage_kv: constants::BUS_PRECHARGE_KV,
+            battery_decay_heat_kw: constants::DECAY_HEAT_KW,
+            mossbauer_recoil_frac: constants::MOSSBAUER_RECOIL_FRAC,
+            borrmann_suppress_factor: constants::BORRMANN_SUPPRESS,
             stopping_radius_m: 0.0,
             adm_metric_err: 0.0,
             adm_shift_norm: 0.0,
@@ -100,7 +118,7 @@ impl Default for PlantStateSnapshot {
             target_jitter_um: 0.0,
             holo_entropy_gap: 0.0,
             interlock_latch: 0,
-            _pad: [0; 5],
+            _pad: [0; 11],
         }
     }
 }

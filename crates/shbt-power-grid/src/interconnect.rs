@@ -13,20 +13,22 @@ pub struct GridConfig {
     pub h_inertia: f64,
     /// Damping constant D_g: 1.80.
     pub d_damping: f64,
-    /// Droop gain K_droop (MW/Hz), 4-5% droop on 7833 MW.
+    /// Droop gain K_droop (MW/Hz), 4-5% droop on 7832.903 MW.
     pub k_droop: f64,
     /// Supercapacitor capacity (MJ): 450.
     pub e_buffer_max: f64,
-    /// Maximum buffer transient injection (MW): +-1500.
+    /// Maximum buffer transient injection (MW): +-1958.23 (repurposed
+    /// 450 MJ synthetic-inertia bank).
     pub p_buffer_max_mw: f64,
 }
 
 impl GridConfig {
-    /// Nominal plant interconnect at 4.5% droop.
+    /// Nominal plant interconnect at 4.0% droop (design-basis
+    /// Delta f = -0.50 Hz -> 1,958.23 MW injection over 230 ms).
     pub fn nominal() -> Self {
         Self { h_inertia: 4.50, d_damping: 1.80,
-               k_droop: 0.045 * 7_832.903 / 0.5, // ~4.5% droop over +-0.5 Hz
-               e_buffer_max: 450.0, p_buffer_max_mw: 1500.0 }
+               k_droop: 0.25 * 7_832.903 / 0.5, // R = 4%: dP = 0.25 S_base at -1% df
+               e_buffer_max: 450.0, p_buffer_max_mw: 1958.23 }
     }
 }
 
@@ -125,18 +127,19 @@ pub const C_GRID: [[f64; 4]; 2] = [
     [0.0, 1.0, 0.0, 0.0],
 ];
 
-/// Plant lifecycle phase (5-phase handover state machine).
+/// Plant lifecycle phase (5-phase isomer bootstrap state machine,
+/// power8.txt FSM contract — supersedes the legacy LANR handover).
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum HandoverPhase {
-    /// Phase 1: LANR auxiliary power, helium pre-heat to 300 K (1200 s).
-    ColdStart,
-    /// Phase 2: grid/LANR injects into the 450 MJ buffer (180 s).
-    BufferCharging,
-    /// Phase 3: LLRF ramps to 40 MV/m (12.5 s).
-    DriverRamp,
-    /// Phase 4: 100 Hz burst on target (continuous).
-    IgnitionBurst,
-    /// Phase 5: DEC + TEG recirculation, 7832.903 MW export.
+    /// State 0: core quiescent at 21.13 K, Mossbauer locked, bus isolated.
+    ColdStandby,
+    /// State 1: PFN primed, PCSS verified, DC link pre-charged (15 kV).
+    IsomerArming,
+    /// State 2: 40 keV seed pulse; 3-stage DEC delivers 140 MW (<= 850 ms).
+    GraserIgnitionPulse,
+    /// State 3: fusion burn initiated, gross >= 1,000 MW ramping (600 ms).
+    DecBootstrap,
+    /// State 4: 7,832.903 MW export locked, graser quenched, buffer on droop.
     SteadyStateRecirculation,
 }
 
@@ -144,20 +147,20 @@ impl HandoverPhase {
     /// Exit criteria text and nominal duration (s).
     pub fn spec(&self) -> (&'static str, f64) {
         match self {
-            Self::ColdStart => ("P_He=10 MPa, T_loop=300 K", 1200.0),
-            Self::BufferCharging => ("V_DC=800 kV, E_sc=450 MJ", 180.0),
-            Self::DriverRamp => ("energy spread <= 1e-4", 12.5),
-            Self::IgnitionBurst => ("reaction rate sustained", f64::INFINITY),
+            Self::ColdStandby => ("dT_headroom >= 11.79 K, PCSS ready", f64::INFINITY),
+            Self::IsomerArming => ("tau_pcss <= 2.10 ns, V_link = 15 kV", 0.0),
+            Self::GraserIgnitionPulse => ("140 MW battery -> recirc, t <= 850 ms", 0.85),
+            Self::DecBootstrap => ("P_gross >= 1000 MW, mdot_sHe nominal", 0.15),
             Self::SteadyStateRecirculation => ("net yield 7832.903 MW", f64::INFINITY),
         }
     }
     /// Next phase in the handover sequence.
     pub fn next(&self) -> Option<Self> {
         match self {
-            Self::ColdStart => Some(Self::BufferCharging),
-            Self::BufferCharging => Some(Self::DriverRamp),
-            Self::DriverRamp => Some(Self::IgnitionBurst),
-            Self::IgnitionBurst => Some(Self::SteadyStateRecirculation),
+            Self::ColdStandby => Some(Self::IsomerArming),
+            Self::IsomerArming => Some(Self::GraserIgnitionPulse),
+            Self::GraserIgnitionPulse => Some(Self::DecBootstrap),
+            Self::DecBootstrap => Some(Self::SteadyStateRecirculation),
             Self::SteadyStateRecirculation => None,
         }
     }
@@ -186,7 +189,7 @@ mod tests {
 
     #[test]
     fn phase_sequence() {
-        let mut p = HandoverPhase::ColdStart;
+        let mut p = HandoverPhase::ColdStandby;
         let mut n = 0;
         while let Some(next) = p.next() {
             p = next;

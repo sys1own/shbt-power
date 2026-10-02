@@ -101,8 +101,20 @@ impl PyShbtDigitalTwin {
         self.state.supercap_soc
     }
     #[getter]
-    pub fn lanr_net_kw(&self) -> f64 {
-        self.state.lanr_net_kw
+    pub fn battery_core_temp_k(&self) -> f64 {
+        self.state.battery_core_temp_k
+    }
+    #[getter]
+    pub fn battery_soc(&self) -> f64 {
+        self.state.battery_soc
+    }
+    #[getter]
+    pub fn battery_bus_voltage_kv(&self) -> f64 {
+        self.state.battery_bus_voltage_kv
+    }
+    #[getter]
+    pub fn battery_decay_heat_kw(&self) -> f64 {
+        self.state.battery_decay_heat_kw
     }
     #[getter]
     pub fn adm_metric_err(&self) -> f64 {

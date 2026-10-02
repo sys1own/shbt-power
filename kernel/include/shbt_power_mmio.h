@@ -1,11 +1,16 @@
 /*
- * shbt_power_mmio.h — 128-byte, dual-cacheline C-ABI MMIO register standard
- * for the SHBT-Graser p-11B power plant (SHBT-MMIO-POWER normative
- * specification).
+ * shbt_power_mmio.h — Memory-Mapped I/O Register Interface for SHBT-POWER.
  *
- * Cacheline 0 (0x00-0x3F): microkernel control + ADM metric interlocks.
- * Cacheline 1 (0x40-0x7F): DEC telemetry + plant balance extension.
- * Anchored at physical base address 0x70000000, 64-byte aligned, zero-copy.
+ * Contract: Exactly 128 bytes, 64-byte aligned, zero heap allocation.
+ * Cacheline 0 (0x00 - 0x3F): Plant Control, Grid State, and Output Telemetry.
+ * Cacheline 1 (0x40 - 0x7F): Thermal-Hydraulics, Protection, and Isomer
+ * Battery telemetry.
+ *
+ * The solid-state coherent graser nuclear isomer battery (376.99 kg of
+ * enriched 178m2Hf, 500 TJ stored) and the 3-stage relativistic DEC stack
+ * originate upstream in sys1own/shbt-warp and sys1own/shbt-ghost; they
+ * supersede the legacy 1,800-module LANR starter array whose register at
+ * 0x5C is replaced by the isomer battery telemetry block.
  */
 #ifndef SHBT_POWER_MMIO_H
 #define SHBT_POWER_MMIO_H
@@ -13,61 +18,118 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#define SHBT_POWER_BASE_ADDR 0x70000000UL
+#define SHBT_POWER_BASE_ADDR          0x70000000UL
 
-typedef struct __attribute__((packed, aligned(64))) {
-    /* CACHELINE 0: Microkernel Control & ADM Metric Interlocks (0x00 - 0x3F) */
-    volatile uint32_t sys_ctrl;            /* 0x00: System Control Word */
-    volatile uint32_t sys_status;          /* 0x04: System Status Word */
-    volatile uint32_t clock_ticks_lo;      /* 0x08: 100 Hz Epoch Counter Lo */
-    volatile uint32_t clock_ticks_hi;      /* 0x0C: 100 Hz Epoch Counter Hi */
-    volatile uint32_t pcss_gate_ctrl;      /* 0x10: PCSS Gate Laser Enable */
-    volatile uint32_t crowbar_status;      /* 0x14: Solid-State Crowbar Flags */
-    volatile float    adm_metric_err;      /* 0x18: ADM 3+1 Lapse Error (|det(g)+1|) */
-    volatile float    adm_shift_norm;      /* 0x1C: ADM 3+1 Shift Norm (beta^i) */
-    volatile uint32_t precision_flags;     /* 0x20: Arbitrary-Precision Flags */
-    volatile float    quench_headroom;     /* 0x24: Magnet Quench Margin (K) */
-    volatile float    beam_energy_gev;     /* 0x28: Linac Beam Energy (GeV) */
-    volatile float    beam_focus_tune;     /* 0x2C: Graser Focus Quad Trim */
-    volatile float    holo_entropy_gap;    /* 0x30: Topological Entropy Margin */
-    volatile uint32_t dark_ledger_par;     /* 0x34: 23/33 Dark Ledger Checksum */
-    volatile uint32_t recon_dma_stat;      /* 0x38: DMA Ring Buffer Status */
-    volatile uint32_t _pad_align_cl0;      /* 0x3C: Enforces 64-Byte Cacheline 0 Boundary */
+#define SHBT_MMIO_MAGIC_VALUE         0x53484254U /* "SHBT" in ASCII */
+#define SHBT_MMIO_VERSION_CURRENT     0x00020000U /* Version 2.0.0 */
+#define SHBT_MMIO_TOTAL_SIZE_BYTES    128U
+#define SHBT_CACHELINE_SIZE_BYTES     64U
 
-    /* CACHELINE 1: Direct Energy Conversion & Plant Balance Extension (0x40 - 0x7F) */
-    volatile float    dec_grid1_volt;      /* 0x40: Venetian Stage 1 Voltage (MV) */
-    volatile float    dec_grid2_volt;      /* 0x44: Venetian Stage 2 Voltage (MV) */
-    volatile float    dec_grid3_volt;      /* 0x48: Venetian Stage 3 Voltage (MV) */
-    volatile float    dec_alpha_curr_ka;   /* 0x4C: Collected Alpha Current (kA) */
-    volatile float    mhd_pickup_curr_ka;  /* 0x50: Inductive HTS Coil Current (kA) */
-    volatile float    wbg_panel_temp_k;    /* 0x54: First-Wall WBG Temperature (K) */
-    volatile float    supercap_soc_pct;    /* 0x58: 450 MJ Buffer State-of-Charge */
-    volatile float    lanr_array_net_kw;   /* 0x5C: 1,800-Module LANR Array Power */
-    volatile float    teg_reclaim_mw;      /* 0x60: Waste Heat TEG Yield (MW) */
-    volatile float    divertor_temp_k;     /* 0x64: Spindle-Cusp Divertor Temp */
-    volatile float    target_pos_dev_um;   /* 0x68: Target Trajectory Jitter (um) */
-    volatile uint32_t target_sync_word;    /* 0x6C: 100 Hz Laser Gate Lock */
-    volatile uint32_t interlock_latch;     /* 0x70: Emergency Trip Latch */
-    volatile uint32_t fault_injection_k;   /* 0x74: Sim Test Fault Injection Code */
-    volatile uint32_t reserved_ext;        /* 0x78: Reserved Expansion */
-    volatile uint32_t telemetry_crc32;     /* 0x7C: CRC-32/Castagnoli Checksum */
-} shbt_power_mmio_t;
+typedef enum shbt_plant_lifecycle_state {
+    SHBT_STATE_COLD_STANDBY            = 0U,
+    SHBT_STATE_ISOMER_ARMING           = 1U,
+    SHBT_STATE_GRASER_IGNITION_PULSE   = 2U,
+    SHBT_STATE_DEC_BOOTSTRAP           = 3U,
+    SHBT_STATE_STEADY_STATE_RECIRC     = 4U
+} shbt_plant_lifecycle_state_t;
 
-_Static_assert(sizeof(shbt_power_mmio_t) == 128, "shbt_power_mmio_t must be exactly 128 bytes");
-_Static_assert(offsetof(shbt_power_mmio_t, dec_grid1_volt) == 64, "dec_grid1_volt must start Cacheline 1 at 0x40");
-_Static_assert(offsetof(shbt_power_mmio_t, telemetry_crc32) == 124, "telemetry_crc32 must reside at offset 0x7C");
+typedef struct shbt_power_mmio {
+    /* ===================================================================== */
+    /* CACHELINE 0: 0x00 - 0x3F (64 Bytes)                                   */
+    /* ===================================================================== */
+    volatile uint32_t magic;                    /* 0x00: Hardware Magic (0x53484254) */
+    volatile uint32_t version;                  /* 0x04: Interface Version */
+    volatile uint32_t plant_state;              /* 0x08: shbt_plant_lifecycle_state_t */
+    volatile uint32_t control_flags;            /* 0x0C: Control and Command Bits */
+    volatile uint64_t uptime_ticks;             /* 0x10: 10 kHz Kernel Timer Ticks */
+    volatile float    net_export_mw;            /* 0x18: Net Export (7832.903 MW nom) */
+    volatile float    gross_output_mw;          /* 0x1C: Gross Output (7972.903 MW nom) */
+    volatile float    recirc_load_mw;           /* 0x20: Total Recirc (140.000 MW nom) */
+    volatile float    linac_load_mw;            /* 0x24: Linac Load (125.000 MW nom) */
+    volatile float    bop_load_mw;              /* 0x28: BoP Load (15.000 MW nom) */
+    volatile float    linac_rf_freq_ghz;        /* 0x2C: Linac RF Freq (5.712 GHz nom) */
+    volatile float    supercap_stored_mj;       /* 0x30: Supercap Buffer (450.0 MJ nom) */
+    volatile float    grid_freq_hz;             /* 0x34: Grid Frequency (50.00 Hz nom) */
+    volatile float    grid_droop_pct;           /* 0x38: Configured Droop (4.0 - 5.0%) */
+    volatile uint32_t fault_code;               /* 0x3C: System Fault Bitfield */
 
-/* sys_status bit field */
-#define SHBT_PWR_STATUS_READY        (1u << 0)
-#define SHBT_PWR_STATUS_PLL_LOCK     (1u << 1)
-#define SHBT_PWR_STATUS_ECC_ERR      (1u << 2)
-#define SHBT_PWR_STATUS_CROWBAR_TRIP (1u << 3)
-#define SHBT_PWR_STATUS_ADM_FAULT    (1u << 4)
-#define SHBT_PWR_STATUS_MMIO_OK      (1u << 5)
+    /* ===================================================================== */
+    /* CACHELINE 1: 0x40 - 0x7F (64 Bytes)                                   */
+    /* ===================================================================== */
+    volatile float    she_loop_temp_cold_k;     /* 0x40: sHe Loop Cold Leg (300.0 K) */
+    volatile float    she_loop_temp_hot_k;      /* 0x44: sHe Loop Hot Leg (900.0 K) */
+    volatile float    she_loop_press_mpa;       /* 0x48: sHe Pressure (10.0 MPa nom) */
+    volatile float    teg_reclaim_kw;           /* 0x4C: TEG Standby Reclaim (~28.5 kW) */
+    volatile float    cryo_subloop_mass_flow;   /* 0x50: 20K He Flow (~21.795 kg/s) */
+    volatile float    pcss_crowbar_quench_ns;   /* 0x54: Crowbar Speed (<= 2.10 ns) */
+    volatile float    pcss_inductive_recov_pct; /* 0x58: Inductive Recovery (>= 94.2%) */
 
-/* interlock_latch bit field */
-#define SHBT_PWR_LATCH_PCSS_FIRED    (1u << 0)
-#define SHBT_PWR_LATCH_CROWBAR_DONE  (1u << 1)
-#define SHBT_PWR_LATCH_ADM_LOCKOUT   (1u << 2)
+    /* Telemetry fields replacing legacy LANR at 0x5C */
+    volatile float    battery_core_temp_k;      /* 0x5C: Isomer Core Temp (21.13 K nom) */
+    volatile float    battery_cryo_headroom_k;  /* 0x60: Cryo Headroom (11.79 K nom) */
+    volatile float    battery_soc;              /* 0x64: Battery SoC (0.000 - 1.000) */
+    volatile float    battery_bus_voltage_kv;   /* 0x68: Bus Discharge (15.0 - 400.0 kV)*/
 
-#endif
+    /* Secondary Telemetry & Audit Registers */
+    volatile float    battery_decay_heat_kw;    /* 0x6C: Quiescent Heat (354.27 kW nom) */
+    volatile float    mossbauer_recoil_frac;    /* 0x70: f_M Fraction (>= 0.74 nom) */
+    volatile float    borrmann_suppress_factor; /* 0x74: epsilon_B Factor (>= 0.985) */
+    volatile uint32_t audit_gate_status_bits;   /* 0x78: Gates 01-32 Pass/Fail Bits */
+    volatile uint32_t audit_gate_extended_bits; /* 0x7C: Gates 33-64 Pass/Fail Bits */
+} __attribute__((aligned(64))) shbt_power_mmio_t;
+
+/* ========================================================================= */
+/* COMPILE-TIME VERIFICATION ASSERTIONS (C11)                                */
+/* ========================================================================= */
+
+_Static_assert(sizeof(shbt_power_mmio_t) == 128,
+    "SHBT MMIO Contract Violation: Struct size must be exactly 128 bytes");
+
+_Static_assert(_Alignof(shbt_power_mmio_t) == 64,
+    "SHBT MMIO Contract Violation: Struct must be 64-byte cacheline aligned");
+
+_Static_assert(offsetof(shbt_power_mmio_t, magic) == 0x00,
+    "Offset mismatch: magic must be at 0x00");
+
+_Static_assert(offsetof(shbt_power_mmio_t, plant_state) == 0x08,
+    "Offset mismatch: plant_state must be at 0x08");
+
+_Static_assert(offsetof(shbt_power_mmio_t, net_export_mw) == 0x18,
+    "Offset mismatch: net_export_mw must be at 0x18");
+
+_Static_assert(offsetof(shbt_power_mmio_t, fault_code) == 0x3C,
+    "Offset mismatch: fault_code must be at 0x3C");
+
+_Static_assert(offsetof(shbt_power_mmio_t, she_loop_temp_cold_k) == 0x40,
+    "Offset mismatch: Cacheline 1 start must be at 0x40");
+
+_Static_assert(offsetof(shbt_power_mmio_t, battery_core_temp_k) == 0x5C,
+    "Offset mismatch: battery_core_temp_k must replace legacy LANR at 0x5C");
+
+_Static_assert(offsetof(shbt_power_mmio_t, battery_cryo_headroom_k) == 0x60,
+    "Offset mismatch: battery_cryo_headroom_k must be at 0x60");
+
+_Static_assert(offsetof(shbt_power_mmio_t, battery_soc) == 0x64,
+    "Offset mismatch: battery_soc must be at 0x64");
+
+_Static_assert(offsetof(shbt_power_mmio_t, battery_bus_voltage_kv) == 0x68,
+    "Offset mismatch: battery_bus_voltage_kv must be at 0x68");
+
+_Static_assert(offsetof(shbt_power_mmio_t, audit_gate_extended_bits) == 0x7C,
+    "Offset mismatch: audit_gate_extended_bits must be at 0x7C");
+
+/* control_flags bit field */
+#define SHBT_PWR_CTRL_START_CMD        (1u << 0) /* verified plant start */
+#define SHBT_PWR_CTRL_PCSS_READY       (1u << 1) /* PCSS crowbar armed+nominal */
+#define SHBT_PWR_CTRL_PCSS_FIRED       (1u << 2) /* crowbar shunt triggered */
+#define SHBT_PWR_CTRL_SEED_LASER_ON    (1u << 3) /* 40 keV graser seed active */
+#define SHBT_PWR_CTRL_DROOP_TRACK      (1u << 4) /* synthetic-inertia droop */
+
+/* fault_code bit field */
+#define SHBT_PWR_FAULT_CRYO_LOW        (1u << 0) /* cryo headroom collapsed */
+#define SHBT_PWR_FAULT_MOSSBAUER       (1u << 1) /* f_M below 0.74 */
+#define SHBT_PWR_FAULT_BORRMANN        (1u << 2) /* eps_B below 0.985 */
+#define SHBT_PWR_FAULT_BUS_OVERVOLT    (1u << 3) /* V_bus > 400 kV */
+#define SHBT_PWR_FAULT_MAGIC           (1u << 4) /* magic/version mismatch */
+
+#endif /* SHBT_POWER_MMIO_H */
