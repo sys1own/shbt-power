@@ -57,80 +57,50 @@ efficiency, and the duplicated "447.903 MW regulated DC" figure
 
 ## 2. Complete Physical System Topology
 
-```
-==================================================================================================================
-                              SHBT-Graser Plant Signal & Energy Flow Architecture
-==================================================================================================================
-
- [ COLD-START & GRID BUFFER ]                                  [ FUEL & DRIVER INJECTION ]
- ┌──────────────────────────────────────┐                      ┌───────────────────────────────────────────┐
- │ 178m2Hf Coherent Isomer Battery      │                      │ Electromagnetic Railgun Injector          │
- │ 376.99 kg | 500 TJ | 140 MW @ 1 s    │                      │ 250 m/s, min-jerk, jitter ≤ 50 µm         │
- └──────────────────┬───────────────────┘                      │ 3.708 mg B₁₀H₁₄ decaborane pellet @ 100 Hz│
-                    │ Cold-Start Bootstrap                     └────────────────────┬──────────────────────┘
-                    ▼ (140 MW electrical)                                           │ Pellet injection (10 ms)
- ┌──────────────────────────────────────┐   125.0 MW Driver                         │
- │ 450 MJ Supercapacitor Buffer         │──────────────────────┐                    │
- │ Synthetic Inertia (H=57.45 ms)       │                      ▼                    ▼
- │ 4–5% Frequency Droop (≤1,958.23 MW)  │             ┌─────────────────────────────────────────┐
- └──────────────────▲───────────────────┘             │ 5.712 GHz Relativistic C-Band Linac     │
-                    │                                 │ Linac ➔ Optical Klystron Graser        │
-                    │ Recirculating                   │ 25.0 MW optical burst (250 kJ @ 100 Hz) │
-                    │ Steady-State                    └────────────────────┬────────────────────┘
-                    │ Feedback Loop                                        │ Coherent gamma pulse
-                    │ (140.0 MW)                                           ▼
-════════════════════╪═════════════════════════════════════════════════════════════════════════════════════════════
-                    │                      RESONANT ANEUTRONIC REACTION CHAMBER
-                    │                      p + ¹¹B ──► 3α + 8.68 MeV (35.0% burn fraction)
-                    │                      Gross Thermonuclear Core Yield: 8,750.000 MW @ 100 Hz
-════════════════════╪═════════════════════════════════════════════════════════════════════════════════════════════
-                    │          │                             │                          │
-                    │ 80% α    │ 7,000.0 MW                  │ 15% MHD 1,312.5 MW       │ 5% Radiant 437.5 MW
-                    │ Kinetic  ▼                             ▼ Expansion                ▼ Bremsstrahlung
-                    │ ┌─────────────────────────┐ ┌─────────────────────────┐ ┌─────────────────────────┐
-                    │ │ 100:1 Expander Trumpet  │ │ HTS Inductive Coils     │ │ Wide-Bandgap Panels     │
-                    │ │ 5.0 T ──► 0.05 T        │ │ Dynamic Flux Compression│ │ 4H-SiC / GaN:Fe         │
-                    │ │ D = 5.000 m             │ │ η = 90.00%              │ │ η = 50.00%              │
-                    │ └────────────┬────────────┘ └────────────┬────────────┘ └────────────┬────────────┘
-                    │              ▼                           │                           │
-                    │ ┌─────────────────────────┐              │                           │
-                    │ │ 3-Stage Venetian DEC    │              │                           │
-                    │ │ 0.8 / 1.8 / 2.7 MV      │              │                           │
-                    │ │ −50 kV suppressor       │              │                           │
-                    │ │ η = 87.50%              │              │                           │
-                    │ └────────────┬────────────┘              │                           │
-                    │              ▼                           ▼                           ▼
-                    │        +6,125.000 MW               +1,181.250 MW                +218.750 MW
-                    │              │                           │                           │
-                    │              └───────────────────────────┼───────────────────────────┘
-                    │                                          │
-                    │                                          ▼ Direct Energy Conversion (DEC): 7,525.000 MW
-                    │
-                    │ Residual Core Enthalpy: 1,325.000 MW
-                    │ ┌──────────────────────────────────────────────────────────────────┐
-                    │ │ Supercritical Helium Loop (10.0 MPa, 450 kg/s, 300 K ──► 900 K)  │
-                    │ │ Dual-Stage Cascaded TEG: CoSb₃ Skutterudite / ZrNiSn Half-Heusler│
-                    │ │ η_TEG = 33.804%                                                  │
-                    │ └────────────────────────────────┬─────────────────────────────────┘
-                    │                                  ▼
-                    │                            +447.903 MW electrical yield
-                    │                                  │
-                    │                                  ▼
-════════════════════╪═════════════════════════════════════════════════════════════════════════════════════════════
-                    │                    GROSS ELECTRICAL AGGREGATION & HIGH-VOLTAGE GRID BUS
-                    │
-                    │                    Total Gross Electrical Generation:  7,972.903 MW
-                    ├─────────────────── Recirculating Graser Driver Load:  −125.000 MW
-                    │                    Recirculating Balance-of-Plant:     −15.000 MW (Supercritical He PCHE)
-                    │                    ──────────────────────────────────────────────────────────────────
-                    └──────────────────► NET DISPATCHABLE GRID EXPORT:        7,832.903 MW (±800 kV HVDC Bus)
-═════════════════════════════════════════════════════════════════════════════════════════════════════════════════
- [ BARE-METAL CYBER-PHYSICAL CONTROL & TELEMETRY CONTRACT ]
-  • shbt-os C11 microkernel: 128-byte dual-cacheline MMIO @ 0x70000000 | SECDED Hamming(72,64) | CRC-32C
-  • Fast interlocks: Sub-2.5 ns PCSS crowbar switch (τ_close ≤ 2.10 ns, ≥94.20% SiC inductive recovery)
-  • Metric bounds: ADM 3+1 metric lapse error |det(g) + 1| ≤ 10⁻¹² | ADM shift vector nulling βⁱ ──► 0
-==================================================================================================================
-```
+╭────────────────────────────────────────────────────────────────────────────────────╮
+│                SHBT-GRASER PLANT SIGNAL & ENERGY FLOW ARCHITECTURE                  │
+╰────────────────────────────────────────────────────────────────────────────────────╯
+╭─────────────────────────╮   ╭─────────────────────────╮   ╭────────────────────────╮
+│  178m2Hf ISOMER BATTERY  │    │ 5.712 GHz C-BAND LINAC   │   │  EM RAILGUN INJECTOR     │
+│  • 376.99 kg | 500 TJ    │    │ • Linac ──► Klystron     │   │  • v = 250 m/s launcher  │
+│  • 140 MW @ 1s Bootstrap │    │ • 25.0 MW Optical Burst  │   │  • Jitter ≤ 50 µm        │
+│  450 MJ BUFFER BANK      │    │ • 125.0 MW Driver Recirc │   │  • 3.708 mg B10H14       │
+│  • H=57.45ms, 4–5% droop │──► │ • 2,500 Bunches @ 100 Hz │   │  • 100 Hz Target (10 ms) │
+╰────────────▲────────────╯   ╰────────────┬────────────╯   ╰───────────┬────────────╯
+              │ (140 MW Recirc)              │ 25 MW γ-burst                │ Pellet target
+              │                              ▼                              ▼
+╭────────────┴───────────────────────────────────────────────────────────────────────╮
+│  ANEUTRONIC REACTION CHAMBER: p + ¹¹B ──► 3α + 8.68 MeV (35.0% Burn Fraction)       │
+│  Gross Thermonuclear Core Yield: 8,750.000 MW @ 100 Hz (87.500 MJ / shot)           │
+╰─────────┬──────────────────────┬───────────────────────┬───────────────────────┬───╯
+           │ 80% α (7.0 GW)       │   15% (1.312 GW)      │   5% (437.5 MW)       │ 1.325 GWth
+           ▼                      ▼                       ▼                       ▼
+╭─────────┴──────────╮ ╭────────┴──────────╮ ╭────────┴──────────╮ ╭────────┴──────────╮
+│  CH 1: ALPHA DEC    │  │ CH 2: HTS MHD      │ │  CH 3: WBG PANELS   │ │ CH 4: TEG ENTHALPY │
+│  • 100:1 Expander   │  │ • HTS Pickup Coils │ │  • 4H-SiC / GaN:Fe  │ │ • Supercritical He │
+│  • 3-Stage Venetian │  │ • Magnetic Cushion │ │  • Bremsstrahlung   │ │ • 10 MPa, 450 kg/s │
+│  • 0.8/1.8/2.7 MV   │  │ • Flux Compression │ │  • Radiovoltaics    │ │ • 300 K ──► 900 K  │
+│  • η = 87.50%       │  │ • η = 90.00%       │ │  • η = 50.00%       │ │ • η = 33.804%      │ 
+│  ►  +6,125.000 MW   │  │ ►  +1,181.250 MW   │ │  ►    +218.750 MW   │ │ ►    +447.903 MW   │
+╰─────────┬──────────╯ ╰────────┬──────────╯ ╰────────┬──────────╯ ╰────────┬──────────╯
+           │                      │                       │                       │
+           └──────────────────────┼────────┬──────────────┴───────────────────────┘
+                                           │
+                                           ▼ 7,972.903 MW Gross Yield
+╭────────────────────────────────────────────────────────────────────────────────────╮
+│ GROSS ELECTRICAL GENERATION BUS:  7,972.903 MW  (DEC: 7,525.0 MW | TEG: 447.9 MW)   │
+│  ├─ Graser Linac Recirculating Load:  −125.000 MW (5.712 GHz C-Band Modulators)     │
+│  ├─ Balance-of-Plant Auxiliaries:     −15.000 MW (10 MPa He Compressor & Cryo)      │
+│  ├─ Closed-Loop Recirculation Feed:   140.000 MW ──► Recharges 450 MJ Buffer Bank   │
+│  ▼                                                                                  │
+│ NET DISPATCHABLE GRID EXPORT:        7,832.903 MW (±800 kV HVDC Bus | Q = 56.95)    │
+╰────────────────────────────────────────────────────────────────────────────────────╯
+╭────────────────────────────────────────────────────────────────────────────────────╮
+│ BARE-METAL C11 MICROKERNEL & CONTROL CONTRACT (shbt-os @ 0x70000000)                │
+│ • Telemetry ABI: 128 B Dual-Cacheline MMIO, SECDED Hamming(72,64), CRC-32C Checksum │
+│ • Fast Interlock: Sub-2.5 ns PCSS Crowbars (τ ≤ 2.10 ns, 94.20% SiC Inductive Rec)  │
+│ • Metric Bounds:  ADM 3+1 Stabilizer (|det(g)+1| ≤ 10⁻¹², Shift Nulling βⁱ ──► 0)   │
+╰────────────────────────────────────────────────────────────────────────────────────╯
 ---
 
 ## 3. Subsystem Mathematical Specifications & Governing Physics
