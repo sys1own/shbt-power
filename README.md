@@ -56,51 +56,52 @@ efficiency, and the duplicated "447.903 MW regulated DC" figure
 ---
 
 ## 2. Complete Physical System Topology
-
+```
 ╭────────────────────────────────────────────────────────────────────────────────────╮
-│                SHBT-GRASER PLANT SIGNAL & ENERGY FLOW ARCHITECTURE                  │
+│                SHBT-GRASER PLANT SIGNAL & ENERGY FLOW ARCHITECTURE                 │
 ╰────────────────────────────────────────────────────────────────────────────────────╯
 ╭─────────────────────────╮   ╭─────────────────────────╮   ╭────────────────────────╮
-│  178m2Hf ISOMER BATTERY  │    │ 5.712 GHz C-BAND LINAC   │   │  EM RAILGUN INJECTOR     │
-│  • 376.99 kg | 500 TJ    │    │ • Linac ──► Klystron     │   │  • v = 250 m/s launcher  │
-│  • 140 MW @ 1s Bootstrap │    │ • 25.0 MW Optical Burst  │   │  • Jitter ≤ 50 µm        │
-│  450 MJ BUFFER BANK      │    │ • 125.0 MW Driver Recirc │   │  • 3.708 mg B10H14       │
-│  • H=57.45ms, 4–5% droop │──► │ • 2,500 Bunches @ 100 Hz │   │  • 100 Hz Target (10 ms) │
+│ 178m2Hf ISOMER BATTERY  │   │ 5.712 GHz C-BAND LINAC  │   │ EM RAILGUN INJECTOR    │
+│ • 376.99 kg | 500 TJ    │   │ • Linac ──► Klystron    │   │ • v = 250 m/s launcher │
+│ • 140 MW @ 1s Bootstrap │   │ • 25.0 MW Optical Burst │   │ • Jitter ≤ 50 µm       │
+│ 450 MJ BUFFER BANK      │   │ • 125.0 MW Driver Recirc│   │ • 3.708 mg B10H14      │
+│ • H=57.45ms, 4–5% droop │──►│ • 2,500 Bunches @ 100 Hz│   │ • 100 Hz Target (10 ms)│
 ╰────────────▲────────────╯   ╰────────────┬────────────╯   ╰───────────┬────────────╯
-              │ (140 MW Recirc)              │ 25 MW γ-burst                │ Pellet target
-              │                              ▼                              ▼
+             │ (140 MW Recirc)             │ 25 MW γ-burst              │ Pellet target
+             │                             ▼                            ▼
 ╭────────────┴───────────────────────────────────────────────────────────────────────╮
-│  ANEUTRONIC REACTION CHAMBER: p + ¹¹B ──► 3α + 8.68 MeV (35.0% Burn Fraction)       │
-│  Gross Thermonuclear Core Yield: 8,750.000 MW @ 100 Hz (87.500 MJ / shot)           │
-╰─────────┬──────────────────────┬───────────────────────┬───────────────────────┬───╯
-           │ 80% α (7.0 GW)       │   15% (1.312 GW)      │   5% (437.5 MW)       │ 1.325 GWth
-           ▼                      ▼                       ▼                       ▼
+│ ANEUTRONIC REACTION CHAMBER: p + ¹¹B ──► 3α + 8.68 MeV (35.0% Burn Fraction)       │
+│ Gross Thermonuclear Core Yield: 8,750.000 MW @ 100 Hz (87.500 MJ / shot)           │
+╰─────────┬─────────────────────┬─────────────────────┬─────────────────────┬────────╯
+          │ 80% α (7.0 GW)      │ 15% (1.312 GW)      │ 5% (437.5 MW)       │ 1.325 GWth
+          ▼                     ▼                     ▼                     ▼
 ╭─────────┴──────────╮ ╭────────┴──────────╮ ╭────────┴──────────╮ ╭────────┴──────────╮
-│  CH 1: ALPHA DEC    │  │ CH 2: HTS MHD      │ │  CH 3: WBG PANELS   │ │ CH 4: TEG ENTHALPY │
-│  • 100:1 Expander   │  │ • HTS Pickup Coils │ │  • 4H-SiC / GaN:Fe  │ │ • Supercritical He │
-│  • 3-Stage Venetian │  │ • Magnetic Cushion │ │  • Bremsstrahlung   │ │ • 10 MPa, 450 kg/s │
-│  • 0.8/1.8/2.7 MV   │  │ • Flux Compression │ │  • Radiovoltaics    │ │ • 300 K ──► 900 K  │
-│  • η = 87.50%       │  │ • η = 90.00%       │ │  • η = 50.00%       │ │ • η = 33.804%      │ 
-│  ►  +6,125.000 MW   │  │ ►  +1,181.250 MW   │ │  ►    +218.750 MW   │ │ ►    +447.903 MW   │
+│ CH 1: ALPHA DEC    │ │ CH 2: HTS MHD     │ │ CH 3: WBG PANELS  │ │ CH 4: TEG ENTHALPY│
+│ • 100:1 Expander   │ │ • HTS Pickup Coils│ │ • 4H-SiC / GaN:Fe │ │ • Supercritical He│
+│ • 3-Stage Venetian │ │ • Magnetic Cushion│ │ • Bremsstrahlung  │ │ • 10 MPa, 450 kg/s│
+│ • 0.8/1.8/2.7 MV   │ │ • Flux Compression│ │ • Radiovoltaics   │ │ • 300 K ──► 900 K │
+│ • η = 87.50%       │ │ • η = 90.00%      │ │ • η = 50.00%      │ │ • η = 33.804%     │
+│ ►  +6,125.000 MW   │ │ ►  +1,181.250 MW  │ │ ►    +218.750 MW  │ │ ►    +447.903 MW  │
 ╰─────────┬──────────╯ ╰────────┬──────────╯ ╰────────┬──────────╯ ╰────────┬──────────╯
-           │                      │                       │                       │
-           └──────────────────────┼────────┬──────────────┴───────────────────────┘
+          │                     │                     │                     │
+          └─────────────────────┼──────────┬──────────┴─────────────────────┘
                                            │
                                            ▼ 7,972.903 MW Gross Yield
 ╭────────────────────────────────────────────────────────────────────────────────────╮
-│ GROSS ELECTRICAL GENERATION BUS:  7,972.903 MW  (DEC: 7,525.0 MW | TEG: 447.9 MW)   │
-│  ├─ Graser Linac Recirculating Load:  −125.000 MW (5.712 GHz C-Band Modulators)     │
-│  ├─ Balance-of-Plant Auxiliaries:     −15.000 MW (10 MPa He Compressor & Cryo)      │
-│  ├─ Closed-Loop Recirculation Feed:   140.000 MW ──► Recharges 450 MJ Buffer Bank   │
-│  ▼                                                                                  │
-│ NET DISPATCHABLE GRID EXPORT:        7,832.903 MW (±800 kV HVDC Bus | Q = 56.95)    │
+│ GROSS ELECTRICAL GENERATION BUS:  7,972.903 MW  (DEC: 7,525.0 MW | TEG: 447.9 MW)  │
+│  ├─ Graser Linac Recirculating Load:  −125.000 MW (5.712 GHz C-Band Modulators)    │
+│  ├─ Balance-of-Plant Auxiliaries:     −15.000 MW (10 MPa He Compressor & Cryo)     │
+│  ├─ Closed-Loop Recirculation Feed:   140.000 MW ──► Recharges 450 MJ Buffer Bank  │
+│  ▼                                                                                 │
+│ NET DISPATCHABLE GRID EXPORT:        7,832.903 MW (±800 kV HVDC Bus | Q = 56.95)   │
 ╰────────────────────────────────────────────────────────────────────────────────────╯
 ╭────────────────────────────────────────────────────────────────────────────────────╮
-│ BARE-METAL C11 MICROKERNEL & CONTROL CONTRACT (shbt-os @ 0x70000000)                │
-│ • Telemetry ABI: 128 B Dual-Cacheline MMIO, SECDED Hamming(72,64), CRC-32C Checksum │
-│ • Fast Interlock: Sub-2.5 ns PCSS Crowbars (τ ≤ 2.10 ns, 94.20% SiC Inductive Rec)  │
-│ • Metric Bounds:  ADM 3+1 Stabilizer (|det(g)+1| ≤ 10⁻¹², Shift Nulling βⁱ ──► 0)   │
+│ BARE-METAL C11 MICROKERNEL & CONTROL CONTRACT (shbt-os @ 0x70000000)               │
+│ • Telemetry ABI: 128 B Dual-Cacheline MMIO, SECDED Hamming(72,64), CRC-32C Checksum│
+│ • Fast Interlock: Sub-2.5 ns PCSS Crowbars (τ ≤ 2.10 ns, 94.20% SiC Inductive Rec) │
+│ • Metric Bounds:  ADM 3+1 Stabilizer (|det(g)+1| ≤ 10⁻¹², Shift Nulling βⁱ ──► 0)  │
 ╰────────────────────────────────────────────────────────────────────────────────────╯
+```
 ---
 
 ## 3. Subsystem Mathematical Specifications & Governing Physics
