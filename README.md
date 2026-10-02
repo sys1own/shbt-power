@@ -547,6 +547,7 @@ MIT — see `LICENSE`.
 ## SHBT Ecosystem Code Repository Crosswalk
 
 `shbt-power` serves as the master systems engineering and multi-physics integration platform for commercial aneutronic fusion, directly synthesizing modular algorithms, runtime kernels, and verification pipelines across the Static Holographic Boundary Theory (SHBT) repository ecosystem:
+
                                   ╭──────────────────────────────────────────╮
                                   │             [shbt-precision]             │
                                   │      Computational Math & Cosmology      │
