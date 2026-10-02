@@ -9,51 +9,61 @@ pub mod calibration;
 pub mod gum;
 pub mod metrology;
 
-use shbt_power_core::constants::MMIO_BASE_ADDR;
+use shbt_power_core::constants::*;
 use shbt_power_core::{PhysicsSubsystem, PlantStateSnapshot};
 
 /// 128-byte, dual-cacheline MMIO register block — Rust mirror of
 /// `kernel/include/shbt_power_mmio.h` (identical field order).
+/// Cacheline 0: plant control, grid state, output telemetry.
+/// Cacheline 1: thermal-hydraulics, protection, isomer battery.
 #[repr(C, align(64))]
 #[derive(Clone, Copy, Debug, Default)]
 pub struct ShbtPowerMmio {
-    pub sys_ctrl: u32,
-    pub sys_status: u32,
-    pub clock_ticks_lo: u32,
-    pub clock_ticks_hi: u32,
-    pub pcss_gate_ctrl: u32,
-    pub crowbar_status: u32,
-    pub adm_metric_err: f32,
-    pub adm_shift_norm: f32,
-    pub precision_flags: u32,
-    pub quench_headroom: f32,
-    pub beam_energy_gev: f32,
-    pub beam_focus_tune: f32,
-    pub holo_entropy_gap: f32,
-    pub dark_ledger_par: u32,
-    pub recon_dma_stat: u32,
-    pub _pad_align_cl0: u32,
-    pub dec_grid1_volt: f32,
-    pub dec_grid2_volt: f32,
-    pub dec_grid3_volt: f32,
-    pub dec_alpha_curr_ka: f32,
-    pub mhd_pickup_curr_ka: f32,
-    pub wbg_panel_temp_k: f32,
-    pub supercap_soc_pct: f32,
-    pub lanr_array_net_kw: f32,
-    pub teg_reclaim_mw: f32,
-    pub divertor_temp_k: f32,
-    pub target_pos_dev_um: f32,
-    pub target_sync_word: u32,
-    pub interlock_latch: u32,
-    pub fault_injection_k: u32,
-    pub reserved_ext: u32,
-    pub telemetry_crc32: u32,
+    pub magic: u32,                      // 0x00
+    pub version: u32,                    // 0x04
+    pub plant_state: u32,                // 0x08
+    pub control_flags: u32,              // 0x0C
+    pub uptime_ticks: u64,               // 0x10
+    pub net_export_mw: f32,              // 0x18
+    pub gross_output_mw: f32,            // 0x1C
+    pub recirc_load_mw: f32,             // 0x20
+    pub linac_load_mw: f32,              // 0x24
+    pub bop_load_mw: f32,                // 0x28
+    pub linac_rf_freq_ghz: f32,          // 0x2C
+    pub supercap_stored_mj: f32,         // 0x30
+    pub grid_freq_hz: f32,               // 0x34
+    pub grid_droop_pct: f32,             // 0x38
+    pub fault_code: u32,                 // 0x3C
+    pub she_loop_temp_cold_k: f32,       // 0x40
+    pub she_loop_temp_hot_k: f32,        // 0x44
+    pub she_loop_press_mpa: f32,         // 0x48
+    pub teg_reclaim_kw: f32,             // 0x4C
+    pub cryo_subloop_mass_flow: f32,     // 0x50
+    pub pcss_crowbar_quench_ns: f32,     // 0x54
+    pub pcss_inductive_recov_pct: f32,   // 0x58
+    pub battery_core_temp_k: f32,        // 0x5C
+    pub battery_cryo_headroom_k: f32,    // 0x60
+    pub battery_soc: f32,                // 0x64
+    pub battery_bus_voltage_kv: f32,     // 0x68
+    pub battery_decay_heat_kw: f32,      // 0x6C
+    pub mossbauer_recoil_frac: f32,      // 0x70
+    pub borrmann_suppress_factor: f32,   // 0x74
+    pub audit_gate_status_bits: u32,     // 0x78
+    pub audit_gate_extended_bits: u32,   // 0x7C
 }
 
 const _: () = assert!(core::mem::size_of::<ShbtPowerMmio>() == 128);
-const _: () = assert!(core::mem::offset_of!(ShbtPowerMmio, dec_grid1_volt) == 0x40);
-const _: () = assert!(core::mem::offset_of!(ShbtPowerMmio, telemetry_crc32) == 0x7C);
+const _: () = assert!(core::mem::align_of::<ShbtPowerMmio>() == 64);
+const _: () = assert!(core::mem::offset_of!(ShbtPowerMmio, magic) == 0x00);
+const _: () = assert!(core::mem::offset_of!(ShbtPowerMmio, plant_state) == 0x08);
+const _: () = assert!(core::mem::offset_of!(ShbtPowerMmio, net_export_mw) == 0x18);
+const _: () = assert!(core::mem::offset_of!(ShbtPowerMmio, fault_code) == 0x3C);
+const _: () = assert!(core::mem::offset_of!(ShbtPowerMmio, she_loop_temp_cold_k) == 0x40);
+const _: () = assert!(core::mem::offset_of!(ShbtPowerMmio, battery_core_temp_k) == 0x5C);
+const _: () = assert!(core::mem::offset_of!(ShbtPowerMmio, battery_cryo_headroom_k) == 0x60);
+const _: () = assert!(core::mem::offset_of!(ShbtPowerMmio, battery_soc) == 0x64);
+const _: () = assert!(core::mem::offset_of!(ShbtPowerMmio, battery_bus_voltage_kv) == 0x68);
+const _: () = assert!(core::mem::offset_of!(ShbtPowerMmio, audit_gate_extended_bits) == 0x7C);
 
 extern "C" {
     fn shbt_power_kernel_init() -> i32;
@@ -163,46 +173,44 @@ impl<'a> SpscRing<'a> {
 /// Publish the live `PlantStateSnapshot` into a register frame.
 pub fn snapshot_to_mmio(state: &PlantStateSnapshot) -> ShbtPowerMmio {
     ShbtPowerMmio {
-        sys_ctrl: 1,
-        sys_status: (1 << 0) | (1 << 1) | (1 << 5),
-        clock_ticks_lo: state.tick as u32,
-        clock_ticks_hi: (state.tick >> 32) as u32,
-        pcss_gate_ctrl: 0,
-        crowbar_status: 0,
-        adm_metric_err: state.adm_metric_err as f32,
-        adm_shift_norm: state.adm_shift_norm as f32,
-        precision_flags: 1,
-        quench_headroom: state.quench_headroom_k as f32,
-        beam_energy_gev: 0.5,
-        beam_focus_tune: 0.0,
-        holo_entropy_gap: state.holo_entropy_gap as f32,
-        dark_ledger_par: 0x23,
-        recon_dma_stat: 1,
-        _pad_align_cl0: 0,
-        dec_grid1_volt: 0.8,
-        dec_grid2_volt: 1.8,
-        dec_grid3_volt: 2.7,
-        dec_alpha_curr_ka: (state.p_direct_total_mw * 1e3 / 2.7e6) as f32,
-        mhd_pickup_curr_ka: 120.0,
-        wbg_panel_temp_k: 1146.0,
-        supercap_soc_pct: (state.supercap_soc * 100.0) as f32,
-        lanr_array_net_kw: state.lanr_net_kw as f32,
-        teg_reclaim_mw: state.p_teg_mw as f32,
-        divertor_temp_k: 450.0,
-        target_pos_dev_um: state.target_jitter_um as f32,
-        target_sync_word: 0xAA55,
-        interlock_latch: state.interlock_latch,
-        fault_injection_k: 0,
-        reserved_ext: 0,
-        telemetry_crc32: 0, // stamped by finalize_crc
+        magic: MMIO_MAGIC,
+        version: MMIO_VERSION,
+        plant_state: state.phase,
+        control_flags: (1 << 1) | (1 << 4), // PCSS_READY | DROOP_TRACK
+        uptime_ticks: state.tick,
+        net_export_mw: state.p_net_mw as f32,
+        gross_output_mw: state.p_gross_mw as f32,
+        recirc_load_mw: state.p_recirc_mw as f32,
+        linac_load_mw: P_GRASER_ELEC_MW as f32,
+        bop_load_mw: P_AUX_MW as f32,
+        linac_rf_freq_ghz: F_RF_GHZ as f32,
+        supercap_stored_mj: (state.supercap_soc * SUPERCAP_MJ) as f32,
+        grid_freq_hz: GRID_FREQ_HZ as f32,
+        grid_droop_pct: DROOP_PCT as f32,
+        fault_code: 0,
+        she_loop_temp_cold_k: TEG_T_COLD_K as f32,
+        she_loop_temp_hot_k: TEG_T_HOT_K as f32,
+        she_loop_press_mpa: HE_PRESSURE_MPA as f32,
+        teg_reclaim_kw: TEG_SHIELD_KW as f32,
+        cryo_subloop_mass_flow: CRYO_MDOT_KG_S as f32,
+        pcss_crowbar_quench_ns: PCSS_QUENCH_NS as f32,
+        pcss_inductive_recov_pct: ETA_INDUCTIVE_RECOVERY_PCT as f32,
+        battery_core_temp_k: state.battery_core_temp_k as f32,
+        battery_cryo_headroom_k: state.battery_cryo_headroom_k as f32,
+        battery_soc: state.battery_soc as f32,
+        battery_bus_voltage_kv: state.battery_bus_voltage_kv as f32,
+        battery_decay_heat_kw: state.battery_decay_heat_kw as f32,
+        mossbauer_recoil_frac: state.mossbauer_recoil_frac as f32,
+        borrmann_suppress_factor: state.borrmann_suppress_factor as f32,
+        audit_gate_status_bits: 0,
+        audit_gate_extended_bits: 0,
     }
 }
 
-/// Stamp the CRC over bytes 0x00..0x7B of a frame.
-pub fn finalize_crc(frame: &mut ShbtPowerMmio) {
-    let bytes =
-        unsafe { core::slice::from_raw_parts(frame as *const _ as *const u8, 124) };
-    frame.telemetry_crc32 = MmioDriver::crc32c(bytes);
+/// Stamp the audit-gate pass/fail bitfields (0x78 / 0x7C) on a frame.
+pub fn finalize_frame(frame: &mut ShbtPowerMmio, gate_mask: u32, ext_mask: u32) {
+    frame.audit_gate_status_bits = gate_mask;
+    frame.audit_gate_extended_bits = ext_mask;
 }
 
 #[derive(Debug, Default)]
@@ -214,10 +222,8 @@ impl PhysicsSubsystem for TelemetrySubsystem {
     }
     fn update(&mut self, state: &mut PlantStateSnapshot) {
         let mut frame = snapshot_to_mmio(state);
-        finalize_crc(&mut frame);
-        debug_assert_eq!(crc32c_rust(unsafe {
-            core::slice::from_raw_parts(&frame as *const _ as *const u8, 124)
-        }), frame.telemetry_crc32);
+        finalize_frame(&mut frame, 0, 0);
+        debug_assert_eq!(frame.magic, MMIO_MAGIC);
         debug_assert_eq!(MMIO_BASE_ADDR, 0x7000_0000);
     }
 }
@@ -229,7 +235,9 @@ mod tests {
     #[test]
     fn mmio_layout() {
         assert_eq!(core::mem::size_of::<ShbtPowerMmio>(), 128);
-        assert_eq!(core::mem::offset_of!(ShbtPowerMmio, dec_grid1_volt), 0x40);
+        assert_eq!(core::mem::offset_of!(ShbtPowerMmio, she_loop_temp_cold_k), 0x40);
+        assert_eq!(core::mem::offset_of!(ShbtPowerMmio, battery_core_temp_k), 0x5C);
+        assert_eq!(core::mem::offset_of!(ShbtPowerMmio, audit_gate_extended_bits), 0x7C);
     }
 
     #[test]
@@ -263,8 +271,11 @@ mod tests {
         let mut storage = [ShbtPowerMmio::default(); 4];
         let mut ring = SpscRing::new(&mut header, &mut storage);
         let mut frame = ShbtPowerMmio::default();
-        finalize_crc(&mut frame);
+        finalize_frame(&mut frame, 0xFFFF_FFFF, 0xFFFF_FFFF);
         assert!(ring.push(&frame));
-        assert_eq!(ring.pop().unwrap().telemetry_crc32, frame.telemetry_crc32);
+        assert_eq!(
+            ring.pop().unwrap().audit_gate_extended_bits,
+            frame.audit_gate_extended_bits
+        );
     }
 }

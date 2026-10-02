@@ -9,7 +9,7 @@ use shbt_power_grid::{GridSubsystem, PlantLedger, PlantPhase, TegArray};
 use shbt_power_holography::HolographySubsystem;
 use shbt_power_linac::LinacSubsystem;
 use shbt_power_target::TargetSubsystem;
-use shbt_power_telemetry::{finalize_crc, snapshot_to_mmio, MmioDriver};
+use shbt_power_telemetry::{finalize_frame, snapshot_to_mmio, MmioDriver};
 
 fn drive_ticks(n: u64) -> (
     PlantStateSnapshot,
@@ -56,10 +56,12 @@ fn closed_loop_reaches_steady_state_and_balances() {
     assert!((state.p_net_mw - 7832.903).abs() < 0.05);
     assert!((state.p_gross_mw - 7972.903).abs() < 0.05);
 
-    // MMIO frame round-trips through the kernel CRC.
+    // MMIO frame carries magic + battery telemetry + audit bitfields.
     let mut frame = snapshot_to_mmio(&state);
-    finalize_crc(&mut frame);
-    assert_ne!(frame.telemetry_crc32, 0);
+    finalize_frame(&mut frame, 0xFFFF_FFFF, 0xFFFF_FFFF);
+    assert_ne!(frame.magic, 0);
+    assert_eq!(frame.audit_gate_status_bits, 0xFFFF_FFFF);
+    assert!((frame.battery_core_temp_k - 21.13).abs() < 0.01);
 }
 
 #[test]

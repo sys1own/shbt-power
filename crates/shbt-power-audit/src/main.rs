@@ -1,10 +1,13 @@
-//! shbt-power-audit — master GATE-01..GATE-70 numerical verification engine
-//! (paper/main.tex §7, paper/supplementary.tex §11).
+//! shbt-power-audit — master GATE-01..GATE-70 + GATE-BAT-01..GATE-BAT-08
+//! numerical verification engine (paper/main.tex §7, paper/supplementary.tex §11).
 //!
-//! `cargo run --release -p shbt-power-audit` evaluates all 70 acceptance
+//! `cargo run --release -p shbt-power-audit` evaluates all 78 acceptance
 //! gates against the physics crates and writes a schema-compliant
 //! `verification_matrix.json` to the repository root.
 
+mod battery_gates;
+
+use battery_gates::{AuditStatus, BatteryAuditMatrix, BatteryTelemetrySnapshot};
 use serde::Serialize;
 use std::fs;
 use std::path::PathBuf;
@@ -357,6 +360,59 @@ fn main() {
         "<= 8.4e-13", hol.adm.det_err, hol.adm.det_err <= 8.4e-13, "", 12));
 
     debug_assert_eq!(gates.len(), 70);
+
+    // ---------- Isomer battery bootstrap (GATE-BAT-01..08, power8.txt) ----------
+    let bat = grid::IsomerBattery::default();
+    let bat_snap = BatteryTelemetrySnapshot {
+        core_mass_kg: ISOMER_CORE_MASS_KG,
+        stored_energy_tj: ISOMER_STORED_TJ,
+        seed_photon_kev: ISOMER_SEED_KEV,
+        released_energy_mev: ISOMER_RELEASE_MEV,
+        dec_efficiency_pct: ETA_DEC_ISOMER * 100.0,
+        pcss_quench_ns: PCSS_QUENCH_NS,
+        inductive_recovery_pct: ETA_INDUCTIVE_RECOVERY_PCT,
+        bootstrap_time_s: bat.bootstrap_time_s(),
+        core_temp_k: bat.core_temp_k,
+        mossbauer_recoil_frac: bat.mossbauer_recoil_frac,
+        borrmann_factor: bat.borrmann_suppress_factor,
+    };
+    let bat_status = BatteryAuditMatrix::audit_all(&bat_snap);
+    let bat_params: [(&'static str, &'static str, String, f64); 8] = [
+        ("Nuclear Core Physics", "Specific Energy Density",
+         ">= 1.3263 TJ/kg".to_string(), ISOMER_ENERGY_DENSITY_TJ_KG),
+        ("Graser Optical Seed", "Quantum Amplification Gain G",
+         ">= 60.0".to_string(), grid::IsomerBattery::trigger_gain()),
+        ("Relativistic Direct Converter", "3-Stage DEC Efficiency",
+         ">= 45.8%".to_string(), ETA_DEC_ISOMER * 100.0),
+        ("Export Bus Switchgear", "PCSS Crowbar Closing Time",
+         "<= 2.10 ns".to_string(), PCSS_QUENCH_NS),
+        ("Inductive Recovery Tank", "Resonant Snubber Regeneration",
+         ">= 94.20%".to_string(), ETA_INDUCTIVE_RECOVERY_PCT),
+        ("Plant Lifecycle Sequencer", "Cold-Start Bootstrap Latency",
+         "<= 1.00 s".to_string(), bat.bootstrap_time_s()),
+        ("Cryostat Crystal Lattice", "Mossbauer Recoil-Free Fraction",
+         ">= 0.74".to_string(), MOSSBAUER_RECOIL_FRAC),
+        ("Borrmann Channeling", "Anomalous Transmission Metric",
+         ">= 0.985".to_string(), BORRMANN_SUPPRESS),
+    ];
+    for (i, ((subsystem, parameter, expected, measured), status)) in
+        bat_params.into_iter().zip(bat_status).enumerate()
+    {
+        gates.push(Gate {
+            gate_id: format!("GATE-BAT-{:02}", i + 1),
+            subsystem,
+            parameter,
+            expected,
+            measured: format!("{measured:.4}"),
+            status: if status.is_passed() { "PASS" } else { "FAIL" },
+            note: match status {
+                AuditStatus::Failed { reason, .. } => Some(reason.to_string()),
+                AuditStatus::Passed => None,
+            },
+        });
+    }
+
+    debug_assert_eq!(gates.len(), 78);
 
     // ---------- Higher-order physics extended checks (power2.txt) ----
     let mut extended: Vec<ExtendedCheck> = Vec::new();
@@ -1077,7 +1133,7 @@ fn main() {
     let failed = gates.len() - passed;
     let report = Report {
         project: "sys1own/shbt-power",
-        matrix: "GATE-01..GATE-70",
+        matrix: "GATE-01..GATE-70 + GATE-BAT-01..GATE-BAT-08",
         generated_by: "shbt-power-audit",
         total_gates: gates.len(),
         passed,

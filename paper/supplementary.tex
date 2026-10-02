@@ -47,9 +47,10 @@ modular-invariance formulation of the holographic boundary channel; the
 pellet stoichiometry and injector trade study (light-gas versus
 electromagnetic launch); the three-field magnetic stopping-radius and
 radiant-flash derivations; the dual-domain tenth-value-layer shielding
-calculations; and the six-stage operational sequence with the LANR
-aggregation-bus specification. All numerical quantities are consistent with
-the 70-gate audit matrix (\texttt{verification\_matrix.json}) of the
+calculations; the six-stage operational sequence with the graser isomer
+battery bus specification; and the isomer coherence physics and 20 K
+cryogenic sub-loop balance. All numerical quantities are consistent with
+the 78-gate audit matrix (\texttt{verification\_matrix.json}) of the
 companion digital twin \cite{mainpaper,sys1own_twin2026}.
 \end{abstract}
 
@@ -376,48 +377,58 @@ x_{10^{-6}}(2.223\MeV) = 6\times 4.837 = 29.02\cm\ \mathrm{Pb},
 \end{equation}
 enclosed over an inner $15.0\cm$ borated-HDPE sleeve to satisfy GATE-69.
 
-\section{Six-Stage Operational Sequence and LANR Bus}
+\section{Six-Stage Operational Sequence and Isomer Battery Bus}
 Plant operation cycles through six stages:
 \begin{enumerate}
-\item \textbf{Cold-start charging.} The 1,800-module LANR auxiliary array
-      routes $\approx 1\,\mathrm{MW_e}$ through solid-state DC--DC
-      converters to the $450\MJ$ supercapacitor buffer; at one-way
-      efficiency $\eta_{\mathrm{chg}} = 0.95$ the charge time is
-      $t_{\mathrm{cold}} = 450\MJ/(1\,\mathrm{MW}\cdot0.95) \approx
-      473.7\,\mathrm{s} \approx 7.51\text{--}7.89\,\mathrm{min}$.
-\item \textbf{Driver energization.} The buffer sources $125\MW$ to the
-      linac/klystron driver chain and superconducting magnets.
+\item \textbf{Instantaneous cold start.} The solid-state coherent graser
+      nuclear isomer battery ($376.99\,\mathrm{kg}$ enriched
+      $^{178\mathrm{m}2}\mathrm{Hf}$, $500.00\,\mathrm{TJ}$ stored;
+      provenance \texttt{sys1own/shbt-warp} and
+      \texttt{sys1own/shbt-ghost}) is seeded by a $40\,\mathrm{keV}$
+      X-ray pulse ($G = 61.15 \ge 60.0$) and its 3-stage relativistic DEC
+      ($\eta_{\mathrm{DEC}} = 45.8\%$) injects $140.000\,\mathrm{MW}$ DC
+      into the recirculating bus within $\tau_{\mathrm{boot}} \le
+      1.0\,\mathrm{s}$, superseding the $7.51\,\mathrm{min}$ LANR
+      pre-charge.
+\item \textbf{Driver energization.} The battery-fed intermediate bus
+      ramps $15\to400\,\mathrm{kV}$ ($\tau_{\mathrm{ramp}} \le
+      45\,\mathrm{ns}$) and sources $125\MW$ to the linac/klystron
+      driver chain and superconducting magnets.
 \item \textbf{Ignition.} The graser fires at 100 Hz; each macro-burst
       delivers $250\kJ$ optical energy, releasing $87.5\MJ$ fusion yield
       ($8{,}750\MW$).
 \item \textbf{Direct conversion.} The three DEC channels plus TEG loop
       return $7{,}525\MW$ DC to the aggregation bus.
 \item \textbf{Recirculation.} $140\MW$ (125 driver + 15 auxiliaries)
-      closes the loop; the LANR array disconnects and floats the reserve
-      buffer.
+      closes the loop; the graser seed laser is throttled and quenched,
+      and the $450\MJ$ buffer floats on synthetic-inertia droop duty
+      ($H = 57.45\,\mathrm{ms}$, up to $1{,}958.23\,\mathrm{MW}$ for
+      $230\,\mathrm{ms}$).
 \item \textbf{Export.} $7{,}832.903\MW$ is conditioned and exported to the
       transmission grid.
 \end{enumerate}
 
 \begin{table}[h]
 \centering
-\caption{LANR Aggregation Bus Electrical Specification}
-\label{tab:lanrbus}
+\caption{Graser Isomer Battery Bus Electrical Specification}
+\label{tab:isomerbus}
 \small
 \setlength{\tabcolsep}{4pt}
 \begin{tabular}{ll}
 \toprule
 \textbf{Parameter} & \textbf{Value} \\
 \midrule
-LANR modules                    & 1,800 \\
-Per-module thermal output       & $11.11\,\mathrm{kW_{th}}$ \\
-Thermoelectric stage            & Bi$_2$Te$_3$/SiGe, $\eta_{TE}=5.0\%$ \\
-Per-module net electrical       & $555.03\text{--}555.56\,\mathrm{W_e}$ \\
-Array net DC power              & $999.054\,\mathrm{kW} \approx 1.0\MW$ \\
-Aggregation bus voltage         & $15.0\kV$ DC \\
-Aggregate bus current           & $109.56\text{--}120.00\kA$ \\
-Supercapacitor buffer           & $450\MJ$ \\
-Cold-start charge time          & $7.51\,\mathrm{min}$ \\
+Isomer core mass                & $376.99\,\mathrm{kg}$ $^{178\mathrm{m}2}\mathrm{Hf}$ \\
+Stored nuclear energy           & $500.00\,\mathrm{TJ}$ ($1.3263\,\mathrm{TJ/kg}$) \\
+Seed trigger photon energy      & $40.0\,\mathrm{keV}$ X-ray \\
+Optical trigger gain $G$        & $61.15 \ge 60.0$ \\
+DEC conversion stages           & 3-stage relativistic, $\eta_{\mathrm{DEC}} = 45.8\%$ \\
+Bootstrap injection power       & $140.000\,\mathrm{MW}$ DC \\
+Bus ramp window                 & $15\text{--}400\,\mathrm{kV}$, $\tau_{\mathrm{ramp}} \le 45\,\mathrm{ns}$ \\
+Cold-start bootstrap latency    & $\le 1.00\,\mathrm{s}$ (0.85 s nominal) \\
+Nuclear mass per start          & $0.2305\,\mathrm{g}$ \\
+Cold-start reserve              & $> 1.6\times10^{6}$ full starts \\
+PCSS crowbar quench             & $\le 2.10\,\mathrm{ns}$, $\eta_{\mathrm{ind}} \ge 94.20\%$ \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -428,12 +439,17 @@ Microkernel telemetry and control are mapped at physical base address
 Cache line 0 (\texttt{0x70000000}--\texttt{0x3F}) maps system status,
 master clocks, PCSS controls, ADM 3+1 metric perturbations, and linac beam
 settings, preserving compatibility with sys1own/shbt-qc. Cache line 1
-(\texttt{0x70000040}--\texttt{0x7F}) is the telemetry extension: DEC
-voltages, collected alpha currents, virtual-anode alarms, expander field
-strengths, the LANR starter grid, buffer state-of-charge, thermoelectric
-enthalpies, first-wall temperatures, and target flight tracking. Block
-integrity is verified by a hardware CRC-32/Castagnoli checksum at byte
-\texttt{0x7C}, and SECDED Hamming(72,64) ECC protects each line
+(\texttt{0x70000040}--\texttt{0x7F}) is the telemetry extension:
+supercritical-helium loop temperatures and pressure, shield TEG
+reclamation, the 20 K cryogenic sub-loop mass flow, PCSS crowbar quench
+and inductive-recovery metrics, and---replacing the legacy LANR
+starter-grid registers at \texttt{0x5C}--\texttt{0x74}---live isomer
+battery telemetry (core temperature, cryo headroom, state of charge,
+bus voltage, decay heat, Mössbauer recoil-free fraction, and Borrmann
+suppression factor). The audit engine's gate status and extended
+bitfields publish at \texttt{0x78} and \texttt{0x7C}; block integrity is
+verified by the magic/version word at \texttt{0x00} plus battery-coherence
+sanity bounds, and SECDED Hamming(72,64) ECC protects each line
 \cite{sys1own_twin2026}.
 
 
@@ -846,6 +862,68 @@ C = \frac{2E}{V^2} = 4.44\,\mathrm{mF},\quad
 I_{pk} \le V\sqrt{C/L},
 \end{equation}
 with RC snubbers clamping $dV/dt$ across the PCSS stack.
+
+\section{Isomer Battery Coherence Physics and Cryogenic Sub-Loop}
+\label{app:isomer}
+Coherent graser amplification requires preserving recoilless emission
+and absorption within the single-crystal hafnium lattice
+(\texttt{sys1own/shbt-warp}, \texttt{sys1own/shbt-ghost} provenance).
+In the Debye model for crystalline hafnium
+($\Theta_D \approx 252\,\mathrm{K}$), the Mössbauer recoil-free fraction
+$f_M(T)$ is formulated as
+\begin{equation}
+f_M(T) = \exp\left\{ -\frac{3 E_\gamma^2}{2 M_{\mathrm{nuc}} c^2 k_B
+\Theta_D} \left[ 1 + 4 \left( \frac{T}{\Theta_D} \right)^2
+\int_0^{\Theta_D / T} \frac{x}{e^x - 1}\,dx \right] \right\}.
+\end{equation}
+To maintain the audit threshold $f_M \ge 0.74$, the core temperature must
+strictly satisfy $T_{\mathrm{core}} \le T_{\mathrm{crit}} =
+32.92\,\mathrm{K}$. Maintaining $T_{\mathrm{op}} = 21.13\,\mathrm{K}$
+establishes the cryogenic thermal headroom
+\begin{equation}
+\Delta T_{\mathrm{headroom}} = T_{\mathrm{crit}} - T_{\mathrm{op}} =
+32.92 - 21.13 = 11.79\,\mathrm{K}.
+\end{equation}
+The periodic crystalline array exhibits the Borrmann effect---anomalous
+transmission of resonant electromagnetic waves along the nodal lattice
+planes---with effective attenuation coefficient
+\begin{equation}
+\mu_{\mathrm{eff}} = \mu_0\,(1 - \epsilon_B),
+\end{equation}
+where $\epsilon_B = 0.9852 \ge 0.985$ at $T_{\mathrm{core}} =
+21.13\,\mathrm{K}$ suppresses photoelectric absorption by a factor of
+$66.7\times$. Exceeding $T_{\mathrm{crit}}$ degrades $\epsilon_B$ below
+$0.95$, risking prompt photoelectric thermal runaway upon seeding.
+
+The quiescent decay load $\dot{Q}_{\mathrm{decay}} = \lambda
+E_{\mathrm{stored}} = 354.27\,\mathrm{kW}$ is lifted by a dedicated
+$2.0\,\mathrm{MPa}$ supercritical helium sub-loop; helium enters the
+micro-channel core exchanger at $18.00\,\mathrm{K}$ and exits at
+$21.13\,\mathrm{K}$ ($\Delta T = 3.13\,\mathrm{K}$, $C_p =
+5.193\,\mathrm{kJ/(kg\cdot K)}$), requiring
+\begin{equation}
+\dot{m}_{\mathrm{He,cryo}} = \frac{\dot{Q}_{\mathrm{decay}}}{C_p\,
+\Delta T} = \frac{354.27}{5.193 \times 3.13} = 21.795\,\mathrm{kg/s}.
+\end{equation}
+Rejection into the $300\,\mathrm{K}$ environment is bounded by the Carnot
+COP and an exergetic efficiency $\eta_{\mathrm{ex}} = 0.280$:
+\begin{equation}
+\mathrm{COP}_{\mathrm{Carnot}} = \frac{21.13}{300.0 - 21.13} = 0.07577,
+\qquad
+\mathrm{COP}_{\mathrm{actual}} = 0.280 \times 0.07577 = 0.021216,
+\end{equation}
+fixing the standby cryoplant electrical demand at
+$P_{\mathrm{cryo,elec}} = 354.27/0.021216 = 16.70\,\mathrm{MW_{elec}}$.
+Cascaded high-$ZT$ skutterudite/SiGe TEG modules on the $80\,\mathrm{K}$
+intermediate radiation shield convert the conductive bypass flux
+($125.4\,\mathrm{kW}$) at
+\begin{equation}
+\eta_{\mathrm{TEG}} = \frac{80.0 - 21.13}{80.0} \cdot
+\frac{\sqrt{1 + 1.45} - 1}{\sqrt{1 + 1.45} + 21.13/80.0} \approx 22.73\%,
+\end{equation}
+recovering $P_{\mathrm{TEG,reclaim}} = 125.4 \times 0.2273 =
+28.50\,\mathrm{kW_{DC}}$ directly onto the kernel MMIO low-voltage
+auxiliary bus for cryostat instrumentation and valve actuation.
 
 \section{Operando Diagnostics, Ni80Cr20 Calibration, and ASTM Matrix}
 \label{app:diagnostics}

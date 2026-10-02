@@ -1,11 +1,16 @@
 /*
  * shbt_power_kernel.c — freestanding C11 microkernel runtime for the
- * SHBT-Graser p-11B power plant (paper/main.tex §6).
+ * SHBT-Graser p-11B power plant (paper/main.tex §5-§6).
  *
  * Implements the 128-byte SHBT-POWER-MMIO register service at
- * 0x70000000: CRC-32/Castagnoli integrity, sub-2.5 ns PCSS solid-state
- * crowbar interlock (GATE-68), ADM 3+1 metric lockout, and ECC scrubbing.
- * Transferred from sys1own/shbt-qc / sys1own/shbt-sglt kernel runtimes.
+ * 0x70000000: magic/version integrity checks, the 5-phase isomer-battery
+ * bootstrap FSM (ColdStandby -> IsomerArming -> GraserIgnitionPulse ->
+ * DecBootstrap -> SteadyStateRecirculation), the sub-2.10 ns PCSS crowbar
+ * interlock (GATE-BAT-04), 20 K cryogenic sub-loop sanity, and SECDED
+ * scrubbing.  The 178m2Hf graser battery core and 3-stage relativistic DEC
+ * originate upstream in sys1own/shbt-warp and sys1own/shbt-ghost; the
+ * legacy LANR starter array is superseded and the 450 MJ supercapacitor
+ * bank is repurposed as a synthetic inertia buffer (H = 57.45 ms).
  */
 
 #include <stdint.h>
@@ -29,12 +34,26 @@ static inline uint64_t shbt_cycles(void)
 #endif
 }
 
-/* Interlock latency budget (GATE-68): total SiC crowbar dump <= 2.450 ns,
- * PCSS trigger diode < 100 ps, avalanche lock-on < 1.0 ns. */
-#define SHBT_PWR_CROWBAR_BUDGET_NS  2.450
+/* Isomer battery nominal setpoints (power8.txt; upstream shbt-warp /
+ * shbt-ghost Borrmann cavity + DEC stack). */
+#define SHBT_BAT_CORE_TEMP_K          21.13f
+#define SHBT_BAT_CRIT_TEMP_K          32.92f
+#define SHBT_BAT_CRYO_HEADROOM_K      11.79f
+#define SHBT_BAT_DECAY_HEAT_KW        354.27f
+#define SHBT_BAT_MOSSBAUER_MIN        0.74f
+#define SHBT_BAT_MOSSBAUER_NOM        0.782f
+#define SHBT_BAT_BORRMANN_MIN         0.985f
+#define SHBT_BAT_BORRMANN_NOM         0.9852f
+#define SHBT_BAT_BUS_PRECHARGE_KV     15.0f
+#define SHBT_BAT_BUS_MAX_KV           400.0f
+#define SHBT_CRYO_MDOT_KG_S           21.795f
+#define SHBT_TEG_SHIELD_RECLAIM_KW    28.50f
 
-/* ADM 3+1 metric invariance limit (GATE-70 reference bound 1e-12). */
-#define SHBT_PWR_ADM_LIMIT          1.0e-12f
+/* PCSS crowbar quench latency budget (GATE-BAT-04): <= 2.10 ns. */
+#define SHBT_PWR_CROWBAR_BUDGET_NS    2.10f
+#define SHBT_PWR_CROWBAR_NOM_NS       2.05f
+/* Inductive-resonant energy recovery (GATE-BAT-05): >= 94.20 %. */
+#define SHBT_PWR_INDUCTIVE_NOM_PCT    94.45f
 
 /* Bare-metal entry point required by linker.ld (ENTRY(_start)).  Only the
  * freestanding image exports it. */
@@ -67,8 +86,9 @@ static inline shbt_power_mmio_t *shbt_power_regs(void)
 #endif
 
 /* --------------------------------------------------------------------------
- * CRC-32/Castagnoli (poly 0x1EDC6F41, reflected) over the register block
- * minus the checksum word itself (bytes 0x00..0x7B).
+ * CRC-32/Castagnoli (poly 0x1EDC6F41, reflected).  Retained as a service
+ * for host-side frames (telemetry ring integrity checks); the register
+ * contract itself is guarded by magic + version + range sanity checks.
  * ------------------------------------------------------------------------ */
 uint32_t shbt_compute_crc32_castagnoli(const void *buf, size_t len)
 {
@@ -82,10 +102,21 @@ uint32_t shbt_compute_crc32_castagnoli(const void *buf, size_t len)
     return ~crc;
 }
 
-static uint32_t shbt_mmio_crc_region(const shbt_power_mmio_t *hw)
+/* --------------------------------------------------------------------------
+ * Isomer battery telemetry sanity: the quiescent cryostat invariants that
+ * must hold before State 0 -> State 1 arming is legal.
+ * ------------------------------------------------------------------------ */
+static bool shbt_battery_coherent(const shbt_power_mmio_t *hw)
 {
-    return shbt_compute_crc32_castagnoli(
-        (const void *)hw, offsetof(shbt_power_mmio_t, telemetry_crc32));
+    return hw->battery_core_temp_k <= SHBT_BAT_CORE_TEMP_K + 1e-3f
+        && hw->battery_cryo_headroom_k >= SHBT_BAT_CRYO_HEADROOM_K - 1e-3f
+        && hw->mossbauer_recoil_frac >= SHBT_BAT_MOSSBAUER_MIN
+        && hw->borrmann_suppress_factor >= SHBT_BAT_BORRMANN_MIN
+        && hw->battery_soc >= 0.0f && hw->battery_soc <= 1.0f
+        && hw->battery_bus_voltage_kv >= 0.0f
+        && hw->battery_bus_voltage_kv <= SHBT_BAT_BUS_MAX_KV
+        && hw->pcss_crowbar_quench_ns <= SHBT_PWR_CROWBAR_BUDGET_NS
+        && hw->pcss_inductive_recov_pct >= 94.20f;
 }
 
 /* --------------------------------------------------------------------------
@@ -98,84 +129,172 @@ int shbt_power_kernel_init(void)
     for (size_t i = 0; i < sizeof(*hw); ++i)
         raw[i] = 0;
 
-    hw->sys_ctrl          = 0x1u;
-    hw->sys_status        = SHBT_PWR_STATUS_READY | SHBT_PWR_STATUS_PLL_LOCK;
-    hw->quench_headroom   = 11.79f;        /* NbN/MgB2 margin (K) */
-    hw->beam_energy_gev   = 0.5f;          /* 500 MeV low-gamma regime */
-    hw->dec_grid1_volt    = 0.8f;          /* MV */
-    hw->dec_grid2_volt    = 1.8f;
-    hw->dec_grid3_volt    = 2.7f;
-    hw->lanr_array_net_kw = 999.054f;      /* 1,800 x 555.03 W */
-    hw->adm_metric_err    = 0.0f;
-    hw->adm_shift_norm    = 0.0f;
+    hw->magic                    = SHBT_MMIO_MAGIC_VALUE;
+    hw->version                  = SHBT_MMIO_VERSION_CURRENT;
+    hw->plant_state              = SHBT_STATE_COLD_STANDBY;
+    hw->control_flags            = SHBT_PWR_CTRL_PCSS_READY
+                                 | SHBT_PWR_CTRL_DROOP_TRACK;
+    hw->uptime_ticks             = 0u;
 
-    hw->sys_status       |= SHBT_PWR_STATUS_MMIO_OK;
-    hw->telemetry_crc32   = shbt_mmio_crc_region(hw);
+    /* Steady-state plant telemetry setpoints. */
+    hw->net_export_mw            = 7832.903f;
+    hw->gross_output_mw          = 7972.903f;
+    hw->recirc_load_mw           = 140.000f;
+    hw->linac_load_mw            = 125.000f;
+    hw->bop_load_mw              = 15.000f;
+    hw->linac_rf_freq_ghz        = 5.712f;
+    hw->supercap_stored_mj       = 450.0f;   /* synthetic inertia reserve */
+    hw->grid_freq_hz             = 50.00f;
+    hw->grid_droop_pct           = 4.0f;
+    hw->fault_code               = 0u;
+
+    /* Cacheline 1: thermal-hydraulics, protection, isomer battery. */
+    hw->she_loop_temp_cold_k     = 300.0f;
+    hw->she_loop_temp_hot_k      = 900.0f;
+    hw->she_loop_press_mpa       = 10.0f;
+    hw->teg_reclaim_kw           = SHBT_TEG_SHIELD_RECLAIM_KW;
+    hw->cryo_subloop_mass_flow   = SHBT_CRYO_MDOT_KG_S;
+    hw->pcss_crowbar_quench_ns   = SHBT_PWR_CROWBAR_NOM_NS;
+    hw->pcss_inductive_recov_pct = SHBT_PWR_INDUCTIVE_NOM_PCT;
+    hw->battery_core_temp_k      = SHBT_BAT_CORE_TEMP_K;
+    hw->battery_cryo_headroom_k  = SHBT_BAT_CRYO_HEADROOM_K;
+    hw->battery_soc              = 1.0f;
+    hw->battery_bus_voltage_kv   = 24.0f;    /* supercap hold rail */
+    hw->battery_decay_heat_kw    = SHBT_BAT_DECAY_HEAT_KW;
+    hw->mossbauer_recoil_frac    = SHBT_BAT_MOSSBAUER_NOM;
+    hw->borrmann_suppress_factor = SHBT_BAT_BORRMANN_NOM;
+    hw->audit_gate_status_bits   = 0u;
+    hw->audit_gate_extended_bits = 0u;
     return 0;
 }
 
 /* --------------------------------------------------------------------------
- * Register-block integrity check: layout + stored CRC-32C.
+ * Register-block integrity check: layout, magic/version, and isomer
+ * battery telemetry sanity over the live register window.
  * ------------------------------------------------------------------------ */
 int shbt_verify_mmio_integrity(void)
 {
     shbt_power_mmio_t *hw = shbt_power_regs();
 
-    if (sizeof(shbt_power_mmio_t) != 128)
+    if (sizeof(shbt_power_mmio_t) != SHBT_MMIO_TOTAL_SIZE_BYTES)
         return -1;
-    if (offsetof(shbt_power_mmio_t, dec_grid1_volt) != 0x40)
+    if (offsetof(shbt_power_mmio_t, she_loop_temp_cold_k) != 0x40)
         return -2;
-    if (offsetof(shbt_power_mmio_t, telemetry_crc32) != 0x7C)
+    if (offsetof(shbt_power_mmio_t, audit_gate_extended_bits) != 0x7C)
         return -3;
-    if (shbt_mmio_crc_region(hw) != hw->telemetry_crc32) {
-        hw->sys_status |= SHBT_PWR_STATUS_ECC_ERR;
+    if (hw->magic != SHBT_MMIO_MAGIC_VALUE
+        || hw->version != SHBT_MMIO_VERSION_CURRENT) {
+        hw->fault_code |= SHBT_PWR_FAULT_MAGIC;
         return -4;
     }
-    hw->sys_status |= SHBT_PWR_STATUS_MMIO_OK;
+    if (!shbt_battery_coherent(hw)) {
+        hw->fault_code |= SHBT_PWR_FAULT_CRYO_LOW;
+        return -5;
+    }
     return 0;
 }
 
 /* --------------------------------------------------------------------------
- * PCSS solid-state crowbar interlock (sub-2.5 ns total dump latency).
+ * PCSS solid-state crowbar interlock (<= 2.10 ns quench latency).
  *
- * On a metric/quench trip: fire the PCSS gate laser, latch the interlock,
- * shunt the HTS coil current into the ceramic dump bank, re-stamp the CRC.
+ * On an overvoltage / arc-fault condition the optically gated GaAs PCSS
+ * array fires, shunting the bus discharge through the inductive-resonant
+ * recovery tank (>= 94.20 % energy recovery) and latching the fault.
  * ------------------------------------------------------------------------ */
 int shbt_trigger_pcss_crowbar(void)
 {
     shbt_power_mmio_t *hw = shbt_power_regs();
 
-    hw->pcss_gate_ctrl   = 1u;
-    hw->interlock_latch |= SHBT_PWR_LATCH_PCSS_FIRED;
-    hw->crowbar_status   = 1u;
-    hw->sys_status      |= SHBT_PWR_STATUS_CROWBAR_TRIP;
+    hw->control_flags |= SHBT_PWR_CTRL_PCSS_FIRED;
+    hw->fault_code    |= SHBT_PWR_FAULT_BUS_OVERVOLT;
 
-    /* Shunt the 120 kA-class bus/coil currents into the dump bank. */
-    hw->mhd_pickup_curr_ka = 0.0f;
-    hw->dec_alpha_curr_ka  = 0.0f;
+    /* Crowbar closes the bus: collapse the DC link to the pre-charge rail. */
+    hw->battery_bus_voltage_kv = SHBT_BAT_BUS_PRECHARGE_KV;
+    hw->pcss_crowbar_quench_ns = SHBT_PWR_CROWBAR_NOM_NS;
 
-    hw->interlock_latch |= SHBT_PWR_LATCH_CROWBAR_DONE;
-    hw->telemetry_crc32  = shbt_mmio_crc_region(hw);
-    hw->pcss_gate_ctrl   = 0u;
+    hw->control_flags &= ~SHBT_PWR_CTRL_PCSS_FIRED;
     return 0;
 }
 
 /* --------------------------------------------------------------------------
- * ADM 3+1 metric lockout: if |det(g)+1| exceeds the invariance bound, force
- * the state amplitude into the dark ledger (eta_D = 23/33) and blank the
- * graser driver.  Returns 0 nominal, 1 if lockout fired.
+ * Isomer-battery bootstrap guard: if the cryostat invariants degrade below
+ * the Mossbauer de-pinning or Borrmann suppression thresholds, the 40 keV
+ * seed pulse is inhibited and the FSM is forced back to COLD_STANDBY.
+ * Returns 0 nominal, 1 if the abort fired.
  * ------------------------------------------------------------------------ */
-int shbt_adm_metric_guard(void)
+int shbt_isomer_safety_guard(void)
 {
     shbt_power_mmio_t *hw = shbt_power_regs();
-    if (hw->adm_metric_err > SHBT_PWR_ADM_LIMIT) {
-        hw->dark_ledger_par   = 0x23u;     /* 23/33 dark ledger fold */
-        hw->interlock_latch  |= SHBT_PWR_LATCH_ADM_LOCKOUT;
-        hw->sys_status       |= SHBT_PWR_STATUS_ADM_FAULT;
-        hw->telemetry_crc32   = shbt_mmio_crc_region(hw);
+
+    if (hw->mossbauer_recoil_frac < SHBT_BAT_MOSSBAUER_MIN) {
+        hw->fault_code |= SHBT_PWR_FAULT_MOSSBAUER;
+    }
+    if (hw->borrmann_suppress_factor < SHBT_BAT_BORRMANN_MIN) {
+        hw->fault_code |= SHBT_PWR_FAULT_BORRMANN;
+    }
+    if (hw->battery_cryo_headroom_k < SHBT_BAT_CRYO_HEADROOM_K - 1e-3f) {
+        hw->fault_code |= SHBT_PWR_FAULT_CRYO_LOW;
+    }
+    if (hw->fault_code
+        & (SHBT_PWR_FAULT_MOSSBAUER | SHBT_PWR_FAULT_BORRMANN
+           | SHBT_PWR_FAULT_CRYO_LOW)) {
+        hw->control_flags &= ~SHBT_PWR_CTRL_SEED_LASER_ON;
+        hw->plant_state    = SHBT_STATE_COLD_STANDBY;
         return 1;
     }
     return 0;
+}
+
+/* --------------------------------------------------------------------------
+ * Five-phase lifecycle sequencer step.  Evaluates the transition
+ * predicates Phi_{i->j} from the power8.txt FSM contract at the 10 kHz
+ * kernel tick.
+ * ------------------------------------------------------------------------ */
+void shbt_lifecycle_step(void)
+{
+    shbt_power_mmio_t *hw = shbt_power_regs();
+
+    switch (hw->plant_state) {
+    case SHBT_STATE_COLD_STANDBY:
+        /* Phi_01: start command + cryo headroom + PCSS ready. */
+        if ((hw->control_flags & SHBT_PWR_CTRL_START_CMD)
+            && hw->battery_cryo_headroom_k >= SHBT_BAT_CRYO_HEADROOM_K - 1e-3f
+            && hw->battery_bus_voltage_kv >= 24.0f
+            && (hw->control_flags & SHBT_PWR_CTRL_PCSS_READY)) {
+            hw->plant_state = SHBT_STATE_ISOMER_ARMING;
+            hw->battery_bus_voltage_kv = SHBT_BAT_BUS_PRECHARGE_KV;
+        }
+        break;
+    case SHBT_STATE_ISOMER_ARMING:
+        /* Phi_12: arming complete, PCSS quench verified, DC link charged. */
+        if (hw->pcss_crowbar_quench_ns <= SHBT_PWR_CROWBAR_BUDGET_NS
+            && hw->battery_bus_voltage_kv == SHBT_BAT_BUS_PRECHARGE_KV) {
+            hw->control_flags |= SHBT_PWR_CTRL_SEED_LASER_ON;
+            hw->plant_state    = SHBT_STATE_GRASER_IGNITION_PULSE;
+            hw->battery_bus_voltage_kv = SHBT_BAT_BUS_MAX_KV;
+        }
+        break;
+    case SHBT_STATE_GRASER_IGNITION_PULSE:
+        /* Phi_23: fusion gross >= 1,000 MW and sHe flow nominal. */
+        if (hw->gross_output_mw >= 1000.0f
+            && hw->cryo_subloop_mass_flow >= SHBT_CRYO_MDOT_KG_S) {
+            hw->plant_state = SHBT_STATE_DEC_BOOTSTRAP;
+        }
+        break;
+    case SHBT_STATE_DEC_BOOTSTRAP:
+        /* Phi_34: net export at rating, recirculation sourced in-plant. */
+        if (hw->net_export_mw >= 7832.903f - 1e-3f
+            && hw->recirc_load_mw == 140.0f
+            && hw->battery_core_temp_k <= SHBT_BAT_CORE_TEMP_K + 1e-3f) {
+            hw->control_flags &= ~SHBT_PWR_CTRL_SEED_LASER_ON;
+            hw->plant_state    = SHBT_STATE_STEADY_STATE_RECIRC;
+        }
+        break;
+    case SHBT_STATE_STEADY_STATE_RECIRC:
+    default:
+        /* Synthetic-inertia droop tracking; fault abort via guard. */
+        break;
+    }
 }
 
 /* --------------------------------------------------------------------------
@@ -306,11 +425,10 @@ bool read_validated_telemetry(uint32_t channel_idx, double *out_physical_val)
 }
 
 /* --------------------------------------------------------------------------
- * Runtime telemetry refresh tick (power6.txt §F): snapshot the 128-byte
- * register block, re-validate the CRC-32/Castagnoli frame over bytes
- * 0x00-0x7B, and advance the monotonic clock counter.  On frame mismatch,
- * latch SHBT_PWR_STATUS_ECC_ERR (SECDED double-bit faults already panic
- * inside read_validated_telemetry via cli; hlt).
+ * Runtime telemetry refresh tick (power8.txt §2): snapshot the 128-byte
+ * register block, re-validate magic/version and the isomer battery
+ * sanity window, and advance the 10 kHz monotonic tick counter.  On a
+ * coherence failure the corresponding fault_code bit latches.
  * ------------------------------------------------------------------------ */
 void shbt_power_kernel_telemetry_tick(void)
 {
@@ -324,13 +442,15 @@ void shbt_power_kernel_telemetry_tick(void)
             dst[i] = src[i];
     }
 
-    if (shbt_mmio_crc_region(&local_snapshot) != local_snapshot.telemetry_crc32) {
-        mmio->sys_status |= SHBT_PWR_STATUS_ECC_ERR;
+    if (local_snapshot.magic != SHBT_MMIO_MAGIC_VALUE
+        || local_snapshot.version != SHBT_MMIO_VERSION_CURRENT) {
+        mmio->fault_code |= SHBT_PWR_FAULT_MAGIC;
+        return;
+    }
+    if (!shbt_battery_coherent(&local_snapshot)) {
+        mmio->fault_code |= SHBT_PWR_FAULT_CRYO_LOW;
         return;
     }
 
-    mmio->sys_status &= ~SHBT_PWR_STATUS_ECC_ERR;
-    if (++mmio->clock_ticks_lo == 0u) {
-        mmio->clock_ticks_hi++;
-    }
+    mmio->uptime_ticks++;
 }

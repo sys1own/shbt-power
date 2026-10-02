@@ -21,7 +21,7 @@ def hud(state: dict) -> str:
         ("P_gross", f"{state['p_gross_mw']:.3f} MW"),
         ("P_net", f"{state['p_net_mw']:.3f} MW"),
         ("SoC", f"{state['supercap_soc'] * 100.0:.1f} %"),
-        ("LANR array", f"{state['lanr_net_kw']:.3f} kW"),
+        ("Isomer battery", f"{state['battery_soc'] * 100.0:.1f} % SoC @ {state['battery_bus_voltage_kv']:.1f} kV"),
         ("ADM |det g + 1|", f"{state['adm_metric_err']:.3e}"),
     ]
     w = max(len(k) for k, _ in rows)
@@ -42,7 +42,8 @@ def cmd_run(args: argparse.Namespace) -> int:
         "p_gross_mw": twin.p_gross_mw,
         "p_net_mw": net,
         "supercap_soc": twin.supercap_soc,
-        "lanr_net_kw": twin.lanr_net_kw,
+        "battery_soc": twin.battery_soc,
+        "battery_bus_voltage_kv": twin.battery_bus_voltage_kv,
         "adm_metric_err": twin.adm_metric_err,
     }
     print(hud(state))
