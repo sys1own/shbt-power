@@ -57,6 +57,7 @@ efficiency, and the duplicated "447.903 MW regulated DC" figure
 
 ## 2. Complete Physical System Topology
 
+```
 ==================================================================================================================
                                     SHBT-Graser Plant Signal & Energy Flow Architecture
 ==================================================================================================================
@@ -129,7 +130,7 @@ efficiency, and the duplicated "447.903 MW regulated DC" figure
   • Fast interlocks: Sub-2.5 ns PCSS crowbar switch (τ_close ≤ 2.10 ns, ≥94.20% SiC inductive recovery)
   • Metric bounds: ADM 3+1 metric lapse error |det(g) + 1| ≤ 10⁻¹² | ADM shift vector nulling βⁱ ──► 0
 ==================================================================================================================
-
+```
 ---
 
 ## 3. Subsystem Mathematical Specifications & Governing Physics
