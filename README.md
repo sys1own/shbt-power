@@ -59,7 +59,7 @@ efficiency, and the duplicated "447.903 MW regulated DC" figure
 
 ```
 ==================================================================================================================
-                                    SHBT-Graser Plant Signal & Energy Flow Architecture
+                              SHBT-Graser Plant Signal & Energy Flow Architecture
 ==================================================================================================================
 
  [ COLD-START & GRID BUFFER ]                                  [ FUEL & DRIVER INJECTION ]
@@ -107,11 +107,11 @@ efficiency, and the duplicated "447.903 MW regulated DC" figure
                     │                                          ▼ Direct Energy Conversion (DEC): 7,525.000 MW
                     │
                     │ Residual Core Enthalpy: 1,325.000 MW
-                    │ ┌───────────────────────────────────────────────────────────────│──┐
+                    │ ┌──────────────────────────────────────────────────────────────────┐
                     │ │ Supercritical Helium Loop (10.0 MPa, 450 kg/s, 300 K ──► 900 K)  │
                     │ │ Dual-Stage Cascaded TEG: CoSb₃ Skutterudite / ZrNiSn Half-Heusler│
                     │ │ η_TEG = 33.804%                                                  │
-                    │ └────────────────────────────────┬────────────────────────────│────┘
+                    │ └────────────────────────────────┬─────────────────────────────────┘
                     │                                  ▼
                     │                            +447.903 MW electrical yield
                     │                                  │
