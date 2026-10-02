@@ -60,12 +60,12 @@ efficiency, and the duplicated "447.903 MW regulated DC" figure
 ```
                    SHBT-Graser Plant Signal & Energy Flow
  ────────────────────────────────────────────────────────────────────────────
-                        ┌───────────────────────────┐
+                         ┌───────────────────────────┐
    Graser Isomer Battery │  450 MJ Supercapacitor    │      ±800 kV HVDC
    (shbt-warp/ghost,     │  Synthetic-Inertia Buffer │────► Grid Export Bus
-    376.99 kg ¹⁷⁸ᵐ²Hf,  │  H=57.45 ms, ≤1,958.23 MW │      7,832.903 MW net
-    500 TJ, 140 MW/1s) ─►│  4–5% droop (shbt-cf)    │            ▲
-                        └───────┬──────────▲────────┘            ▲
+    376.99 kg ¹⁷⁸ᵐ²Hf,   │  H=57.45 ms, ≤1,958.23 MW │      7,832.903 MW net
+    500 TJ, 140 MW/1s) ─►│  4–5% droop (shbt-cf)     │           ▲
+                         └──────┬──────────▲─────────┘           ▲
                                 │ 125 MW   │ 7,972.903 MW gross  │
                                 ▼          │                     │
    Electromagnetic Railgun   ┌─────────────┴────┐   ┌────────────┴─────────┐
