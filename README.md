@@ -57,7 +57,7 @@ efficiency, and the duplicated "447.903 MW regulated DC" figure
 ## 2. Complete Physical System Topology
 
 ```
-                    SHBT-Graser Plant Signal & Energy Flow
+                   SHBT-Graser Plant Signal & Energy Flow
  ────────────────────────────────────────────────────────────────────────────
                         ┌───────────────────────────┐
    LANR Starter Grid    │  450 MJ Supercapacitor    │      ±800 kV HVDC
