@@ -979,7 +979,7 @@
       "subsystem": "Core ROM",
       "parameter": "12-state affine step",
       "expected": "<= 10 us",
-      "computed": "0.03 us",
+      "computed": "0.06 us",
       "status": "PASS"
     },
     {
