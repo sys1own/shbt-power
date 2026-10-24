@@ -545,7 +545,7 @@ MIT — see `LICENSE`.
 
 `shbt-power` serves as the master systems engineering and multi-physics integration platform for commercial aneutronic fusion, directly synthesizing modular algorithms, runtime kernels, and verification pipelines across the Static Holographic Boundary Theory (SHBT) repository ecosystem:
 
-                                  ```text
+                                 
                                   +------------------------------------------+
                                   |             [shbt-precision]             |
                                   |      Computational Math & Cosmology      |
@@ -587,7 +587,6 @@ MIT — see `LICENSE`.
                                        |  Universal Matter Foundry &   |
                                        |   5th-Gen SHBT-MAR-312X Twin  |
                                        +-------------------------------+
-```
                                                        │
                      ┌─────────────────────────────────┼─────────────────────────────────┐
                      ▼                                 ▼                                 ▼
@@ -599,14 +598,14 @@ MIT — see `LICENSE`.
                      │                                 │                                 │
                      └────────────────────────┬────────┴─────────────────────────────────┘
                                               ▼
-       ╭───────────────────────────────────────────────────────────────────────────────────────────╮
-       │                                SPECIALIZED VEHICLE TWINS                                  │
-       │                                                                                           │
-       │  • shbt-ghost : Reactionless Propulsion & Local Gravity Wells (3+1 CCZ4 / PCSS Crowbars)  │
-       │  • shbt-recon : Macroscopic State Translocation Gateway (Stinespring V_macro / 504 Gbps)  │
-       │  • shbt-sglt  : Synthetic Gravitational Lensing Telescope (SE-L2 Swarm / TMSV Metrology)  │
-       │  • shbt-warp  : Holographic Warp Metric & 3+1D Flight Twin (ADM α=1.0 / SHBT-MAR-312X Engine)    │
-       ╰──────────────────────────────────────────┬────────────────────────────────────────────────╯
+       ╭──────────────────────────────────────────────────────────────────────────────────────────────╮
+       │                                SPECIALIZED VEHICLE TWINS                                     │
+       │                                                                                              │
+       │  • shbt-ghost : Reactionless Propulsion & Local Gravity Wells (3+1 CCZ4 / PCSS Crowbars)     │
+       │  • shbt-recon : Macroscopic State Translocation Gateway (Stinespring V_macro / 504 Gbps)     │
+       │  • shbt-sglt  : Synthetic Gravitational Lensing Telescope (SE-L2 Swarm / TMSV Metrology)     │
+       │  • shbt-warp  : Holographic Warp Metric & 3+1D Flight Twin (ADM α=1.0 / SHBT-MAR-312X Engine)│
+       ╰──────────────────────────────────────────┬───────────────────────────────────────────────────╯
                                                   │
                                                   ▼
        ╭───────────────────────────────────────────────────────────────────────────────────────────╮
